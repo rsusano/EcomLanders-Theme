@@ -1,0 +1,109 @@
+/* assets/product-announcement-bar.css */
+.product-announcement-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+    z-index: 10;
+    padding: 8px 16px;
+}
+
+.product-announcement-bar__list {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 32px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.product-announcement-bar__item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.product-announcement-bar__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+}
+
+.product-announcement-bar__icon svg,
+.product-announcement-bar__icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    fill: currentColor;
+}
+
+.product-announcement-bar__text {
+    font-family: var(--font-body-family, inherit);
+    font-size: clamp(12px, 1.2vw, 14px);
+    font-weight: 600;
+    line-height: 1.5;
+    text-align: center;
+    margin: 0;
+    padding: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    white-space: nowrap;
+}
+
+/* Scrolling modifier */
+.product-announcement-bar--scrolling {
+    display: block;
+}
+
+.product-announcement-bar--scrolling .product-announcement-bar__inner {
+    display: flex;
+    white-space: nowrap;
+    animation: announcement-scroll var(--scroll-speed, 20s) linear infinite;
+    width: max-content;
+}
+
+.product-announcement-bar--scrolling .product-announcement-bar__list {
+    padding: 0 16px;
+    /* Gap between repetitions */
+}
+
+/* Hide on specific devices (triggered by liquid classes) */
+.product-announcement-bar.hide-desktop {
+    display: none !important;
+}
+
+@media screen and (max-width: 768px) {
+    .product-announcement-bar.hide-mobile {
+        display: none !important;
+    }
+}
+
+@media screen and (min-width: 769px) {
+    .product-announcement-bar.hide-desktop {
+        display: none !important;
+    }
+
+    .product-announcement-bar.hide-mobile {
+        display: flex !important;
+    }
+
+    .product-announcement-bar--scrolling.hide-mobile {
+        display: block !important;
+    }
+}
+
+@keyframes announcement-scroll {
+    0% {
+        transform: translateX(0);
+    }
+
+    100% {
+        transform: translateX(-50%);
+    }
+}

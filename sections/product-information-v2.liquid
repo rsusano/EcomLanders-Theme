@@ -1,0 +1,1597 @@
+{{ 'section-product-v2.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'section-product-v2.js' | asset_url }}" defer></script>
+
+{%- liquid
+  assign product = section.settings.product | default: product
+  assign current_variant = product.selected_or_first_available_variant
+  assign thumb_pos = section.settings.gallery_thumb_position | default: 'bottom'
+-%}
+
+{%- comment -%} --- CSS variables from schema settings --- {%- endcomment -%}
+<style>
+  #shopify-section-{{ section.id }} .piv2 {
+    --piv2-primary: {{ section.settings.primary_color }};
+    --piv2-primary-dark: {{ section.settings.primary_dark_color }};
+    --piv2-primary-light: {{ section.settings.primary_light_color }};
+    --piv2-primary-border: {{ section.settings.primary_border_color }};
+    --piv2-accent: {{ section.settings.accent_color }};
+    --piv2-star: {{ section.settings.star_color }};
+    --piv2-text: {{ section.settings.text_color }};
+    --piv2-text-muted: {{ section.settings.text_muted_color }};
+    --piv2-bg: {{ section.settings.bg_color }};
+    --piv2-border: {{ section.settings.border_color }};
+    padding-top: {{ section.settings.padding_top }}px;
+    padding-bottom: {{ section.settings.padding_bottom }}px;
+  }
+</style>
+
+<section
+  class="piv2"
+  data-section-type="product-information-v2"
+  id="shopify-section-{{ section.id }}"
+>
+  <div class="piv2__wrapper">
+    <div class="piv2__grid">
+
+      {%- comment -%} ================================
+        LEFT COLUMN — GALLERY + FEATURE ICONS
+      ================================ {%- endcomment -%}
+      <div class="piv2__left">
+
+        {%- comment -%} GALLERY {%- endcomment -%}
+        <div class="piv2-gallery piv2-gallery--thumbs-{{ thumb_pos }}" data-piv2-gallery>
+
+          {%- comment -%} LEFT thumbnails {%- endcomment -%}
+          {%- if product != blank and product.media.size > 1 and thumb_pos == 'left' -%}
+            <div class="piv2-gallery__thumbs">
+              {%- for media in product.media -%}
+                <div
+                  class="piv2-gallery__thumb{% if forloop.first %} is-active{% endif %}"
+                  data-piv2-thumb
+                  aria-label="Image {{ forloop.index }}"
+                >
+                  <img
+                    src="{{ media | image_url: width: 120 }}"
+                    alt="{{ media.alt | default: product.title | escape }}"
+                    width="120"
+                    height="120"
+                    loading="lazy"
+                  >
+                </div>
+              {%- endfor -%}
+            </div>
+          {%- endif -%}
+
+          {%- comment -%} Main Image Wrap {%- endcomment -%}
+          <div class="piv2-gallery__main-wrap">
+            <div class="piv2-gallery__main">
+              {%- if product != blank and product.media.size > 0 -%}
+                <img
+                  class="piv2-gallery__main-img"
+                  src="{{ product.featured_image | image_url: width: 800 }}"
+                  alt="{{ product.featured_image.alt | default: product.title | escape }}"
+                  width="800"
+                  height="800"
+                  loading="eager"
+                  fetchpriority="high"
+                  data-piv2-main-img
+                >
+              {%- else -%}
+                {{ 'product-1' | placeholder_svg_tag: 'piv2-gallery__main-img placeholder-svg placeholder-svg--product' }}
+              {%- endif -%}
+
+              {%- comment -%} Hidden media data for JS {%- endcomment -%}
+              {%- if product != blank -%}
+                {%- for media in product.media -%}
+                  <span
+                    data-piv2-media
+                    data-src="{{ media | image_url: width: 800 }}"
+                    data-alt="{{ media.alt | default: product.title | escape }}"
+                    style="display:none;"
+                  ></span>
+                {%- endfor -%}
+              {%- endif -%}
+
+              {%- comment -%} Bestseller Badge {%- endcomment -%}
+              {%- if section.settings.show_badge and section.settings.badge_text != blank -%}
+                <div class="piv2-gallery__badge">
+                  <svg viewBox="0 0 12 12" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M6 0L7.347 4.146H11.706L8.18 6.708 9.527 10.854 6 8.292 2.473 10.854 3.82 6.708.294 4.146H4.653z"/>
+                  </svg>
+                  {{ section.settings.badge_text }}
+                </div>
+              {%- endif -%}
+
+              <button class="piv2-gallery__nav piv2-gallery__nav--prev" data-piv2-prev aria-label="Previous image">
+                <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+              </button>
+              <button class="piv2-gallery__nav piv2-gallery__nav--next" data-piv2-next aria-label="Next image">
+                <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+              </button>
+            </div>
+          </div>{%- comment -%} end main-wrap {%- endcomment -%}
+
+          {%- comment -%} BOTTOM thumbnails (default) {%- endcomment -%}
+          {%- if product != blank and product.media.size > 1 and thumb_pos == 'bottom' -%}
+            <div class="piv2-gallery__thumbs">
+              {%- for media in product.media -%}
+                <div
+                  class="piv2-gallery__thumb{% if forloop.first %} is-active{% endif %}"
+                  data-piv2-thumb
+                  aria-label="Image {{ forloop.index }}"
+                >
+                  <img
+                    src="{{ media | image_url: width: 120 }}"
+                    alt="{{ media.alt | default: product.title | escape }}"
+                    width="120"
+                    height="120"
+                    loading="lazy"
+                  >
+                </div>
+              {%- endfor -%}
+            </div>
+          {%- endif -%}
+
+        </div>{%- comment -%} end gallery {%- endcomment -%}
+
+        {%- comment -%} Left column blocks (page-builder style) {%- endcomment -%}
+
+        {%- if section.settings.show_features -%}
+          <div class="piv2-features" data-piv2-features>
+            {%- for block in section.blocks -%}
+              {%- if block.type == 'feature_icon' -%}
+                {%- assign block_column = block.settings.column -%}
+                {%- if block_column == blank or block_column == 'left' -%}
+                  {%- assign feature_classes = 'piv2-feature' -%}
+                  {%- if block.settings.hide_on_desktop -%}
+                    {%- assign feature_classes = feature_classes | append: ' piv2--hide-desktop' -%}
+                  {%- endif -%}
+                  {%- if block.settings.hide_on_mobile -%}
+                    {%- assign feature_classes = feature_classes | append: ' piv2--hide-mobile' -%}
+                  {%- endif -%}
+                  {%- assign spacing_style = '' -%}
+                  {%- if block.settings.margin_top and block.settings.margin_top > 0 -%}
+                    {%- assign spacing_style = spacing_style | append: 'margin-top:' | append: block.settings.margin_top | append: 'px;' -%}
+                  {%- endif -%}
+                  {%- if block.settings.margin_bottom and block.settings.margin_bottom > 0 -%}
+                    {%- assign spacing_style = spacing_style | append: 'margin-bottom:' | append: block.settings.margin_bottom | append: 'px;' -%}
+                  {%- endif -%}
+                  <div class="{{ feature_classes }}" {% unless spacing_style == '' %}style="{{ spacing_style }}"{% endunless %} {{ block.shopify_attributes }}>
+                    {%- if block.settings.icon_image != blank -%}
+                      <img
+                        class="piv2-feature__icon"
+                        src="{{ block.settings.icon_image | image_url: width: 80 }}"
+                        alt="{{ block.settings.label | escape }}"
+                        width="40"
+                        height="40"
+                        loading="lazy"
+                      >
+                    {%- else -%}
+                      <div class="piv2-feature__icon--svg">
+                        {%- case block.settings.icon_preset -%}
+                          {%- when 'joint' -%}
+                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C8.686 2 6 4.686 6 8c0 2.21.895 4.21 2.343 5.657A8 8 0 1 0 12 2zm0 2a6 6 0 1 1 0 12A6 6 0 0 1 12 4zm0 2a4 4 0 1 0 0 8 4 4 0 0 0 0-8z" fill="currentColor"/></svg>
+                          {%- when 'lab' -%}
+                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9 2v7.29L5.5 17A3 3 0 0 0 8.28 21h7.44A3 3 0 0 0 18.5 17L15 9.29V2H9zm2 2h2v5.71l.43.79L16.3 19a1 1 0 0 1-.86 1H8.56a1 1 0 0 1-.86-1l2.87-8.5.43-.79V4z" fill="currentColor"/></svg>
+                          {%- when 'relief' -%}
+                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2a10 10 0 1 0 0 20A10 10 0 0 0 12 2zm0 2a8 8 0 1 1 0 16A8 8 0 0 1 12 4zm-1 4v4H7l5 6 5-6h-4V8h-2z" fill="currentColor"/></svg>
+                          {%- when 'shield' -%}
+                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2L4 6v6c0 5.25 3.5 10.15 8 11.35C16.5 22.15 20 17.25 20 12V6l-8-4zm0 2.18L18 7.3V12c0 4.08-2.7 7.88-6 9.14C8.7 19.88 6 16.08 6 12V7.3l6-3.12z" fill="currentColor"/></svg>
+                          {%- else -%}
+                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" fill="currentColor"/></svg>
+                        {%- endcase -%}
+                      </div>
+                    {%- endif -%}
+                    <span class="piv2-feature__label">{{ block.settings.label }}</span>
+                  </div>
+                {%- endif -%}
+              {%- endif -%}
+            {%- endfor -%}
+          </div>
+        {%- endif -%}
+
+        {%- for block in section.blocks -%}
+          {%- assign block_column = block.settings.column -%}
+          {%- if block_column == 'left' and block.type != 'feature_icon' -%}
+            {%- case block.type -%}
+              {%- when 'benefit' -%}
+                {%- assign spacing_style = '' -%}
+                {%- if block.settings.margin_top and block.settings.margin_top > 0 -%}
+                  {%- assign spacing_style = spacing_style | append: 'margin-top:' | append: block.settings.margin_top | append: 'px;' -%}
+                {%- endif -%}
+                {%- if block.settings.margin_bottom and block.settings.margin_bottom > 0 -%}
+                  {%- assign spacing_style = spacing_style | append: 'margin-bottom:' | append: block.settings.margin_bottom | append: 'px;' -%}
+                {%- endif -%}
+                <div class="piv2-block" {% unless spacing_style == '' %}style="{{ spacing_style }}"{% endunless %} {{ block.shopify_attributes }}>
+                  <ul class="piv2-benefits piv2-benefits--desktop-{{ section.settings.benefits_layout_desktop | default: 'two-column' }} piv2-benefits--mobile-{{ section.settings.benefits_layout_mobile | default: 'one-column' }}">
+                    <li class="piv2-benefits__item">
+                      <span class="piv2-benefits__icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                          <polyline points="20 6 9 17 4 12"/>
+                        </svg>
+                      </span>
+                      {{ block.settings.text }}
+                    </li>
+                  </ul>
+                </div>
+
+              {%- when 'trust_signal' -%}
+                {%- assign spacing_style = '' -%}
+                {%- if block.settings.margin_top and block.settings.margin_top > 0 -%}
+                  {%- assign spacing_style = spacing_style | append: 'margin-top:' | append: block.settings.margin_top | append: 'px;' -%}
+                {%- endif -%}
+                {%- if block.settings.margin_bottom and block.settings.margin_bottom > 0 -%}
+                  {%- assign spacing_style = spacing_style | append: 'margin-bottom:' | append: block.settings.margin_bottom | append: 'px;' -%}
+                {%- endif -%}
+                <div class="piv2-trust__item" {% unless spacing_style == '' %}style="{{ spacing_style }}"{% endunless %} {{ block.shopify_attributes }}>
+                  <span class="piv2-trust__icon piv2-trust__icon--{{ block.settings.icon_style }}">
+                    {%- case block.settings.icon_style -%}
+                      {%- when 'stock' -%}
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" xmlns="http://www.w3.org/2000/svg">
+                          <circle cx="12" cy="12" r="10"/>
+                          <path d="M12 8v4l3 3"/>
+                        </svg>
+                      {%- when 'ship' -%}
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" xmlns="http://www.w3.org/2000/svg">
+                          <rect x="1" y="3" width="15" height="13"/>
+                          <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/>
+                          <circle cx="5.5" cy="18.5" r="2.5"/>
+                          <circle cx="18.5" cy="18.5" r="2.5"/>
+                        </svg>
+                      {%- when 'guarantee' -%}
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" xmlns="http://www.w3.org/2000/svg">
+                          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                        </svg>
+                      {%- when 'link' -%}
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" xmlns="http://www.w3.org/2000/svg">
+                          <circle cx="12" cy="12" r="10"/>
+                          <line x1="12" y1="8" x2="12" y2="16"/>
+                          <line x1="8" y1="12" x2="16" y2="12"/>
+                        </svg>
+                      {%- else -%}
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" xmlns="http://www.w3.org/2000/svg">
+                          <polyline points="20 6 9 17 4 12"/>
+                        </svg>
+                    {%- endcase -%}
+                  </span>
+                  <span>
+                    {{ block.settings.text }}
+                    {%- if block.settings.show_country_flag and block.settings.country_name != blank -%}
+                      &nbsp;
+                      <img
+                        class="piv2-trust__flag"
+                        src="{{ block.settings.flag_image | image_url: width: 44 }}"
+                        alt="{{ block.settings.country_name }}"
+                        width="22"
+                        height="15"
+                        loading="lazy"
+                      >
+                      {{ block.settings.country_name }}
+                    {%- endif -%}
+                  </span>
+                  {%- if block.settings.link_text != blank -%}
+                    <button class="piv2-trust__link" type="button">
+                      {{ block.settings.link_text }}
+                    </button>
+                  {%- endif -%}
+                </div>
+
+              {%- when 'accordion' -%}
+                {%- assign spacing_style = '' -%}
+                {%- if block.settings.margin_top and block.settings.margin_top > 0 -%}
+                  {%- assign spacing_style = spacing_style | append: 'margin-top:' | append: block.settings.margin_top | append: 'px;' -%}
+                {%- endif -%}
+                {%- if block.settings.margin_bottom and block.settings.margin_bottom > 0 -%}
+                  {%- assign spacing_style = spacing_style | append: 'margin-bottom:' | append: block.settings.margin_bottom | append: 'px;' -%}
+                {%- endif -%}
+                <details class="piv2-accordion" {% unless spacing_style == '' %}style="{{ spacing_style }}"{% endunless %} {{ block.shopify_attributes }}>
+                  <summary class="piv2-accordion__trigger">
+                    <span class="piv2-accordion__title">{{ block.settings.title }}</span>
+                    <span class="piv2-accordion__icon" aria-hidden="true">
+                      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <line x1="12" y1="5" x2="12" y2="19"/>
+                        <line x1="5" y1="12" x2="19" y2="12"/>
+                      </svg>
+                    </span>
+                  </summary>
+                  <div class="piv2-accordion__body">{{ block.settings.content }}</div>
+                </details>
+
+            {%- endcase -%}
+          {%- endif -%}
+        {%- endfor -%}
+
+      </div>{%- comment -%} end left col {%- endcomment -%}
+
+      {%- comment -%} ================================
+        RIGHT COLUMN — PRODUCT INFO
+      ================================ {%- endcomment -%}
+      <div class="piv2-info">
+
+        {%- comment -%} Fixed Header Elements {%- endcomment -%}
+        {%- if section.settings.show_rating -%}
+          {%- assign rating_classes = 'piv2-rating' -%}
+          {%- unless section.settings.show_rating_desktop -%}
+            {%- assign rating_classes = rating_classes | append: ' piv2--hide-desktop' -%}
+          {%- endunless -%}
+          {%- unless section.settings.show_rating_mobile -%}
+            {%- assign rating_classes = rating_classes | append: ' piv2--hide-mobile' -%}
+          {%- endunless -%}
+          <div class="{{ rating_classes }}">
+            <div class="piv2-rating__stars" aria-label="{{ section.settings.rating_score }} out of 5 stars">
+              {%- assign full_stars = section.settings.rating_score | floor -%}
+              {%- for i in (1..5) -%}
+                <span class="piv2-rating__star{% if i <= full_stars %} is-filled{% endif %}" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2l2.92 5.92 6.53.95-4.72 4.6 1.12 6.51L12 17.77 6.15 20.98l1.12-6.51-4.72-4.6 6.53-.95z" />
+                  </svg>
+                </span>
+              {%- endfor -%}
+            </div>
+            <span class="piv2-rating__text">Rated <strong>{{ section.settings.rating_score }} Excellent</strong> | {{ section.settings.rating_count }}+ Customers</span>
+          </div>
+        {%- endif -%}
+
+        <div>
+          {%- if section.settings.brand_name != blank -%}<p class="piv2__brand">{{ section.settings.brand_name }}</p>{%- endif -%}
+          <h1 class="piv2__title">{%- if product != blank -%}{{ product.title }}{%- else -%}{{ section.settings.product_title | default: 'Product Title' }}{%- endif -%}</h1>
+          {%- if section.settings.product_subtitle != blank -%}<p class="piv2__subtitle">{{ section.settings.product_subtitle }}</p>{%- endif -%}
+        </div>
+
+        {%- comment -%} Dynamic Block Rendering {%- endcomment -%}
+        {%- assign bundle_rendered = false -%}
+        {%- for block in section.blocks -%}
+          {%- if block.type == 'feature_icon' or block.settings.column == 'left' -%}
+            {%- continue -%}
+          {%- endif -%}
+
+          {%- assign block_classes = 'piv2-block' -%}
+          {%- if block.settings.hide_on_desktop -%}
+            {%- assign block_classes = block_classes | append: ' piv2--hide-desktop' -%}
+          {%- endif -%}
+          {%- if block.settings.hide_on_mobile -%}
+            {%- assign block_classes = block_classes | append: ' piv2--hide-mobile' -%}
+          {%- endif -%}
+
+          {%- assign spacing_style = '' -%}
+          {%- if block.settings.margin_top and block.settings.margin_top > 0 -%}
+            {%- assign spacing_style = spacing_style | append: 'margin-top:' | append: block.settings.margin_top | append: 'px;' -%}
+          {%- endif -%}
+          {%- if block.settings.margin_bottom and block.settings.margin_bottom > 0 -%}
+            {%- assign spacing_style = spacing_style | append: 'margin-bottom:' | append: block.settings.margin_bottom | append: 'px;' -%}
+          {%- endif -%}
+
+          <div class="{{ block_classes }}" {% unless spacing_style == '' %}style="{{ spacing_style }}"{% endunless %} {{ block.shopify_attributes }}>
+            {%- case block.type -%}
+              {%- when 'benefit' -%}
+                <ul class="piv2-benefits piv2-benefits--desktop-{{ section.settings.benefits_layout_desktop | default: 'two-column' }} piv2-benefits--mobile-{{ section.settings.benefits_layout_mobile | default: 'one-column' }}">
+                  <li class="piv2-benefits__item">
+                    <span class="piv2-benefits__icon" aria-hidden="true">
+                      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <polyline points="20 6 9 17 4 12"/>
+                      </svg>
+                    </span>
+                    {{ block.settings.text }}
+                  </li>
+                </ul>
+
+              {%- when 'bundle' -%}
+                {%- if bundle_rendered == false -%}
+                  <div data-piv2-bundles data-piv2-subscribe-discount="{{ section.settings.subscription_discount }}">
+                    <p class="piv2-bundles__heading">{{ section.settings.quantity_heading }}</p>
+
+                    <div class="piv2-bundle-list">
+                      {%- for b in section.blocks -%}
+                        {%- if b.type == 'bundle' -%}
+                          {%- liquid
+                            assign split_price = b.settings.price | times: 100 | round
+                            assign split_compare = b.settings.compare_price | times: 100 | round
+                            assign split_price_f = b.settings.price | money
+                            assign split_compare_f = b.settings.compare_price | money
+                            if b.settings.variant_id != blank
+                              assign bv = product.variants | where: 'id', b.settings.variant_id | first
+                              if bv
+                                assign split_price = bv.price
+                                assign split_compare = bv.compare_at_price
+                                assign split_price_f = bv.price | money
+                                assign split_compare_f = bv.compare_at_price | money
+                              endif
+                            endif
+                          -%}
+                          {%- assign has_social_proof = false -%}
+                          {%- if section.settings.social_proof_text != blank and forloop.index == section.settings.social_proof_position -%}
+                            <div class="piv2-social-proof">{{ section.settings.social_proof_text }}</div>
+                            {%- assign has_social_proof = true -%}
+                          {%- endif -%}
+
+                          <div
+                            class="piv2-bundle{% if has_social_proof %} piv2-bundle--has-proof{% endif %}"
+                            data-piv2-bundle
+                            data-price="{{ split_price }}"
+                            data-compare-price="{{ split_compare }}"
+                            data-price-formatted="{{ split_price_f }}"
+                            data-compare-price-formatted="{{ split_compare_f }}"
+                            data-variant-id="{{ b.settings.variant_id | default: current_variant.id }}"
+                            data-selling-plan-id="{{ b.settings.selling_plan_id }}"
+                            data-index="{{ forloop.index0 }}"
+                            {{ b.shopify_attributes }}
+                          >
+                            <div class="piv2-bundle__radio"></div>
+                            <div class="piv2-bundle__img-wrap">
+                              {%- if b.settings.bundle_image != blank -%}
+                                <img
+                                  class="piv2-bundle__img"
+                                  src="{{ b.settings.bundle_image | image_url: width: 104 }}"
+                                  alt="{{ b.settings.title | escape }}"
+                                  width="52"
+                                  height="52"
+                                  loading="lazy"
+                                >
+                              {%- elsif product != blank and product.featured_image != blank -%}
+                                <img
+                                  class="piv2-bundle__img"
+                                  src="{{ product.featured_image | image_url: width: 104 }}"
+                                  alt="{{ product.title | escape }}"
+                                  width="52"
+                                  height="52"
+                                  loading="lazy"
+                                >
+                              {%- else -%}
+                                {{ 'product-1' | placeholder_svg_tag: 'piv2-bundle__img placeholder-svg' }}
+                              {%- endif -%}
+                              {%- if b.settings.save_badge != blank -%}
+                                <div class="piv2-bundle__save">{{ b.settings.save_badge }}</div>
+                              {%- endif -%}
+                            </div>
+                            <div class="piv2-bundle__content">
+                              <p class="piv2-bundle__title">
+                                {{ b.settings.title }}
+                                {%- if b.settings.title_highlight != blank -%}
+                                  <em>{{ b.settings.title_highlight }}</em>
+                                {%- endif -%}
+                              </p>
+                              {%- if b.settings.subtitle != blank -%}
+                                <p class="piv2-bundle__subtitle">{{ b.settings.subtitle }}</p>
+                              {%- endif -%}
+                            </div>
+                            <div class="piv2-bundle__price">
+                              <span class="piv2-bundle__price-now">{{ split_price_f }}</span>
+                              {%- if split_compare > 0 and split_compare != split_price -%}
+                                <span class="piv2-bundle__price-was">{{ split_compare_f }}</span>
+                              {%- endif -%}
+                            </div>
+                            {%- if b.settings.popular_badge -%}
+                              <div class="piv2-bundle__popular-badge">Best Value</div>
+                            {%- endif -%}
+                          </div>
+                        {%- endif -%}
+                      {%- endfor -%}
+                    </div>
+
+                    {%- if section.settings.show_subscription -%}
+                      {%- assign sub_spacing = '' -%}
+                      {%- if section.settings.subscription_margin_top and section.settings.subscription_margin_top > 0 -%}
+                        {%- assign sub_spacing = sub_spacing | append: 'margin-top:' | append: section.settings.subscription_margin_top | append: 'px;' -%}
+                      {%- endif -%}
+                      {%- if section.settings.subscription_margin_bottom and section.settings.subscription_margin_bottom > 0 -%}
+                        {%- assign sub_spacing = sub_spacing | append: 'margin-bottom:' | append: section.settings.subscription_margin_bottom | append: 'px;' -%}
+                      {%- endif -%}
+                      <div class="piv2-subscription" data-piv2-subscribe {% unless sub_spacing == '' %}style="{{ sub_spacing }}"{% endunless %}>
+                        <div class="piv2-subscription__checkbox" data-piv2-subscribe-checkbox>
+                          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <polyline points="20 6 9 17 4 12"/>
+                          </svg>
+                        </div>
+                        <div>
+                          <p class="piv2-subscription__title">{{ section.settings.subscription_title }}</p>
+                          <p class="piv2-subscription__subtitle">{{ section.settings.subscription_subtitle }}</p>
+                        </div>
+                      </div>
+                    {%- endif -%}
+
+                    {%- assign atc_spacing = '' -%}
+                    {%- if section.settings.atc_margin_top and section.settings.atc_margin_top > 0 -%}
+                      {%- assign atc_spacing = atc_spacing | append: 'margin-top:' | append: section.settings.atc_margin_top | append: 'px;' -%}
+                    {%- endif -%}
+                    {%- if section.settings.atc_margin_bottom and section.settings.atc_margin_bottom > 0 -%}
+                      {%- assign atc_spacing = atc_spacing | append: 'margin-bottom:' | append: section.settings.atc_margin_bottom | append: 'px;' -%}
+                    {%- endif -%}
+                    <button
+                      class="piv2-atc"
+                      data-piv2-atc
+                      type="button"
+                      {% unless atc_spacing == '' %}style="{{ atc_spacing }}"{% endunless %}
+                      {%- unless current_variant.available -%}disabled{%- endunless -%}
+                    >
+                      <span>{{ section.settings.atc_button_text }}</span>
+                      <span class="piv2-atc__price">
+                        <span class="piv2-atc__price-now" data-piv2-price-now>
+                          {%- if current_variant -%}{{ current_variant.price | money }}{%- endif -%}
+                        </span>
+                        {%- if current_variant.compare_at_price > current_variant.price -%}
+                          <span class="piv2-atc__price-was" data-piv2-price-was>
+                            {{ current_variant.compare_at_price | money }}
+                          </span>
+                        {%- endif -%}
+                      </span>
+                    </button>
+                    <input type="hidden" name="id" value="{{ current_variant.id }}">
+                  </div>
+                  {%- assign bundle_rendered = true -%}
+                {%- endif -%}
+
+              {%- when 'trust_signal' -%}
+                <div class="piv2-trust__item">
+                  <span class="piv2-trust__icon piv2-trust__icon--{{ block.settings.icon_style }}">
+                    {%- case block.settings.icon_style -%}
+                      {%- when 'stock' -%}
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" xmlns="http://www.w3.org/2000/svg">
+                          <circle cx="12" cy="12" r="10"/>
+                          <path d="M12 8v4l3 3"/>
+                        </svg>
+                      {%- when 'ship' -%}
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" xmlns="http://www.w3.org/2000/svg">
+                          <rect x="1" y="3" width="15" height="13"/>
+                          <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/>
+                          <circle cx="5.5" cy="18.5" r="2.5"/>
+                          <circle cx="18.5" cy="18.5" r="2.5"/>
+                        </svg>
+                      {%- when 'guarantee' -%}
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" xmlns="http://www.w3.org/2000/svg">
+                          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                        </svg>
+                      {%- when 'link' -%}
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" xmlns="http://www.w3.org/2000/svg">
+                          <circle cx="12" cy="12" r="10"/>
+                          <line x1="12" y1="8" x2="12" y2="16"/>
+                          <line x1="8" y1="12" x2="16" y2="12"/>
+                        </svg>
+                      {%- else -%}
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" xmlns="http://www.w3.org/2000/svg">
+                          <polyline points="20 6 9 17 4 12"/>
+                        </svg>
+                    {%- endcase -%}
+                  </span>
+                  <span>
+                    {{ block.settings.text }}
+                    {%- if block.settings.show_country_flag and block.settings.country_name != blank -%}
+                      &nbsp;
+                      <img
+                        class="piv2-trust__flag"
+                        src="{{ block.settings.flag_image | image_url: width: 44 }}"
+                        alt="{{ block.settings.country_name }}"
+                        width="22"
+                        height="15"
+                        loading="lazy"
+                      >
+                      {{ block.settings.country_name }}
+                    {%- endif -%}
+                  </span>
+                  {%- if block.settings.link_text != blank -%}
+                    <button class="piv2-trust__link" type="button">
+                      {{ block.settings.link_text }}
+                    </button>
+                  {%- endif -%}
+                </div>
+
+              {%- when 'accordion' -%}
+                <details class="piv2-accordion">
+                  <summary class="piv2-accordion__trigger">
+                    <span class="piv2-accordion__title">{{ block.settings.title }}</span>
+                    <span class="piv2-accordion__icon" aria-hidden="true">
+                      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <line x1="12" y1="5" x2="12" y2="19"/>
+                        <line x1="5" y1="12" x2="19" y2="12"/>
+                      </svg>
+                    </span>
+                  </summary>
+                  <div class="piv2-accordion__body">{{ block.settings.content }}</div>
+                </details>
+
+              {%- when 'review_video' -%}
+                <div class="piv2-reviews__slide">
+                  {%- if block.settings.thumbnail != blank -%}
+                    <img
+                      class="piv2-reviews__video-thumb"
+                      src="{{ block.settings.thumbnail | image_url: width: 600 }}"
+                      alt="{{ block.settings.alt | escape }}"
+                      width="300"
+                      height="450"
+                      loading="lazy"
+                    >
+                  {%- else -%}
+                    {{ 'lifestyle-1' | placeholder_svg_tag: 'piv2-reviews__video-thumb placeholder-svg' }}
+                  {%- endif -%}
+                  <div class="piv2-reviews__play-btn">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <circle cx="12" cy="12" r="11" fill="rgba(0,0,0,0.4)"/>
+                      <polygon points="10,8 17,12 10,16" fill="white"/>
+                    </svg>
+                  </div>
+                </div>
+            {%- endcase -%}
+          </div>
+        {%- endfor -%}
+
+      </div>{%- comment -%} end right col {%- endcomment -%}
+
+    </div>{%- comment -%} end grid {%- endcomment -%}
+  </div>{%- comment -%} end wrapper {%- endcomment -%}
+
+  {%- comment -%} ================================
+    REVIEWS CAROUSEL (Full Width)
+  ================================ {%- endcomment -%}
+  {%- assign review_blocks = section.blocks | where: 'type', 'review_video' -%}
+  {%- if review_blocks.size > 0 and section.settings.show_reviews -%}
+    <div class="piv2-reviews">
+      <h2 class="piv2-reviews__heading">{{ section.settings.reviews_heading }}</h2>
+
+      <div class="piv2-reviews__carousel" data-piv2-reviews>
+        <div class="piv2-reviews__track" data-piv2-reviews-track>
+          {%- for block in review_blocks -%}
+            <div class="piv2-reviews__slide" data-piv2-review-slide {{ block.shopify_attributes }}>
+              {%- if block.settings.thumbnail != blank -%}
+                <img
+                  class="piv2-reviews__video-thumb"
+                  src="{{ block.settings.thumbnail | image_url: width: 600 }}"
+                  alt="{{ block.settings.alt | default: 'Customer review' | escape }}"
+                  width="600"
+                  height="900"
+                  loading="lazy"
+                >
+              {%- else -%}
+                {{ 'lifestyle-1' | placeholder_svg_tag: 'piv2-reviews__video-thumb placeholder-svg' }}
+              {%- endif -%}
+              <div class="piv2-reviews__play-btn" aria-label="Play review video">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="11" fill="rgba(0,0,0,0.4)"/><polygon points="10,8 17,12 10,16" fill="white"/></svg>
+              </div>
+            </div>
+          {%- endfor -%}
+        </div>
+
+        <div class="piv2-reviews__controls">
+          <button class="piv2-reviews__nav" data-piv2-reviews-prev aria-label="Previous">
+            <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+          <div class="piv2-reviews__dots">
+            {%- for block in review_blocks -%}
+              <button
+                class="piv2-reviews__dot{% if forloop.first %} is-active{% endif %}"
+                data-piv2-review-dot
+                aria-label="Slide {{ forloop.index }}"
+              ></button>
+            {%- endfor -%}
+          </div>
+          <button class="piv2-reviews__nav" data-piv2-reviews-next aria-label="Next">
+            <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  {%- endif -%}
+
+</section>
+
+{% schema %}
+{
+  "name": "Product Info V2",
+  "class": "section-product-v2",
+  "limit": 1,
+  "enabled_on": {
+    "templates": ["product"]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "Product"
+    },
+
+    {
+      "type": "product",
+      "id": "product",
+      "label": "Product (leave blank to use page product)"
+    },
+    {
+      "type": "text",
+      "id": "product_title",
+      "label": "Title Override",
+      "info": "Only used if no product is selected above."
+    },
+    {
+      "type": "text",
+      "id": "brand_name",
+      "label": "Brand Name",
+      "default": "BioRoot Labs"
+    },
+    {
+      "type": "textarea",
+      "id": "product_subtitle",
+      "label": "Product Subtitle / Description",
+      "default": "A natural formula, once-a-day, to ease everyday stiffness and keep you active."
+    },
+    {
+      "type": "header",
+      "content": "Badge"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_badge",
+      "label": "Show Image Badge",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "badge_text",
+      "label": "Badge Text",
+      "default": "★ BESTSELLER"
+    },
+    {
+      "type": "header",
+      "content": "Rating"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_rating",
+      "label": "Show Rating",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_rating_desktop",
+      "label": "Show rating on desktop",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_rating_mobile",
+      "label": "Show rating on mobile",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "rating_score",
+      "min": 1,
+      "max": 5,
+      "step": 0.1,
+      "label": "Rating Score",
+      "default": 4.8
+    },
+    {
+      "type": "text",
+      "id": "rating_count",
+      "label": "Review Count",
+      "default": "45k"
+    },
+    {
+      "type": "header",
+      "content": "Benefits"
+    },
+    {
+      "type": "select",
+      "id": "benefits_layout_desktop",
+      "label": "Benefits layout (desktop)",
+      "options": [
+        { "value": "two-column", "label": "Two columns" },
+        { "value": "one-column", "label": "Single column" }
+      ],
+      "default": "two-column"
+    },
+    {
+      "type": "select",
+      "id": "benefits_layout_mobile",
+      "label": "Benefits layout (mobile)",
+      "options": [
+        { "value": "one-column", "label": "Single column" },
+        { "value": "two-column", "label": "Two columns" }
+      ],
+      "default": "one-column"
+    },
+    {
+      "type": "header",
+      "content": "Feature Icons Grid"
+    },
+    {
+      "type": "select",
+      "id": "gallery_thumb_position",
+      "label": "Gallery thumbnail position (desktop)",
+      "options": [
+        { "value": "bottom", "label": "Below main image" },
+        { "value": "left", "label": "Left side (vertical)" }
+      ],
+      "default": "bottom"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_features",
+      "label": "Show Feature Icons",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Bundle Selection"
+    },
+    {
+      "type": "text",
+      "id": "quantity_heading",
+      "label": "Section Heading",
+      "default": "Choose your quantity"
+    },
+    {
+      "type": "text",
+      "id": "social_proof_text",
+      "label": "Social Proof Bar Text",
+      "default": "92% of customers choose: Buy 2, Get 1 Free",
+      "info": "Leave blank to hide."
+    },
+    {
+      "type": "range",
+      "id": "social_proof_position",
+      "label": "Show social proof before bundle #",
+      "min": 1,
+      "max": 5,
+      "step": 1,
+      "default": 2
+    },
+    {
+      "type": "header",
+      "content": "Subscription / Autorefill"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_subscription",
+      "label": "Show Subscription Option",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "subscription_margin_top",
+      "label": "Subscription margin top",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "subscription_margin_bottom",
+      "label": "Subscription margin bottom",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "text",
+      "id": "subscription_title",
+      "label": "Subscription Title",
+      "default": "Save 20% on automatic refills"
+    },
+    {
+      "type": "text",
+      "id": "subscription_subtitle",
+      "label": "Subscription Subtitle",
+      "default": "Monthly Delivery, Zero Commitment, Cancel Anytime"
+    },
+    {
+      "type": "range",
+      "id": "subscription_discount",
+      "min": 0,
+      "max": 50,
+      "step": 1,
+      "unit": "%",
+      "label": "Subscription Discount %",
+      "default": 20
+    },
+    {
+      "type": "header",
+      "content": "Add to Cart Button"
+    },
+    {
+      "type": "text",
+      "id": "atc_button_text",
+      "label": "Button Text",
+      "default": "ADD TO CART"
+    },
+    {
+      "type": "range",
+      "id": "atc_margin_top",
+      "label": "Add to cart margin top",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "atc_margin_bottom",
+      "label": "Add to cart margin bottom",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "header",
+      "content": "Reviews Section"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_reviews",
+      "label": "Show Reviews Carousel",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "reviews_heading",
+      "label": "Reviews Section Heading",
+      "default": "Real Change for Real People"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "primary_color",
+      "label": "Primary Color",
+      "default": "#1a6b5a"
+    },
+    {
+      "type": "color",
+      "id": "primary_dark_color",
+      "label": "Primary Dark Color",
+      "default": "#155748"
+    },
+    {
+      "type": "color",
+      "id": "primary_light_color",
+      "label": "Primary Light (Tint) Color",
+      "default": "#e8f5f1"
+    },
+    {
+      "type": "color",
+      "id": "primary_border_color",
+      "label": "Primary Border Color",
+      "default": "#a8d8cc"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent Color (Badges)",
+      "default": "#f4831f"
+    },
+    {
+      "type": "color",
+      "id": "star_color",
+      "label": "Star Rating Color",
+      "default": "#f4a623"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text Color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "text_muted_color",
+      "label": "Muted Text Color",
+      "default": "#6b7280"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Border Color",
+      "default": "#e5e7eb"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding Top",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding Bottom",
+      "default": 32
+    }
+  ],
+  "blocks": [
+    {
+      "type": "feature_icon",
+      "name": "Feature Icon",
+      "limit": 6,
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "icon_image",
+          "label": "Custom Icon (JPG/PNG/SVG/WEBP)",
+          "info": "Upload a custom icon (PNG, JPG, WEBP or SVG). Leave blank to use a preset SVG."
+        },
+        {
+          "type": "select",
+          "id": "icon_preset",
+          "label": "Preset SVG Icon (if no custom icon)",
+          "options": [
+            { "value": "joint", "label": "Joint / Circle" },
+            { "value": "lab", "label": "Lab / Flask" },
+            { "value": "relief", "label": "Relief / Arrow" },
+            { "value": "shield", "label": "Shield" },
+            { "value": "check", "label": "Checkmark" }
+          ],
+          "default": "joint"
+        },
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Label",
+          "default": "Joint Health Support"
+        },
+    {
+      "type": "select",
+      "id": "column",
+      "label": "Column placement",
+      "options": [
+        { "value": "left", "label": "Left (below product images)" },
+        { "value": "right", "label": "Right (info column)" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "range",
+      "id": "margin_top",
+      "label": "Margin top",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom",
+      "label": "Margin bottom",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "default": 0
+    },
+        {
+          "type": "checkbox",
+          "id": "hide_on_desktop",
+          "label": "Hide on desktop",
+          "default": false
+        },
+        {
+          "type": "checkbox",
+          "id": "hide_on_mobile",
+          "label": "Hide on mobile",
+          "default": false
+        }
+      ]
+    },
+    {
+      "type": "benefit",
+      "name": "Benefit Item",
+      "limit": 8,
+      "settings": [
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Benefit Text",
+          "default": "Ease everyday stiffness"
+        },
+    {
+      "type": "select",
+      "id": "column",
+      "label": "Column placement",
+      "options": [
+        { "value": "left", "label": "Left (below product images)" },
+        { "value": "right", "label": "Right (info column)" }
+      ],
+      "default": "right"
+    },
+    {
+      "type": "range",
+      "id": "margin_top",
+      "label": "Margin top",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom",
+      "label": "Margin bottom",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "default": 8
+    },
+        {
+          "type": "checkbox",
+          "id": "hide_on_desktop",
+          "label": "Hide on desktop",
+          "default": false
+        },
+        {
+          "type": "checkbox",
+          "id": "hide_on_mobile",
+          "label": "Hide on mobile",
+          "default": false
+        }
+      ]
+    },
+    {
+      "type": "bundle",
+      "name": "Bundle Option",
+      "limit": 5,
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Bundle Title",
+          "default": "Buy 1 Bottle"
+        },
+        {
+          "type": "text",
+          "id": "title_highlight",
+          "label": "Highlighted Title Part (e.g. '1 Free')",
+          "info": "Appears in accent color after main title."
+        },
+        {
+          "type": "text",
+          "id": "subtitle",
+          "label": "Subtitle (e.g. price per bottle)",
+          "default": "£19.00 / bottle"
+        },
+        {
+          "type": "text",
+          "id": "variant_id",
+          "label": "Shopify Variant ID",
+          "info": "Paste the Variant ID. Pricing will auto-populate from Shopify + apply currency conversion."
+        },
+        {
+          "type": "number",
+          "id": "price",
+          "label": "Manual Price (fallback, in store currency base unit)",
+          "default": 19,
+          "info": "Used only if Variant ID is blank."
+        },
+        {
+          "type": "number",
+          "id": "compare_price",
+          "label": "Manual Compare-at Price (fallback)",
+          "default": 39
+        },
+        {
+          "type": "image_picker",
+          "id": "bundle_image",
+          "label": "Bundle Image (optional)",
+          "info": "Overrides product featured image for this option."
+        },
+        {
+          "type": "text",
+          "id": "save_badge",
+          "label": "Save Badge (e.g. 'Save 51%')",
+          "default": "Save 51%"
+        },
+        {
+          "type": "checkbox",
+          "id": "popular_badge",
+          "label": "Show 'Best Value' Badge",
+          "default": false
+        },
+        {
+          "type": "text",
+          "id": "selling_plan_id",
+          "label": "Selling Plan ID (for subscriptions)",
+          "info": "Optional. Used when subscription is toggled on."
+        },
+        {
+          "type": "range",
+          "id": "margin_top",
+          "label": "Margin top",
+          "min": 0,
+          "max": 80,
+          "step": 4,
+          "unit": "px",
+          "default": 0
+        },
+        {
+          "type": "range",
+          "id": "margin_bottom",
+          "label": "Margin bottom",
+          "min": 0,
+          "max": 80,
+          "step": 4,
+          "unit": "px",
+          "default": 16
+        },
+        {
+          "type": "checkbox",
+          "id": "hide_on_desktop",
+          "label": "Hide on desktop",
+          "default": false
+        },
+        {
+          "type": "checkbox",
+          "id": "hide_on_mobile",
+          "label": "Hide on mobile",
+          "default": false
+        }
+      ]
+    },
+    {
+      "type": "trust_signal",
+      "name": "Trust Signal",
+      "limit": 6,
+      "settings": [
+        {
+          "type": "select",
+          "id": "icon_style",
+          "label": "Icon",
+          "options": [
+            { "value": "stock", "label": "Clock (In Stock)" },
+            { "value": "ship", "label": "Truck (Shipping)" },
+            { "value": "guarantee", "label": "Shield (Guarantee)" },
+            { "value": "link", "label": "Plus / Link" },
+            { "value": "check", "label": "Checkmark" }
+          ],
+          "default": "stock"
+        },
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Trust Signal Text",
+          "default": "In Stock | Available for delivery by: XXXXXX"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_country_flag",
+          "label": "Show Country Flag",
+          "default": false
+        },
+        {
+          "type": "image_picker",
+          "id": "flag_image",
+          "label": "Country Flag Image",
+          "info": "Upload a flag image (PNG, JPG, WEBP or SVG, ~22x15px recommended)."
+        },
+        {
+          "type": "text",
+          "id": "country_name",
+          "label": "Country Name",
+          "default": "United States"
+        },
+        {
+          "type": "text",
+          "id": "link_text",
+          "label": "Optional Link Text (e.g. Full Ingredients List)"
+        },
+        {
+          "type": "select",
+          "id": "column",
+          "label": "Column placement",
+          "options": [
+            { "value": "left", "label": "Left (below product images)" },
+            { "value": "right", "label": "Right (info column)" }
+          ],
+          "default": "right"
+        },
+        {
+          "type": "range",
+          "id": "margin_top",
+          "label": "Margin top",
+          "min": 0,
+          "max": 80,
+          "step": 4,
+          "unit": "px",
+          "default": 4
+        },
+        {
+          "type": "range",
+          "id": "margin_bottom",
+          "label": "Margin bottom",
+          "min": 0,
+          "max": 80,
+          "step": 4,
+          "unit": "px",
+          "default": 4
+        },
+        {
+          "type": "checkbox",
+          "id": "hide_on_desktop",
+          "label": "Hide on desktop",
+          "default": false
+        },
+        {
+          "type": "checkbox",
+          "id": "hide_on_mobile",
+          "label": "Hide on mobile",
+          "default": false
+        }
+      ]
+    },
+    {
+      "type": "accordion",
+      "name": "Accordion",
+      "limit": 8,
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Accordion Title",
+          "default": "Product Description"
+        },
+        {
+          "type": "richtext",
+          "id": "content",
+          "label": "Accordion Content",
+          "default": "<p>Share details about your product or use this block to describe a product feature.</p>"
+        },
+        {
+          "type": "select",
+          "id": "column",
+          "label": "Column placement",
+          "options": [
+            { "value": "left", "label": "Left (below product images)" },
+            { "value": "right", "label": "Right (info column)" }
+          ],
+          "default": "right"
+        },
+        {
+          "type": "range",
+          "id": "margin_top",
+          "label": "Margin top",
+          "min": 0,
+          "max": 80,
+          "step": 4,
+          "unit": "px",
+          "default": 0
+        },
+        {
+          "type": "range",
+          "id": "margin_bottom",
+          "label": "Margin bottom",
+          "min": 0,
+          "max": 80,
+          "step": 4,
+          "unit": "px",
+          "default": 0
+        },
+        {
+          "type": "checkbox",
+          "id": "hide_on_desktop",
+          "label": "Hide on desktop",
+          "default": false
+        },
+        {
+          "type": "checkbox",
+          "id": "hide_on_mobile",
+          "label": "Hide on mobile",
+          "default": false
+        }
+      ]
+    },
+    {
+      "type": "review_video",
+      "name": "Review Video",
+      "limit": 12,
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "thumbnail",
+          "label": "Video Thumbnail (JPG/PNG/WEBP)",
+          "info": "Displayed as a poster image (PNG, JPG or WEBP). 9:16 portrait ratio recommended."
+        },
+        {
+          "type": "url",
+          "id": "video_url",
+          "label": "Video URL (YouTube / Vimeo)",
+          "info": "Clicking the play button will open this URL."
+        },
+        {
+          "type": "text",
+          "id": "alt",
+          "label": "Image Alt Text",
+          "default": "Customer review"
+        },
+        {
+          "type": "select",
+          "id": "column",
+          "label": "Column placement",
+          "options": [
+            { "value": "left", "label": "Left (below product images)" },
+            { "value": "right", "label": "Right (info column)" }
+          ],
+          "default": "right"
+        },
+        {
+          "type": "range",
+          "id": "margin_top",
+          "label": "Margin top",
+          "min": 0,
+          "max": 80,
+          "step": 4,
+          "unit": "px",
+          "default": 0
+        },
+        {
+          "type": "range",
+          "id": "margin_bottom",
+          "label": "Margin bottom",
+          "min": 0,
+          "max": 80,
+          "step": 4,
+          "unit": "px",
+          "default": 0
+        },
+        {
+          "type": "checkbox",
+          "id": "hide_on_desktop",
+          "label": "Hide on desktop",
+          "default": false
+        },
+        {
+          "type": "checkbox",
+          "id": "hide_on_mobile",
+          "label": "Hide on mobile",
+          "default": false
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product Info V2",
+      "blocks": [
+        {
+          "type": "feature_icon",
+          "settings": {
+            "icon_preset": "joint",
+            "label": "Joint Health Support"
+          }
+        },
+        {
+          "type": "feature_icon",
+          "settings": {
+            "icon_preset": "lab",
+            "label": "Third Party Tested"
+          }
+        },
+        {
+          "type": "feature_icon",
+          "settings": {
+            "icon_preset": "relief",
+            "label": "Inflammation Relief"
+          }
+        },
+        {
+          "type": "benefit",
+          "settings": { "text": "Ease everyday stiffness" }
+        },
+        {
+          "type": "benefit",
+          "settings": { "text": "Improve daily mobility" }
+        },
+        {
+          "type": "benefit",
+          "settings": { "text": "Support joint comfort" }
+        },
+        {
+          "type": "benefit",
+          "settings": { "text": "Feel more flexible" }
+        },
+        {
+          "type": "bundle",
+          "settings": {
+            "title": "Buy 1 Bottle",
+            "subtitle": "£19.00 / bottle",
+            "price": 19,
+            "compare_price": 39,
+            "save_badge": "Save 51%"
+          }
+        },
+        {
+          "type": "bundle",
+          "settings": {
+            "title": "Buy 2, Get",
+            "title_highlight": "1 Free",
+            "subtitle": "£12.67 / bottle",
+            "price": 38,
+            "compare_price": 117,
+            "save_badge": "Save 68%"
+          }
+        },
+        {
+          "type": "bundle",
+          "settings": {
+            "title": "Buy 3, Get",
+            "title_highlight": "2 Free",
+            "subtitle": "£11.40 / bottle",
+            "price": 57,
+            "compare_price": 195,
+            "save_badge": "Save 71%",
+            "popular_badge": true
+          }
+        },
+        {
+          "type": "trust_signal",
+          "settings": {
+            "icon_style": "stock",
+            "text": "In Stock | Available for delivery by: XXXXXX"
+          }
+        },
+        {
+          "type": "trust_signal",
+          "settings": {
+            "icon_style": "ship",
+            "text": "Fast, Tracked Shipping to:",
+            "show_country_flag": true,
+            "country_name": "United States"
+          }
+        },
+        {
+          "type": "trust_signal",
+          "settings": {
+            "icon_style": "guarantee",
+            "text": "60 day money back guarantee"
+          }
+        },
+        {
+          "type": "trust_signal",
+          "settings": {
+            "icon_style": "link",
+            "text": "",
+            "link_text": "Full Ingredients List"
+          }
+        },
+        {
+          "type": "accordion",
+          "settings": { "title": "Product Description" }
+        },
+        {
+          "type": "accordion",
+          "settings": { "title": "Ingredients & Nutrition" }
+        },
+        {
+          "type": "accordion",
+          "settings": { "title": "Frequently Asked Questions" }
+        },
+        {
+          "type": "accordion",
+          "settings": { "title": "Shipping, Returns & 60 Day Guarantee" }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

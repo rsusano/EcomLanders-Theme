@@ -1,0 +1,160 @@
+{%- comment -%} sections/product-announcement-bar.liquid {%- endcomment -%}
+{{ 'product-announcement-bar.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign text_color = section.settings.text_color
+  assign bg_color = section.settings.bg_color
+  assign enable_scrolling = section.settings.enable_scrolling
+  assign speed = section.settings.speed
+
+  assign wrapper_classes = 'product-announcement-bar'
+  if enable_scrolling
+    assign wrapper_classes = wrapper_classes | append: ' product-announcement-bar--scrolling'
+  endif
+  unless section.settings.show_on_mobile
+    assign wrapper_classes = wrapper_classes | append: ' hide-mobile'
+  endunless
+  unless section.settings.show_on_desktop
+    assign wrapper_classes = wrapper_classes | append: ' hide-desktop'
+  endunless
+-%}
+
+<style>
+  #shopify-section-{{ section.id }} .product-announcement-bar {
+    background-color: {{ bg_color }};
+    color: {{ text_color }};
+    --scroll-speed: {{ speed }}s;
+  }
+</style>
+
+<div class="{{ wrapper_classes }}" data-section-id="{{ section.id }}" data-section-type="product-announcement-bar">
+  {%- if section.blocks.size > 0 -%}
+    {%- capture announcement_content -%}
+      <ul class="product-announcement-bar__list">
+        {%- for block in section.blocks -%}
+          <li class="product-announcement-bar__item" {{ block.shopify_attributes }}>
+            {%- if block.settings.icon_image != blank -%}
+              <span class="product-announcement-bar__icon">
+                <img src="{{ block.settings.icon_image | image_url: width: 32 }}" alt="{{ block.settings.text | escape }}" width="16" height="16" loading="lazy">
+              </span>
+            {%- elsif block.settings.icon_svg != blank -%}
+              <span class="product-announcement-bar__icon">
+                {{ block.settings.icon_svg }}
+              </span>
+            {%- endif -%}
+            {%- if block.settings.text != blank -%}
+              <span class="product-announcement-bar__text">{{ block.settings.text }}</span>
+            {%- endif -%}
+          </li>
+        {%- endfor -%}
+      </ul>
+    {%- endcapture -%}
+
+    {%- if enable_scrolling -%}
+      <div class="product-announcement-bar__inner" aria-hidden="true">
+        {%- for i in (1..8) -%}
+          {{ announcement_content }}
+        {%- endfor -%}
+      </div>
+    {%- else -%}
+      {{ announcement_content }}
+    {%- endif -%}
+  {%- endif -%}
+</div>
+
+{% schema %}
+{
+  "name": "Product Announcement Bar",
+  "class": "section-product-announcement-bar",
+  "settings": [
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background Color",
+      "default": "#145946"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_scrolling",
+      "label": "Enable Scrolling Text",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "speed",
+      "label": "Scrolling Speed (seconds)",
+      "min": 10,
+      "max": 60,
+      "step": 1,
+      "default": 30,
+      "info": "Lower is faster."
+    },
+    {
+      "type": "header",
+      "content": "Device Visibility"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_on_desktop",
+      "label": "Show on Desktop",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_on_mobile",
+      "label": "Show on Mobile",
+      "default": true
+    }
+  ],
+  "blocks": [
+    {
+      "type": "announcement",
+      "name": "Message",
+      "settings": [
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Text",
+          "default": "LIMITED TIME OFFER - SAVE UP TO 71% OFF"
+        },
+        {
+          "type": "image_picker",
+          "id": "icon_image",
+          "label": "Custom Icon (Image)"
+        },
+        {
+          "type": "textarea",
+          "id": "icon_svg",
+          "label": "Custom Icon (SVG Raw)",
+          "info": "Paste raw SVG code here. Overrides image if both are present."
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product Announcement Bar",
+      "blocks": [
+        {
+          "type": "announcement",
+          "settings": {
+            "text": "LIMITED TIME OFFER - SAVE UP TO 71% OFF"
+          }
+        },
+        {
+          "type": "announcement",
+          "settings": {
+            "text": "FREE SHIPPING WORLDWIDE"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
