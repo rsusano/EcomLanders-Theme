@@ -112,7 +112,7 @@
             "subtitle_unit": "/ bottle",
             "quantity_per_unit": 3,
             "subtitle_price": "",
-            "social_proof": "92% of customers choose: Buy 2, Get 1 Free",
+            "social_proof": "<p>92% of customers choose: Buy 2, Get 1 Free</p>",
             "variant_id": "",
             "price": 38,
             "compare_price": 117,
