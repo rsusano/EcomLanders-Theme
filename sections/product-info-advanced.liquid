@@ -505,13 +505,13 @@
 
                     <div class="product-info-advanced__bundle-info">
                       <span class="product-info-advanced__bundle-title">{{ block.settings.title }}<em> {{ block.settings.title_highlight }}</em></span>
-                      {%- if block.settings.subtitle_price != blank -%}
-                        {%- comment -%} Merchant-overridden static per-unit price – market-aware via | money {%- endcomment -%}
+                      {%- if block.settings.quantity_per_unit != blank and block.settings.quantity_per_unit > 0 -%}
+                        {%- comment -%} Auto per-unit: variant price ÷ quantity — always market-aware (uses live variant price in visitor's currency) {%- endcomment -%}
+                        <span class="product-info-advanced__bundle-subtitle">{{ subtitle_cents | money }} {{ block.settings.subtitle_unit }}</span>
+                      {%- elsif block.settings.subtitle_price != blank and b_variant == blank -%}
+                        {%- comment -%} Static fallback: only used when no variant ID is linked (no live price available). NOT market-aware — use quantity_per_unit instead when a variant exists. {%- endcomment -%}
                         {%- assign subtitle_price_cents = block.settings.subtitle_price | times: 100 | round -%}
                         <span class="product-info-advanced__bundle-subtitle">{{ subtitle_price_cents | money }} {{ block.settings.subtitle_unit }}</span>
-                      {%- elsif block.settings.quantity_per_unit != blank and block.settings.quantity_per_unit > 0 -%}
-                        {%- comment -%} Auto per-unit from variant price ÷ quantity — market-aware {%- endcomment -%}
-                        <span class="product-info-advanced__bundle-subtitle">{{ subtitle_cents | money }} {{ block.settings.subtitle_unit }}</span>
                       {%- elsif block.settings.subtitle != blank -%}
                         <span class="product-info-advanced__bundle-subtitle">{{ block.settings.subtitle }}</span>
                       {%- endif -%}
