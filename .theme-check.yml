@@ -7,3 +7,9 @@
 # These render correctly at runtime — theme-check cannot follow cross-branch logic.
 UnclosedHTMLElement:
   enabled: false
+
+# theme-check's CSS parser does not recognise @starting-style (CSS Transitions
+# Level 2 — valid in all modern browsers). Suppressing CSSLint avoids false
+# "Unknown at rule" warnings for this and other modern CSS features.
+CSSLint:
+  enabled: false

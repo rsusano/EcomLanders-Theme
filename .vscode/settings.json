@@ -1,0 +1,8 @@
+{
+  // Tell the CSS/SCSS language service to ignore unknown at-rules.
+  // @starting-style is valid modern CSS (CSS Transitions Level 2) but the
+  // built-in language server reports it as unknown — this suppresses that false positive.
+  "css.lint.unknownAtRules": "ignore",
+  "scss.lint.unknownAtRules": "ignore",
+  "less.lint.unknownAtRules": "ignore"
+}
