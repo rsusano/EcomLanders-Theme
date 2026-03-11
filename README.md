@@ -5,7 +5,10 @@ A **conversion-focused product page section** for Shopify Online Store 2.0. Buil
 **✅ Zero app dependencies** — bundle picker, subscription toggle, trust signals, popup modal, and media carousel are all native Liquid + vanilla JS + CSS.  
 **✅ Fully configurable via the Theme Editor** — every visual and behavioural setting is exposed in the Shopify customizer. No code edits needed after install.
 
-Shopify &nbsp;&nbsp; Liquid &nbsp;&nbsp; JavaScript ES6+ &nbsp;&nbsp; CSS Custom Properties
+![Shopify](https://img.shields.io/badge/Shopify-96BF48?style=flat-square&logo=shopify&logoColor=white)
+![Liquid](https://img.shields.io/badge/Liquid-000000?style=flat-square&logo=shopify&logoColor=white)
+![JavaScript](https://img.shields.io/badge/JavaScript_ES6+-F7DF1E?style=flat-square&logo=javascript&logoColor=black)
+![CSS](https://img.shields.io/badge/CSS_Custom_Properties-1572B6?style=flat-square&logo=css3&logoColor=white)
 
 ---
 
