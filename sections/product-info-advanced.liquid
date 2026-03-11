@@ -1,0 +1,1804 @@
+{%- comment -%} sections/product-info-advanced.liquid {%- endcomment -%}
+{{ 'product-info-advanced.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'product-info-advanced.js' | asset_url }}" defer="defer"></script>
+
+{%- liquid
+  assign current_variant = product.selected_or_first_available_variant
+
+  assign badge_mx     = section.settings.badge_margin | default: 12 | append: 'px'
+  assign badge_pos_top    = 'auto'
+  assign badge_pos_right  = 'auto'
+  assign badge_pos_bottom = 'auto'
+  assign badge_pos_left   = 'auto'
+  case section.settings.badge_position
+    when 'top-left'
+      assign badge_pos_top  = badge_mx
+      assign badge_pos_left = badge_mx
+    when 'bottom-right'
+      assign badge_pos_bottom = badge_mx
+      assign badge_pos_right  = badge_mx
+    when 'bottom-left'
+      assign badge_pos_bottom = badge_mx
+      assign badge_pos_left   = badge_mx
+    else
+      assign badge_pos_top   = badge_mx
+      assign badge_pos_right = badge_mx
+  endcase
+-%}
+
+<style>
+  #shopify-section-{{ section.id }} .product-info-advanced {
+    /* Brand */
+    --color-brand:       {{ section.settings.primary_color }};
+    --color-brand-dark:  {{ section.settings.primary_dark }};
+    --color-brand-light: {{ section.settings.primary_light }};
+    --color-accent:      {{ section.settings.accent_color }};
+
+    /* Bundle Card */
+    --pia-bundle-card-bg:            {{ section.settings.bundle_card_bg }};
+    --pia-bundle-card-border:        {{ section.settings.bundle_card_border }};
+    --pia-bundle-card-border-width:  {{ section.settings.bundle_card_border_width }}px;
+    --pia-bundle-card-radius:        {{ section.settings.bundle_card_radius }}px;
+    --pia-bundle-card-padding-v:     {{ section.settings.bundle_card_padding_v }}px;
+    --pia-bundle-card-padding-h:     {{ section.settings.bundle_card_padding_h }}px;
+    --pia-bundle-gap:                {{ section.settings.bundle_gap }}px;
+    --pia-bundle-selected-bg:        {{ section.settings.bundle_selected_bg }};
+    --pia-bundle-selected-border:    {{ section.settings.bundle_selected_border }};
+    --pia-bundle-selected-width:     {{ section.settings.bundle_selected_border_width }}px;
+    --pia-bundle-img-size:           {{ section.settings.bundle_img_size }}px;
+    --pia-bundle-img-fit:            {{ section.settings.bundle_img_fit | default: 'cover' }};
+    --pia-bundle-img-ratio:          {{ section.settings.bundle_img_ratio | default: '1' }};
+
+    /* Bundle Typography */
+    --pia-bundle-title-size:    {{ section.settings.bundle_title_size }}px;
+    --pia-bundle-subtitle-size: {{ section.settings.bundle_subtitle_size }}px;
+    --pia-bundle-price-size:    {{ section.settings.bundle_price_size }}px;
+    --pia-bundle-was-size:      {{ section.settings.bundle_was_size }}px;
+    --pia-bundle-price-color:   {{ section.settings.bundle_price_color }};
+    --pia-bundle-title-color:   {{ section.settings.bundle_title_color }};
+    --pia-bundle-subtitle-color:{{ section.settings.bundle_subtitle_color }};
+
+    /* Save Badge */
+    --pia-save-bg:      {{ section.settings.save_badge_bg }};
+    --pia-save-color:   {{ section.settings.save_badge_color }};
+    --pia-save-size:    {{ section.settings.save_badge_size }}px;
+    --pia-save-radius:  {{ section.settings.save_badge_radius }}px;
+    --pia-save-pad-v:   {{ section.settings.save_badge_pad_v }}px;
+    --pia-save-pad-h:   {{ section.settings.save_badge_pad_h }}px;
+
+    /* Best Value Badge */
+    --pia-best-bg:    {{ section.settings.best_badge_bg }};
+    --pia-best-color: {{ section.settings.best_badge_color }};
+    --pia-best-size:  {{ section.settings.best_badge_size }}px;
+
+    /* Social Proof Banner */
+    --pia-social-bg:    {{ section.settings.social_proof_bg }};
+    --pia-social-color: {{ section.settings.social_proof_color }};
+    --pia-social-highlight-color: {{ section.settings.social_proof_highlight_color }};
+    --pia-social-size:  {{ section.settings.social_proof_size }}px;
+
+    /* Subscription Box */
+    --pia-sub-bg-active:     {{ section.settings.sub_bg_active }};
+    --pia-sub-border-active: {{ section.settings.sub_border_active }};
+    --pia-sub-check-bg:      {{ section.settings.sub_check_bg }};
+
+    /* ATC Button */
+    --pia-atc-bg:           {{ section.settings.atc_bg }};
+    --pia-atc-bg-hover:     {{ section.settings.atc_bg_hover }};
+    --pia-atc-color:        {{ section.settings.atc_color }};
+    --pia-atc-height:       {{ section.settings.atc_height }}px;
+    --pia-atc-radius:       {{ section.settings.atc_radius }}px;
+    --pia-atc-text-size:    {{ section.settings.atc_text_size }}px;
+    --pia-atc-price-size:   {{ section.settings.atc_price_size }}px;
+    --pia-atc-was-size:     {{ section.settings.atc_was_size }}px;
+
+    /* ATC Design */
+    --pia-atc-divider:      {{ section.settings.atc_divider_color }};
+    --pia-atc-price-bg:     {{ section.settings.atc_price_bg }};
+    --pia-atc-price-radius: {{ section.settings.atc_price_radius }}px;
+
+    /* Main Image Badge */
+    --pia-badge-bg:              {{ section.settings.badge_bg }};
+    --pia-badge-color:           {{ section.settings.badge_color }};
+    --pia-badge-highlight-color: {{ section.settings.badge_highlight_color }};
+    --pia-badge-font-size:       {{ section.settings.badge_font_size | default: 13 }}px;
+    --pia-badge-pad-v:           {{ section.settings.badge_pad_v | default: 7 }}px;
+    --pia-badge-pad-h:           {{ section.settings.badge_pad_h | default: 14 }}px;
+    --pia-badge-icon-size:       {{ section.settings.badge_icon_size | default: 13 }}px;
+    --pia-badge-top:             {{ badge_pos_top }};
+    --pia-badge-right:          {{ badge_pos_right }};
+    --pia-badge-bottom:         {{ badge_pos_bottom }};
+    --pia-badge-left:           {{ badge_pos_left }};
+
+    /* Accordions */
+    --pia-accordion-bg:       {{ section.settings.accordion_bg }};
+    --pia-accordion-border:   {{ section.settings.accordion_border }};
+    --pia-accordion-border-width: {{ section.settings.accordion_border_width }}px;
+    --pia-accordion-radius:   {{ section.settings.accordion_radius }}px;
+    --pia-accordion-title-color: {{ section.settings.accordion_title_color }};
+    --pia-accordion-content-color: {{ section.settings.accordion_content_color }};
+    --pia-accordion-icon-color: {{ section.settings.accordion_icon_color }};
+    --pia-accordion-padding:  {{ section.settings.accordion_padding }}px;
+
+    /* Product Image */
+    --pia-image-ratio: {{ section.settings.image_aspect_ratio | default: '1' }};
+    --pia-thumb-aspect: {%- if section.settings.image_aspect_ratio == 'auto' -%}1{%- else -%}{{ section.settings.image_aspect_ratio | default: '1' }}{%- endif -%};
+
+    /* Gallery Arrows */
+    --pia-gallery-arrow-color: {{ section.settings.gallery_arrow_color }};
+    --pia-gallery-arrow-bg:    {{ section.settings.gallery_arrow_bg }};
+
+    /* Benefits */
+    --pia-benefit-size: {{ section.settings.benefit_font_size | default: 13 }}px;
+    --pia-benefit-icon-size: {{ section.settings.benefit_icon_size | default: 16 }}px;
+  }
+</style>
+
+<div class="product-info-advanced" data-section-id="{{ section.id }}" data-section-type="product-info-advanced">
+  <div class="product-info-advanced__grid">
+    
+    {%- comment -%} ================================
+      LEFT COLUMN
+    ================================ {%- endcomment -%}
+    <div class="product-info-advanced__left">
+      <div class="product-info-advanced__media">
+        
+        {%- comment -%} Main Image (wrapped for edge-arrow positioning) {%- endcomment -%}
+        <div class="product-info-advanced__image-with-nav">
+          {%- if product.media.size > 1 -%}
+            <div class="product-info-advanced__gallery-arrows">
+              <button type="button" class="product-info-advanced__gallery-nav product-info-advanced__gallery-prev" aria-label="Previous image"{% if section.settings.gallery_prev_image != blank or section.settings.gallery_prev_svg != blank %} data-icon-type="custom"{% endif %}>
+                {%- if section.settings.gallery_prev_svg != blank -%}
+                  {{ section.settings.gallery_prev_svg }}
+                {%- elsif section.settings.gallery_prev_image != blank -%}
+                  <img src="{{ section.settings.gallery_prev_image | image_url: width: 100 }}" alt="" width="44" height="44" loading="lazy">
+                {%- else -%}
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+                {%- endif -%}
+              </button>
+              <button type="button" class="product-info-advanced__gallery-nav product-info-advanced__gallery-next" aria-label="Next image"{% if section.settings.gallery_next_image != blank or section.settings.gallery_next_svg != blank %} data-icon-type="custom"{% endif %}>
+                {%- if section.settings.gallery_next_svg != blank -%}
+                  {{ section.settings.gallery_next_svg }}
+                {%- elsif section.settings.gallery_next_image != blank -%}
+                  <img src="{{ section.settings.gallery_next_image | image_url: width: 100 }}" alt="" width="44" height="44" loading="lazy">
+                {%- else -%}
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                {%- endif -%}
+              </button>
+            </div>
+          {%- endif -%}
+
+          <div class="product-info-advanced__main-image-wrap">
+            {%- if section.settings.show_badge and section.settings.badge_text != blank -%}
+              <div class="product-info-advanced__badge">
+                <span class="product-info-advanced__badge-icon">
+                  {%- if section.settings.badge_icon_svg != blank -%}
+                    {{ section.settings.badge_icon_svg }}
+                  {%- elsif section.settings.badge_icon_image != blank -%}
+                    <img src="{{ section.settings.badge_icon_image | image_url: width: 32 }}" width="14" height="14" alt="" loading="lazy">
+                  {%- else -%}
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M12 2l3 6.5 7 1-5 5 1 7-6-3.5-6 3.5 1-7-5-5 7-1z"/>
+                    </svg>
+                  {%- endif -%}
+                </span>
+                <span class="product-info-advanced__badge-text">{{ section.settings.badge_text | strip_html | strip }}</span>
+              </div>
+            {%- endif -%}
+
+            {%- if product.featured_media != blank -%}
+              <img
+                data-pia-main-image
+                src="{{ product.featured_media | image_url: width: 800 }}"
+                alt="{{ product.featured_media.alt | escape }}"
+                width="800"
+                height="800"
+                loading="lazy"
+              >
+            {%- else -%}
+              {{ 'product-1' | placeholder_svg_tag: 'placeholder-svg' }}
+            {%- endif -%}
+          </div>
+        </div>
+
+        {%- comment -%} Thumbnails {%- endcomment -%}
+        {%- if product.media.size > 1 -%}
+          <div class="product-info-advanced__thumbnails-wrap">
+            <div class="product-info-advanced__thumbnails">
+              {%- for media in product.media limit: 5 -%}
+                <div
+                  class="product-info-advanced__thumb{% if forloop.first %} is-active{% endif %}"
+                  data-pia-thumb
+                  data-src="{{ media | image_url: width: 800 }}"
+                >
+                  <img
+                    src="{{ media | image_url: width: 200 }}"
+                    alt="{{ media.alt | escape }}"
+                    width="200"
+                    height="200"
+                    loading="lazy"
+                  >
+                </div>
+              {%- endfor -%}
+            </div>
+          </div>
+        {%- endif -%}
+      </div>
+
+      {%- comment -%} Left Column Blocks {%- endcomment -%}
+      {%- assign icon_blocks = section.blocks | where: 'type', 'icon_block' -%}
+      {%- if icon_blocks.size > 0 -%}
+        <div class="product-info-advanced__icons">
+          {%- for block in icon_blocks -%}
+            {%- liquid
+              assign block_classes = 'product-info-advanced__icon-item'
+              unless block.settings.show_on_mobile
+                assign block_classes = block_classes | append: ' hide-mobile'
+              endunless
+              unless block.settings.show_on_desktop
+                assign block_classes = block_classes | append: ' hide-desktop'
+              endunless
+            -%}
+            <div class="{{ block_classes }}" {{ block.shopify_attributes }}>
+              {%- if block.settings.icon_image != blank -%}
+                <img 
+                  src="{{ block.settings.icon_image | image_url: width: 64 }}" 
+                  alt="{{ block.settings.title | escape }}"
+                  width="32"
+                  height="32"
+                  loading="lazy"
+                >
+              {%- elsif block.settings.icon_svg != blank -%}
+                {{ block.settings.icon_svg }}
+              {%- endif -%}
+              <span class="product-info-advanced__icon-label">{{ block.settings.title }}</span>
+            </div>
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+
+      {%- comment -%} Media Carousel Blocks (Left Column) {%- endcomment -%}
+      {%- for block in section.blocks -%}
+        {%- if block.type == 'media_carousel' and block.settings.column == 'left' -%}
+          {%- liquid
+            assign mc_classes = 'product-info-advanced__media-carousel'
+            unless block.settings.show_on_mobile
+              assign mc_classes = mc_classes | append: ' hide-mobile'
+            endunless
+            unless block.settings.show_on_desktop
+              assign mc_classes = mc_classes | append: ' hide-desktop'
+            endunless
+            assign dt_cards = block.settings.visible_cards_desktop
+            assign mb_cards = block.settings.visible_cards_mobile
+          -%}
+          <div class="{{ mc_classes }}" data-pia-media-carousel="{{ block.id }}" data-cards-desktop="{{ dt_cards }}" data-cards-mobile="{{ mb_cards }}" style="--mc-dt-cols: {{ dt_cards }}; --mc-mb-cols: {{ mb_cards }};" {{ block.shopify_attributes }}>
+            {%- if block.settings.heading != blank -%}
+              <h3 class="product-info-advanced__mc-heading">{{ block.settings.heading }}</h3>
+            {%- endif -%}
+            {%- if block.settings.subheading != blank -%}
+              <p class="product-info-advanced__mc-subheading">{{ block.settings.subheading }}</p>
+            {%- endif -%}
+            {%- assign mc_has_items = false -%}
+            {%- for i in (1..6) -%}
+              {%- assign mc_img_key = 'media' | append: i | append: '_image' -%}
+              {%- assign mc_vid_key = 'media' | append: i | append: '_video' -%}
+              {%- if block.settings[mc_img_key] != blank or block.settings[mc_vid_key] != blank -%}
+                {%- assign mc_has_items = true -%}
+              {%- endif -%}
+            {%- endfor -%}
+            {%- if mc_has_items -%}
+              <div class="product-info-advanced__mc-carousel" data-mc-carousel>
+                <div class="product-info-advanced__mc-track" data-mc-track>
+                  {%- for i in (1..6) -%}
+                    {%- assign mc_img_key = 'media' | append: i | append: '_image' -%}
+                    {%- assign mc_vid_key = 'media' | append: i | append: '_video' -%}
+                    {%- if block.settings[mc_img_key] != blank or block.settings[mc_vid_key] != blank -%}
+                      <div class="product-info-advanced__mc-slide" data-mc-slide>
+                        <div class="product-info-advanced__review-media">
+                          {%- if block.settings[mc_img_key] != blank -%}
+                            <img src="{{ block.settings[mc_img_key] | image_url: width: 600 }}" alt="" class="product-info-advanced__review-img" width="600" height="800" loading="lazy">
+                          {%- else -%}
+                            <div class="product-info-advanced__review-placeholder">&#9654;</div>
+                          {%- endif -%}
+                          {%- if block.settings[mc_vid_key] != blank -%}
+                            <button type="button" class="product-info-advanced__review-play" data-video-url="{{ block.settings[mc_vid_key] | escape }}" aria-label="Play video">
+                              <svg viewBox="0 0 24 24" fill="currentColor" width="28" height="28"><path d="M8 5v14l11-7z"/></svg>
+                            </button>
+                          {%- endif -%}
+                        </div>
+                      </div>
+                    {%- endif -%}
+                  {%- endfor -%}
+                </div>
+              </div>
+              <div class="product-info-advanced__reviews-nav">
+                <button type="button" class="product-info-advanced__reviews-arrow product-info-advanced__mc-prev" aria-label="Previous">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+                </button>
+                <div class="product-info-advanced__reviews-dots" data-mc-dots>
+                  {%- for i in (1..6) -%}
+                    {%- assign mc_img_key = 'media' | append: i | append: '_image' -%}
+                    {%- assign mc_vid_key = 'media' | append: i | append: '_video' -%}
+                    {%- if block.settings[mc_img_key] != blank or block.settings[mc_vid_key] != blank -%}
+                      <button type="button" class="product-info-advanced__reviews-dot{% if forloop.first %} is-active{% endif %}" data-dot-index="{{ forloop.index0 }}" aria-label="Slide {{ forloop.index }}"></button>
+                    {%- endif -%}
+                  {%- endfor -%}
+                </div>
+                <button type="button" class="product-info-advanced__reviews-arrow product-info-advanced__mc-next" aria-label="Next">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                </button>
+              </div>
+            {%- endif -%}
+          </div>
+        {%- endif -%}
+      {%- endfor -%}
+
+      {%- comment -%} Accordions (Left) {%- endcomment -%}
+      {%- capture left_accordions_html -%}
+        {%- for block in section.blocks -%}
+          {%- if block.type == 'accordion' and block.settings.column == 'left' -%}
+            {%- liquid
+              assign block_classes = 'product-info-advanced__accordion'
+              unless block.settings.show_on_mobile
+                assign block_classes = block_classes | append: ' hide-mobile'
+              endunless
+              unless block.settings.show_on_desktop
+                assign block_classes = block_classes | append: ' hide-desktop'
+              endunless
+            -%}
+            <div class="{{ block_classes }}" data-pia-accordion {{ block.shopify_attributes }}>
+              <button type="button" class="product-info-advanced__accordion-trigger" data-pia-accordion-trigger>
+                <span class="product-info-advanced__accordion-title-wrap">
+                  {%- if block.settings.icon_svg != blank -%}
+                    <span class="product-info-advanced__accordion-custom-icon">{{ block.settings.icon_svg }}</span>
+                  {%- elsif block.settings.icon_image != blank -%}
+                    <span class="product-info-advanced__accordion-custom-icon">
+                      <img src="{{ block.settings.icon_image | image_url: width: 40 }}" alt="" width="20" height="20" loading="lazy">
+                    </span>
+                  {%- endif -%}
+                  {{ block.settings.title }}
+                </span>
+                <span class="product-info-advanced__accordion-icon"></span>
+              </button>
+              <div class="product-info-advanced__accordion-body">
+                <div class="product-info-advanced__accordion-content">
+                  <div class="product-info-advanced__accordion-content-inner">
+                    {{ block.settings.content }}
+                  </div>
+                </div>
+              </div>
+            </div>
+          {%- endif -%}
+        {%- endfor -%}
+      {%- endcapture -%}
+
+      {%- if left_accordions_html != blank -%}
+        <div class="product-info-advanced__accordions">
+          {{ left_accordions_html }}
+        </div>
+      {%- endif -%}
+
+    </div>
+
+    {%- comment -%} ================================
+      RIGHT COLUMN
+    ================================ {%- endcomment -%}
+    <div class="product-info-advanced__right">
+      <div class="product-info-advanced__details">
+        
+        <form method="post" action="{{ routes.cart_add_url }}" class="product-info-advanced__form" data-pia-form>
+          <input type="hidden" name="id" value="{{ current_variant.id }}">
+          <input type="hidden" name="quantity" value="1">
+          <input type="hidden" name="selling_plan" value="" disabled>
+
+          {%- assign prev_type = '' -%}
+
+          {%- for block in section.blocks -%}
+            {%- liquid
+              assign bc = ''
+              unless block.settings.show_on_mobile
+                assign bc = bc | append: ' hide-mobile'
+              endunless
+              unless block.settings.show_on_desktop
+                assign bc = bc | append: ' hide-desktop'
+              endunless
+            -%}
+
+            {%- case block.type -%}
+              
+              {%- when 'rating' -%}
+                <div class="product-info-advanced__rating{{ bc }}" {{ block.shopify_attributes }}>
+                  <div class="product-info-advanced__stars">
+                    {%- if block.settings.icon_image != blank -%}
+                      <img src="{{ block.settings.icon_image | image_url: width: 32 }}" width="16" height="16" alt="" loading="lazy" style="object-fit: contain;">
+                    {%- elsif block.settings.icon_svg != blank -%}
+                      <div style="width:16px;height:16px;display:flex;align-items:center;justify-content:center;">{{ block.settings.icon_svg }}</div>
+                    {%- else -%}
+                      {%- for i in (1..5) -%}
+                        <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M12 2l3 6.5 7 1-5 5 1 7-6-3.5-6 3.5 1-7-5-5 7-1z"/></svg>
+                      {%- endfor -%}
+                    {%- endif -%}
+                  </div>
+                  <span>{{ block.settings.text }}</span>
+                </div>
+
+              {%- when 'brand' -%}
+                <p class="product-info-advanced__brand{{ bc }}" {{ block.shopify_attributes }}>{{ block.settings.text }}</p>
+
+              {%- when 'title' -%}
+                <h1 class="product-info-advanced__title{{ bc }}" {{ block.shopify_attributes }}>
+                  {{ block.settings.title | default: product.title }}
+                </h1>
+
+              {%- when 'description' -%}
+                <div class="product-info-advanced__description{{ bc }}" {{ block.shopify_attributes }}>
+                  {{ block.settings.content }}
+                </div>
+
+              {%- when 'benefit' -%}
+                {%- if prev_type != 'benefit' -%}
+                  <ul class="product-info-advanced__benefits{{ bc }}">
+                {%- endif -%}
+                
+                <li class="product-info-advanced__benefit-item" {{ block.shopify_attributes }}>
+                  <span class="product-info-advanced__benefit-icon">
+                    {%- if block.settings.icon_image != blank -%}
+                      <img src="{{ block.settings.icon_image | image_url: width: 64 }}" width="32" height="32" style="width:var(--pia-benefit-icon-size, 16px);height:var(--pia-benefit-icon-size, 16px);object-fit:contain;" alt="" loading="lazy">
+                    {%- elsif block.settings.icon_svg != blank -%}
+                      <div style="width:var(--pia-benefit-icon-size, 16px);height:var(--pia-benefit-icon-size, 16px);display:flex;align-items:center;justify-content:center;">{{ block.settings.icon_svg }}</div>
+                    {%- else -%}
+                      <div style="width:var(--pia-benefit-icon-size, 16px);height:var(--pia-benefit-icon-size, 16px);display:flex;align-items:center;justify-content:center;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" width="100%" height="100%"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                      </div>
+                    {%- endif -%}
+                  </span>
+                  <span class="product-info-advanced__benefit-text">{{ block.settings.text }}</span>
+                </li>
+
+                {%- assign next_index = forloop.index -%}
+                {%- assign next_block = section.blocks[next_index] -%}
+                {%- if next_block.type != 'benefit' -%}
+                  </ul>
+                {%- endif -%}
+
+              {%- when 'bundles_heading' -%}
+                <p class="product-info-advanced__bundles-heading{{ bc }}" {{ block.shopify_attributes }}>{{ block.settings.text }}</p>
+
+              {%- when 'bundle' -%}
+                {%- if prev_type != 'bundle' -%}
+                  <div class="product-info-advanced__bundle-list{{ bc }}">
+                {%- endif -%}
+                {%- liquid
+                  assign b_variant_id_int = block.settings.variant_id | plus: 0
+                  assign b_variant = product.variants | where: 'id', b_variant_id_int | first
+                  assign bundle_price = block.settings.price | times: 100
+                  assign bundle_compare = block.settings.compare_price | times: 100
+                  assign bundle_compare_valid = false
+                  assign bundle_plan_id = block.settings.selling_plan_id
+                  if b_variant
+                    assign bundle_price = b_variant.price
+                    assign b_compare_raw = b_variant.compare_at_price | plus: 0
+                    if b_compare_raw > 0
+                      assign bundle_compare = b_compare_raw
+                    endif
+                    if b_variant.selling_plan_allocations.size > 0
+                      assign bundle_plan_id = b_variant.selling_plan_allocations.first.selling_plan.id
+                    endif
+                  else
+                    if bundle_compare > 0
+                      assign bundle_compare_valid = true
+                    endif
+                  endif
+                  assign bundle_qty = block.settings.quantity_per_unit | default: 1 | plus: 0
+                  if bundle_qty < 1
+                    assign bundle_qty = 1
+                  endif
+
+                  if bundle_compare == 0 or bundle_compare <= bundle_price
+                    assign base_compare = product.compare_at_price_max | default: product.price | default: 0
+                    assign calculated_compare = base_compare | times: bundle_qty
+                    if calculated_compare > bundle_price
+                      assign bundle_compare = calculated_compare
+                    endif
+                  endif
+
+                  if bundle_compare > bundle_price
+                    assign bundle_compare_valid = true
+                  endif
+                  assign subtitle_cents = bundle_price | divided_by: bundle_qty
+                -%}
+                
+                <div class="product-info-advanced__bundle-wrapper{{ bc }}" {{ block.shopify_attributes }}>
+                  {%- if block.settings.social_proof != blank -%}
+                    <div class="product-info-advanced__social-proof">{{ block.settings.social_proof | replace: '<p>', '' | replace: '</p>', '' }}</div>
+                  {%- endif -%}
+                  
+                  <div 
+                    class="product-info-advanced__bundle" 
+                    data-pia-bundle 
+                    data-variant-id="{{ block.settings.variant_id | default: current_variant.id }}"
+                    data-selling-plan-id="{{ bundle_plan_id }}"
+                    data-price="{{ bundle_price }}"
+                    data-compare-price="{{ bundle_compare }}"
+                    data-compare-valid="{{ bundle_compare_valid }}"
+                    data-price-formatted="{{ bundle_price | money }}"
+                  >
+                    {%- comment -%} Image with save badge overlapping bottom-left {%- endcomment -%}
+                    <div class="product-info-advanced__bundle-img-wrap">
+                      {%- if block.settings.image != blank -%}
+                        <img class="product-info-advanced__bundle-img" src="{{ block.settings.image | image_url: width: 140 }}" alt="{{ block.settings.title | escape }}" width="70" height="70" loading="lazy">
+                      {%- elsif product.featured_media != blank -%}
+                        <img class="product-info-advanced__bundle-img" src="{{ product.featured_media | image_url: width: 140 }}" alt="{{ product.title | escape }}" width="70" height="70" loading="lazy">
+                      {%- endif -%}
+                      {%- if block.settings.save_badge != blank -%}
+                        <span class="product-info-advanced__bundle-save">{{ block.settings.save_badge }}</span>
+                      {%- endif -%}
+                    </div>
+
+                    <div class="product-info-advanced__bundle-info">
+                      <span class="product-info-advanced__bundle-title">{{ block.settings.title }}<em> {{ block.settings.title_highlight }}</em></span>
+                      {%- if block.settings.quantity_per_unit != blank and block.settings.quantity_per_unit > 0 -%}
+                        {%- comment -%} Auto per-unit: variant price ÷ quantity — always market-aware (uses live variant price in visitor's currency) {%- endcomment -%}
+                        <span class="product-info-advanced__bundle-subtitle">{{ subtitle_cents | money }} {{ block.settings.subtitle_unit }}</span>
+                      {%- elsif block.settings.subtitle_price != blank and b_variant == blank -%}
+                        {%- comment -%} Static fallback: only used when no variant ID is linked (no live price available). NOT market-aware — use quantity_per_unit instead when a variant exists. {%- endcomment -%}
+                        {%- assign subtitle_price_cents = block.settings.subtitle_price | times: 100 | round -%}
+                        <span class="product-info-advanced__bundle-subtitle">{{ subtitle_price_cents | money }} {{ block.settings.subtitle_unit }}</span>
+                      {%- elsif block.settings.subtitle != blank -%}
+                        <span class="product-info-advanced__bundle-subtitle">{{ block.settings.subtitle }}</span>
+                      {%- endif -%}
+                    </div>
+
+                    <div class="product-info-advanced__bundle-pricing">
+                      <span class="product-info-advanced__bundle-price" data-pia-bundle-price>{{ bundle_price | money }}</span>
+                      <span class="product-info-advanced__bundle-was" data-pia-bundle-was {% unless bundle_compare_valid %}style="display:none;"{% endunless %}>{{ bundle_compare | money }}</span>
+                    </div>
+                    
+                    {%- if block.settings.best_value -%}
+                      <div class="product-info-advanced__bundle-best">Best Value</div>
+                    {%- endif -%}
+                  </div>
+                </div>
+
+                {%- assign next_index = forloop.index -%}
+                {%- assign next_block = section.blocks[next_index] -%}
+                {%- if next_block.type != 'bundle' -%}
+                  </div>
+                {%- endif -%}
+
+              {%- when 'subscription' -%}
+                <div 
+                  class="product-info-advanced__subscription{{ bc }}" 
+                  data-pia-subscription 
+                  data-discount-pct="{{ block.settings.discount_pct }}"
+                  data-default-plan-id="{{ block.settings.default_plan_id }}"
+                  {{ block.shopify_attributes }}
+                >
+                  <div class="product-info-advanced__sub-checkbox">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" width="12" height="12"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                  </div>
+                  <div class="product-info-advanced__sub-text">
+                    <p class="product-info-advanced__sub-title">{{ block.settings.title }}</p>
+                    <p class="product-info-advanced__sub-desc">{{ block.settings.subtitle }}</p>
+                  </div>
+                </div>
+
+              {%- when 'add_to_cart' -%}
+                <button type="submit" 
+                  class="product-info-advanced__submit{{ bc }}" 
+                  data-pia-submit 
+                  style="
+                    --pia-atc-gap: {{ block.settings.atc_gap }}px;
+                    --pia-atc-gap-mobile: {{ block.settings.atc_gap_mobile }}px;
+                    --pia-atc-padding-h: {{ section.settings.atc_padding_h }}px;
+                    --pia-atc-padding-h-mobile: {{ block.settings.atc_padding_h_mobile }}px;
+                    --pia-atc-text-size-mobile: {{ block.settings.atc_text_size_mobile }}px;
+                  "
+                  {{ block.shopify_attributes }}
+                >
+                  <span class="product-info-advanced__submit-text">{{ block.settings.text }}</span>
+                  <div class="product-info-advanced__submit-price-wrap">
+                    <span data-pia-submit-price>{%- if current_variant -%}{{ current_variant.price | money }}{%- endif -%}</span>
+                    <span class="product-info-advanced__submit-was" data-pia-submit-was {% unless current_variant.compare_at_price > current_variant.price %}style="display:none;"{% endunless %}>
+                      {%- if current_variant -%}{{ current_variant.compare_at_price | money }}{%- endif -%}
+                    </span>
+                  </div>
+                </button>
+
+              {%- when 'trust_signals' -%}
+                <div class="product-info-advanced__trust{{ bc }}" {{ block.shopify_attributes }}>
+                  {%- assign current_time = "now" | date: "%s" | plus: 0 -%}
+                  {%- assign seconds_to_add = block.settings.trust_1_delivery_days | times: 86400 -%}
+                  {%- assign delivery_date = current_time | plus: seconds_to_add | date: "%B %d" -%}
+                  {%- assign icon_size_style = '' -%}
+                  {%- if block.settings.icon_size != blank -%}
+                    {%- assign icon_size_style = 'width:' | append: block.settings.icon_size | append: 'px;height:' | append: block.settings.icon_size | append: 'px;flex-shrink:0;' -%}
+                  {%- endif -%}
+
+                  {%- for i in (1..4) -%}
+                    {%- liquid
+                      assign t_text_key   = 'trust_' | append: i
+                      assign t_icon_key   = 'trust_' | append: i | append: '_icon_svg'
+                      assign t_img_key    = 'trust_' | append: i | append: '_icon_image'
+                      assign t_color_key  = 'trust_' | append: i | append: '_color'
+                      assign t_size_key   = 'trust_' | append: i | append: '_size'
+                      assign t_link_key   = 'trust_' | append: i | append: '_link'
+                      
+                      assign t_text  = block.settings[t_text_key]
+                      assign t_icon  = block.settings[t_icon_key]
+                      assign t_img   = block.settings[t_img_key]
+                      assign t_color = block.settings[t_color_key]
+                      assign t_size  = block.settings[t_size_key]
+                      assign t_link  = block.settings[t_link_key]
+
+                      if i == 1
+                        assign t_text = t_text | replace: '{days}', delivery_date | replace: 'XXXXXX', delivery_date
+                      endif
+                      
+                      assign target_attr = ''
+                      if block.settings.link_type == 'blank'
+                        assign target_attr = ' target="_blank" rel="noopener"'
+                      elsif block.settings.link_type == 'popup'
+                        assign target_attr = ' data-pia-popup'
+                      endif
+                    -%}
+                    {%- if t_text != blank -%}
+                      <div class="product-info-advanced__trust-item" {% if t_color != blank or t_size != blank %}style="{% if t_color != blank %}color:{{ t_color }};{% endif %}{% if t_size != blank %}font-size:{{ t_size }}px;{% endif %}"{% endif %}>
+                        {%- liquid
+                        assign show_pulse = false
+                        if i == 1 and block.settings.trust_1_pulse
+                          assign show_pulse = true
+                        endif
+                        if i == 2 and block.settings.trust_2_pulse
+                          assign show_pulse = true
+                        endif
+                        if i == 3 and block.settings.trust_3_pulse
+                          assign show_pulse = true
+                        endif
+                        if i == 4 and block.settings.trust_4_pulse
+                          assign show_pulse = true
+                        endif
+                      -%}
+                      <span class="product-info-advanced__trust-icon" {% if icon_size_style != blank %}style="{{ icon_size_style }}"{% endif %}>
+                          {%- if t_icon != blank -%}
+                            {{ t_icon }}
+                          {%- elsif t_img != blank -%}
+                            <img src="{{ t_img | image_url: width: 80 }}" alt="" width="{{ block.settings.icon_size | default: 20 }}" height="{{ block.settings.icon_size | default: 20 }}" loading="lazy" style="object-fit:contain;width:100%;height:100%;">
+                          {%- elsif show_pulse -%}
+                            <span class="product-info-advanced__pulse-dot"></span>
+                          {%- else -%}
+                            {%- case i -%}
+                              {%- when 1 -%}<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.686 2 6 4.686 6 8c0 2.21.895 4.21 2.343 5.657A8 8 0 1 0 12 2zm0 2a6 6 0 1 1 0 12A6 6 0 0 1 12 4zm0 2a4 4 0 1 0 0 8 4 4 0 0 0 0-8z"/></svg>
+                              {%- when 2 -%}<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L4 6v6c0 5.25 3.5 10.15 8 11.35C16.5 22.15 20 17.25 20 12V6l-8-4z"/></svg>
+                              {%- when 3 -%}<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 1 0 0 20A10 10 0 0 0 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+                              {%- when 4 -%}<svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2zm-7 14l-5-5 1.41-1.41L12 14.17l7.59-7.59L21 8l-9 9z"/></svg>
+                            {%- endcase -%}
+                          {%- endif -%}
+                        </span>
+                        
+                        <div class="product-info-advanced__trust-text-wrap" style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+                          {%- assign t_underline_key = 'trust_' | append: i | append: '_underline' -%}
+                          {%- assign apply_underline = block.settings[t_underline_key] -%}
+
+                          {%- assign parsed_text = t_text -%}
+                          {%- if parsed_text contains '[' and parsed_text contains ']' -%}
+                            {%- assign parsed_text = parsed_text | replace: '[', '<u class="pia-underline">' | replace: ']', '</u>' -%}
+                          {%- endif -%}
+
+                          {%- if apply_underline -%}
+                            {%- if t_link != blank -%}
+                              <a href="{{ t_link }}"{{ target_attr }} class="pia-underline">{{ parsed_text }}</a>
+                            {%- else -%}
+                              <span class="pia-underline">{{ parsed_text }}</span>
+                            {%- endif -%}
+                          {%- else -%}
+                            {%- if t_link != blank -%}
+                              <a href="{{ t_link }}"{{ target_attr }}>{{ parsed_text }}</a>
+                            {%- else -%}
+                              <span>{{ parsed_text }}</span>
+                            {%- endif -%}
+                          {%- endif -%}
+
+                          {%- assign t_flag_key      = 'trust_' | append: i | append: '_flag_img' -%}
+                          {%- assign t_flag_text_key = 'trust_' | append: i | append: '_flag_text' -%}
+                          {%- assign t_flag          = block.settings[t_flag_key] -%}
+                          {%- assign t_flag_text     = block.settings[t_flag_text_key] -%}
+                          {%- if t_flag != blank -%}
+                            <img src="{{ t_flag | image_url: width: 44 }}" alt="" width="22" height="15" loading="lazy" class="product-info-advanced__trust-flag">
+                          {%- endif -%}
+                          {%- if t_flag_text != blank -%}
+                            <span class="product-info-advanced__trust-flag-text">{{ t_flag_text }}</span>
+                          {%- endif -%}
+                      </div>
+                    </div>
+                    {%- endif -%}
+                  {%- endfor -%}
+                </div>
+
+              {%- when 'review_heading' -%}
+                {%- comment -%} Removed: use media_carousel block instead {%- endcomment -%}
+
+              {%- when 'review_item' -%}
+                {%- comment -%} Removed: use media_carousel block instead {%- endcomment -%}
+
+              {%- when 'media_carousel' -%}
+                {%- if block.settings.column == 'right' -%}
+                  {%- liquid
+                    assign mc_classes = 'product-info-advanced__media-carousel'
+                    unless block.settings.show_on_mobile
+                      assign mc_classes = mc_classes | append: ' hide-mobile'
+                    endunless
+                    unless block.settings.show_on_desktop
+                      assign mc_classes = mc_classes | append: ' hide-desktop'
+                    endunless
+                    assign dt_cards = block.settings.visible_cards_desktop
+                    assign mb_cards = block.settings.visible_cards_mobile
+                  -%}
+                  <div class="{{ mc_classes }}" data-pia-media-carousel="{{ block.id }}" data-cards-desktop="{{ dt_cards }}" data-cards-mobile="{{ mb_cards }}" style="--mc-dt-cols: {{ dt_cards }}; --mc-mb-cols: {{ mb_cards }};" {{ block.shopify_attributes }}>
+                    {%- if block.settings.heading != blank -%}
+                      <h3 class="product-info-advanced__mc-heading">{{ block.settings.heading }}</h3>
+                    {%- endif -%}
+                    {%- if block.settings.subheading != blank -%}
+                      <p class="product-info-advanced__mc-subheading">{{ block.settings.subheading }}</p>
+                    {%- endif -%}
+                    {%- assign mc_has_items = false -%}
+                    {%- for i in (1..6) -%}
+                      {%- assign mc_img_key = 'media' | append: i | append: '_image' -%}
+                      {%- assign mc_vid_key = 'media' | append: i | append: '_video' -%}
+                      {%- if block.settings[mc_img_key] != blank or block.settings[mc_vid_key] != blank -%}
+                        {%- assign mc_has_items = true -%}
+                      {%- endif -%}
+                    {%- endfor -%}
+                    {%- if mc_has_items -%}
+                      <div class="product-info-advanced__mc-carousel" data-mc-carousel>
+                        <div class="product-info-advanced__mc-track" data-mc-track>
+                          {%- for i in (1..6) -%}
+                            {%- assign mc_img_key = 'media' | append: i | append: '_image' -%}
+                            {%- assign mc_vid_key = 'media' | append: i | append: '_video' -%}
+                            {%- if block.settings[mc_img_key] != blank or block.settings[mc_vid_key] != blank -%}
+                              <div class="product-info-advanced__mc-slide" data-mc-slide>
+                                <div class="product-info-advanced__review-media">
+                                  {%- if block.settings[mc_img_key] != blank -%}
+                                    <img src="{{ block.settings[mc_img_key] | image_url: width: 600 }}" alt="" class="product-info-advanced__review-img" width="600" height="800" loading="lazy">
+                                  {%- else -%}
+                                    <div class="product-info-advanced__review-placeholder">&#9654;</div>
+                                  {%- endif -%}
+                                  {%- if block.settings[mc_vid_key] != blank -%}
+                                    <button type="button" class="product-info-advanced__review-play" data-video-url="{{ block.settings[mc_vid_key] | escape }}" aria-label="Play video">
+                                      <svg viewBox="0 0 24 24" fill="currentColor" width="28" height="28"><path d="M8 5v14l11-7z"/></svg>
+                                    </button>
+                                  {%- endif -%}
+                                </div>
+                              </div>
+                            {%- endif -%}
+                          {%- endfor -%}
+                        </div>
+                      </div>
+                      <div class="product-info-advanced__reviews-nav">
+                        <button type="button" class="product-info-advanced__reviews-arrow product-info-advanced__mc-prev" aria-label="Previous">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+                        </button>
+                        <div class="product-info-advanced__reviews-dots" data-mc-dots>
+                          {%- for i in (1..6) -%}
+                            {%- assign mc_img_key = 'media' | append: i | append: '_image' -%}
+                            {%- assign mc_vid_key = 'media' | append: i | append: '_video' -%}
+                            {%- if block.settings[mc_img_key] != blank or block.settings[mc_vid_key] != blank -%}
+                              <button type="button" class="product-info-advanced__reviews-dot{% if forloop.first %} is-active{% endif %}" data-dot-index="{{ forloop.index0 }}" aria-label="Slide {{ forloop.index }}"></button>
+                            {%- endif -%}
+                          {%- endfor -%}
+                        </div>
+                        <button type="button" class="product-info-advanced__reviews-arrow product-info-advanced__mc-next" aria-label="Next">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                        </button>
+                      </div>
+                    {%- endif -%}
+                  </div>
+                {%- endif -%}
+
+              {%- when 'accordion' -%}
+                {%- if block.settings.column == 'right' -%}
+                  <div class="product-info-advanced__accordion{{ bc }}" data-pia-accordion {{ block.shopify_attributes }}>
+                    <button type="button" class="product-info-advanced__accordion-trigger" data-pia-accordion-trigger>
+                      <span class="product-info-advanced__accordion-title-wrap">
+                        {%- if block.settings.icon_svg != blank -%}
+                          <span class="product-info-advanced__accordion-custom-icon">{{ block.settings.icon_svg }}</span>
+                        {%- elsif block.settings.icon_image != blank -%}
+                          <span class="product-info-advanced__accordion-custom-icon">
+                            <img src="{{ block.settings.icon_image | image_url: width: 40 }}" alt="" width="20" height="20" loading="lazy">
+                          </span>
+                        {%- endif -%}
+                        {{ block.settings.title }}
+                      </span>
+                      <span class="product-info-advanced__accordion-icon"></span>
+                    </button>
+                    <div class="product-info-advanced__accordion-body">
+                      <div class="product-info-advanced__accordion-content">
+                        <div class="product-info-advanced__accordion-content-inner">
+                          {{ block.settings.content }}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                {%- endif -%}
+
+            {%- endcase -%}
+            
+            {%- assign prev_type = block.type -%}
+          {%- endfor -%}
+        </form>
+
+      </div>
+    </div>
+  </div>
+
+</div>
+
+{% schema %}
+{
+  "name": "Product Info Advanced",
+  "class": "section-product-info-advanced",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Brand Colors"
+    },
+    {
+      "type": "color",
+      "id": "primary_color",
+      "label": "Primary Brand Color",
+      "default": "#145946"
+    },
+    {
+      "type": "color",
+      "id": "primary_dark",
+      "label": "Primary Dark",
+      "default": "#0f4335"
+    },
+    {
+      "type": "color",
+      "id": "primary_light",
+      "label": "Primary Light",
+      "default": "#e6f1ed"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent Color",
+      "default": "#f48024"
+    },
+    {
+      "type": "header",
+      "content": "Main Image Badge"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_badge",
+      "label": "Show Main Image Badge",
+      "default": true
+    },
+    {
+      "type": "richtext",
+      "id": "badge_text",
+      "label": "Badge Text (Rich Text)",
+      "default": "<p>BESTSELLER</p>"
+    },
+    {
+      "type": "image_picker",
+      "id": "badge_icon_image",
+      "label": "Custom Badge Icon (Image)"
+    },
+    {
+      "type": "textarea",
+      "id": "badge_icon_svg",
+      "label": "Custom Badge Icon (SVG Raw)",
+      "info": "Overrides default star if provided."
+    },
+    {
+      "type": "color",
+      "id": "badge_bg",
+      "label": "Badge Background Color",
+      "default": "#dc2626"
+    },
+    {
+      "type": "color",
+      "id": "badge_color",
+      "label": "Badge Text Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "badge_highlight_color",
+      "label": "Badge Highlight Color",
+      "info": "Color for bold/italic text in the badge",
+      "default": "#fbbf24"
+    },
+    {
+      "type": "range",
+      "id": "badge_font_size",
+      "label": "Badge Font Size (px)",
+      "min": 8,
+      "max": 28,
+      "step": 1,
+      "default": 13
+    },
+    {
+      "type": "range",
+      "id": "badge_pad_v",
+      "label": "Badge Padding – Vertical (px)",
+      "min": 2,
+      "max": 20,
+      "step": 1,
+      "default": 7
+    },
+    {
+      "type": "range",
+      "id": "badge_pad_h",
+      "label": "Badge Padding – Horizontal (px)",
+      "min": 4,
+      "max": 32,
+      "step": 1,
+      "default": 14
+    },
+    {
+      "type": "select",
+      "id": "badge_position",
+      "label": "Badge Position",
+      "options": [
+        { "value": "top-right",    "label": "Top Right" },
+        { "value": "top-left",     "label": "Top Left" },
+        { "value": "bottom-right", "label": "Bottom Right" },
+        { "value": "bottom-left",  "label": "Bottom Left" }
+      ],
+      "default": "top-right"
+    },
+    {
+      "type": "range",
+      "id": "badge_margin",
+      "label": "Badge Offset from Corner (px)",
+      "min": 4,
+      "max": 40,
+      "step": 2,
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "badge_icon_size",
+      "label": "Badge Icon Size (px)",
+      "min": 8,
+      "max": 48,
+      "step": 1,
+      "default": 13,
+      "info": "Controls the size of the star icon or custom badge image/SVG"
+    },
+    {
+      "type": "header",
+      "content": "Bundle Cards"
+    },
+    {
+      "type": "color",
+      "id": "bundle_card_bg",
+      "label": "Card Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "bundle_card_border",
+      "label": "Card Border Color",
+      "default": "#e2e8f0"
+    },
+    {
+      "type": "range",
+      "id": "bundle_card_border_width",
+      "label": "Card Border Width (px)",
+      "min": 1,
+      "max": 4,
+      "step": 1,
+      "default": 1
+    },
+    {
+      "type": "range",
+      "id": "bundle_card_radius",
+      "label": "Card Border Radius (px)",
+      "min": 0,
+      "max": 24,
+      "step": 1,
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "bundle_card_padding_v",
+      "label": "Card Padding – Vertical (px)",
+      "min": 8,
+      "max": 32,
+      "step": 2,
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "bundle_card_padding_h",
+      "label": "Card Padding – Horizontal (px)",
+      "min": 8,
+      "max": 32,
+      "step": 2,
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "bundle_gap",
+      "label": "Gap Between Cards (px)",
+      "min": 4,
+      "max": 24,
+      "step": 2,
+      "default": 10
+    },
+    {
+      "type": "color",
+      "id": "bundle_selected_bg",
+      "label": "Selected Card Background",
+      "default": "#f4fbf8"
+    },
+    {
+      "type": "color",
+      "id": "bundle_selected_border",
+      "label": "Selected Card Border Color",
+      "default": "#145946"
+    },
+    {
+      "type": "range",
+      "id": "bundle_selected_border_width",
+      "label": "Selected Border Width (px)",
+      "min": 1,
+      "max": 4,
+      "step": 1,
+      "default": 2
+    },
+    {
+      "type": "header",
+      "content": "Bundle Card — Image & Text"
+    },
+    {
+      "type": "range",
+      "id": "bundle_img_size",
+      "label": "Product Image Size (px)",
+      "min": 40,
+      "max": 120,
+      "step": 5,
+      "default": 70
+    },
+    {
+      "type": "select",
+      "id": "bundle_img_fit",
+      "label": "Image Fit",
+      "options": [
+        { "value": "cover",   "label": "Cover (crop to fill)" },
+        { "value": "contain", "label": "Contain (show full image)" },
+        { "value": "fill",    "label": "Fill (stretch to fill)" }
+      ],
+      "default": "cover"
+    },
+    {
+      "type": "select",
+      "id": "bundle_img_ratio",
+      "label": "Image Aspect Ratio",
+      "options": [
+        { "value": "1",   "label": "1:1 Square" },
+        { "value": "4/5", "label": "4:5 Portrait" },
+        { "value": "auto","label": "Auto (natural)" }
+      ],
+      "default": "1"
+    },
+    {
+      "type": "range",
+      "id": "bundle_title_size",
+      "label": "Title Font Size (px)",
+      "min": 12,
+      "max": 22,
+      "step": 1,
+      "default": 15
+    },
+    {
+      "type": "color",
+      "id": "bundle_title_color",
+      "label": "Title Color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "range",
+      "id": "bundle_subtitle_size",
+      "label": "Subtitle Font Size (px)",
+      "min": 10,
+      "max": 18,
+      "step": 1,
+      "default": 12
+    },
+    {
+      "type": "color",
+      "id": "bundle_subtitle_color",
+      "label": "Subtitle Color",
+      "default": "#6b7280"
+    },
+    {
+      "type": "range",
+      "id": "bundle_price_size",
+      "label": "Price Font Size (px)",
+      "min": 14,
+      "max": 28,
+      "step": 1,
+      "default": 18
+    },
+    {
+      "type": "color",
+      "id": "bundle_price_color",
+      "label": "Price Color",
+      "default": "#0f4335"
+    },
+    {
+      "type": "range",
+      "id": "bundle_was_size",
+      "label": "Compare Price Font Size (px)",
+      "min": 10,
+      "max": 18,
+      "step": 1,
+      "default": 12
+    },
+    {
+      "type": "header",
+      "content": "Save Badge"
+    },
+    {
+      "type": "color",
+      "id": "save_badge_bg",
+      "label": "Save Badge Background",
+      "default": "#e53935"
+    },
+    {
+      "type": "color",
+      "id": "save_badge_color",
+      "label": "Save Badge Text Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "save_badge_size",
+      "label": "Save Badge Font Size (px)",
+      "min": 8,
+      "max": 16,
+      "step": 1,
+      "default": 10
+    },
+    {
+      "type": "range",
+      "id": "save_badge_radius",
+      "label": "Save Badge Border Radius (px)",
+      "min": 0,
+      "max": 30,
+      "step": 2,
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "save_badge_pad_v",
+      "label": "Save Badge Padding – Vertical (px)",
+      "min": 2,
+      "max": 10,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "type": "range",
+      "id": "save_badge_pad_h",
+      "label": "Save Badge Padding – Horizontal (px)",
+      "min": 4,
+      "max": 20,
+      "step": 1,
+      "default": 8
+    },
+    {
+      "type": "header",
+      "content": "Best Value Badge"
+    },
+    {
+      "type": "color",
+      "id": "best_badge_bg",
+      "label": "Best Value Background",
+      "default": "#f48024"
+    },
+    {
+      "type": "color",
+      "id": "best_badge_color",
+      "label": "Best Value Text Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "best_badge_size",
+      "label": "Best Value Font Size (px)",
+      "min": 8,
+      "max": 16,
+      "step": 1,
+      "default": 11
+    },
+    {
+      "type": "header",
+      "content": "Social Proof Banner"
+    },
+    {
+      "type": "color",
+      "id": "social_proof_bg",
+      "label": "Banner Background",
+      "default": "#f59e0b"
+    },
+    {
+      "type": "color",
+      "id": "social_proof_color",
+      "label": "Banner Text Color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "social_proof_highlight_color",
+      "label": "Banner Highlight Color",
+      "info": "Applies to bold or italic text",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "social_proof_size",
+      "label": "Banner Font Size (px)",
+      "min": 10,
+      "max": 18,
+      "step": 1,
+      "default": 12
+    },
+    {
+      "type": "header",
+      "content": "Subscription Box"
+    },
+    {
+      "type": "color",
+      "id": "sub_bg_active",
+      "label": "Checked Background",
+      "default": "#e6f1ed"
+    },
+    {
+      "type": "color",
+      "id": "sub_border_active",
+      "label": "Checked Border Color",
+      "default": "#145946"
+    },
+    {
+      "type": "color",
+      "id": "sub_check_bg",
+      "label": "Checkbox Fill Color",
+      "default": "#145946"
+    },
+    {
+      "type": "header",
+      "content": "Add to Cart Button"
+    },
+    {
+      "type": "color",
+      "id": "atc_bg",
+      "label": "Button Background",
+      "default": "#0e3e30"
+    },
+    {
+      "type": "color",
+      "id": "atc_bg_hover",
+      "label": "Button Hover Background",
+      "default": "#0a2e23"
+    },
+    {
+      "type": "color",
+      "id": "atc_color",
+      "label": "Button Text Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "atc_height",
+      "label": "Button Height (px)",
+      "min": 44,
+      "max": 96,
+      "step": 4,
+      "default": 64
+    },
+    {
+      "type": "range",
+      "id": "atc_radius",
+      "label": "Button Border Radius (px)",
+      "min": 0,
+      "max": 48,
+      "step": 2,
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "atc_text_size",
+      "label": "Button Text Font Size (px)",
+      "min": 12,
+      "max": 28,
+      "step": 1,
+      "default": 18
+    },
+    {
+      "type": "range",
+      "id": "atc_price_size",
+      "label": "Button Price Font Size (px)",
+      "min": 14,
+      "max": 32,
+      "step": 1,
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "atc_was_size",
+      "label": "Button Was-Price Font Size (px)",
+      "min": 10,
+      "max": 20,
+      "step": 1,
+      "default": 14
+    },
+    {
+      "type": "color",
+      "id": "atc_divider_color",
+      "label": "Button Divider Color",
+      "default": "#4d7a6a"
+    },
+    {
+      "type": "range",
+      "id": "atc_padding_h",
+      "label": "Button Horizontal Padding (px)",
+      "min": 12,
+      "max": 48,
+      "step": 2,
+      "default": 24
+    },
+
+    {
+      "type": "color",
+      "id": "atc_price_bg",
+      "label": "Button Price Pill Background",
+      "default": "#092c22"
+    },
+    {
+      "type": "range",
+      "id": "atc_price_radius",
+      "label": "Button Price Pill Radius (px)",
+      "min": 0,
+      "max": 24,
+      "step": 1,
+      "default": 4
+    },
+    {
+      "type": "header",
+      "content": "Global Accordions"
+    },
+    {
+      "type": "color",
+      "id": "accordion_bg",
+      "label": "Accordion Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "accordion_border",
+      "label": "Accordion Border Color",
+      "default": "#e2e8f0"
+    },
+    {
+      "type": "range",
+      "id": "accordion_border_width",
+      "label": "Accordion Border Width (px)",
+      "min": 0,
+      "max": 4,
+      "step": 1,
+      "default": 1
+    },
+    {
+      "type": "range",
+      "id": "accordion_radius",
+      "label": "Accordion Border Radius (px)",
+      "min": 0,
+      "max": 24,
+      "step": 1,
+      "default": 0
+    },
+    {
+      "type": "color",
+      "id": "accordion_title_color",
+      "label": "Accordion Title Color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "accordion_content_color",
+      "label": "Accordion Content Color",
+      "default": "#6b7280"
+    },
+    {
+      "type": "color",
+      "id": "accordion_icon_color",
+      "label": "Accordion SVG Icon Color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "range",
+      "id": "accordion_padding",
+      "label": "Accordion Content Padding (px)",
+      "min": 8,
+      "max": 32,
+      "step": 2,
+      "default": 16
+    },
+    {
+      "type": "header",
+      "content": "Benefits List"
+    },
+    {
+      "type": "range",
+      "id": "benefit_font_size",
+      "label": "Benefit Text Size (px)",
+      "min": 10,
+      "max": 16,
+      "step": 1,
+      "default": 13,
+      "info": "Reduce to fit longer text on one line"
+    },
+    {
+      "type": "range",
+      "id": "benefit_icon_size",
+      "label": "Benefit Icon Size (px)",
+      "min": 10,
+      "max": 32,
+      "step": 1,
+      "default": 16
+    },
+    {
+      "type": "header",
+      "content": "Product Image"
+    },
+    {
+      "type": "select",
+      "id": "image_aspect_ratio",
+      "label": "Image Aspect Ratio",
+      "options": [
+        { "value": "1", "label": "1:1 Square" },
+        { "value": "4/5", "label": "4:5 Portrait" },
+        { "value": "auto", "label": "Auto (natural height)" }
+      ],
+      "default": "1"
+    },
+    {
+      "type": "header",
+      "content": "Gallery Navigation Arrows"
+    },
+    {
+      "type": "color",
+      "id": "gallery_arrow_color",
+      "label": "Arrow Color",
+      "default": "#145946"
+    },
+    {
+      "type": "color",
+      "id": "gallery_arrow_bg",
+      "label": "Arrow Background Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "image_picker",
+      "id": "gallery_prev_image",
+      "label": "Custom Prev Arrow Icon (JPG/PNG/WebP)"
+    },
+    {
+      "type": "textarea",
+      "id": "gallery_prev_svg",
+      "label": "Custom Prev Arrow Icon (SVG code)",
+      "info": "Paste raw SVG. Overrides image if set."
+    },
+    {
+      "type": "image_picker",
+      "id": "gallery_next_image",
+      "label": "Custom Next Arrow Icon (JPG/PNG/WebP)"
+    },
+    {
+      "type": "textarea",
+      "id": "gallery_next_svg",
+      "label": "Custom Next Arrow Icon (SVG code)",
+      "info": "Paste raw SVG. Overrides image if set."
+    }
+  ],
+  "blocks": [
+    {
+      "type": "rating",
+      "name": "Rating",
+      "limit": 1,
+      "settings": [
+        { "type": "text", "id": "text", "label": "Rating Text", "default": "Rated 4.8 'Excellent' | 45k+ Customers" },
+        { "type": "image_picker", "id": "icon_image", "label": "Custom Icon (Image)" },
+        { "type": "textarea", "id": "icon_svg", "label": "Custom Icon (SVG Raw)", "info": "Overrides default 5 stars if provided." },
+        { "type": "checkbox", "id": "show_on_desktop", "label": "Show on Desktop", "default": true },
+        { "type": "checkbox", "id": "show_on_mobile", "label": "Show on Mobile", "default": true }
+      ]
+    },
+    {
+      "type": "brand",
+      "name": "Brand",
+      "limit": 1,
+      "settings": [
+        { "type": "text", "id": "text", "label": "Brand Name", "default": "BioRoot Labs" },
+        { "type": "checkbox", "id": "show_on_desktop", "label": "Show on Desktop", "default": true },
+        { "type": "checkbox", "id": "show_on_mobile", "label": "Show on Mobile", "default": true }
+      ]
+    },
+    {
+      "type": "title",
+      "name": "Title",
+      "limit": 1,
+      "settings": [
+        { "type": "text", "id": "title", "label": "Title Override (leave blank for product title)" },
+        { "type": "checkbox", "id": "show_on_desktop", "label": "Show on Desktop", "default": true },
+        { "type": "checkbox", "id": "show_on_mobile", "label": "Show on Mobile", "default": true }
+      ]
+    },
+    {
+      "type": "description",
+      "name": "Description",
+      "limit": 1,
+      "settings": [
+        { "type": "richtext", "id": "content", "label": "Content", "default": "<p>A natural formula, once-a-day, to ease everyday stiffness and keep you active.</p>" },
+        { "type": "checkbox", "id": "show_on_desktop", "label": "Show on Desktop", "default": true },
+        { "type": "checkbox", "id": "show_on_mobile", "label": "Show on Mobile", "default": true }
+      ]
+    },
+    {
+      "type": "benefit",
+      "name": "Benefit Item",
+      "settings": [
+        { "type": "text", "id": "text", "label": "Benefit Text", "default": "Ease everyday stiffness" },
+        { "type": "image_picker", "id": "icon_image", "label": "Custom Icon (Image)" },
+        { "type": "textarea", "id": "icon_svg", "label": "Custom Icon (SVG Raw)" },
+        { "type": "checkbox", "id": "show_on_desktop", "label": "Show on Desktop", "default": true },
+        { "type": "checkbox", "id": "show_on_mobile", "label": "Show on Mobile", "default": true }
+      ]
+    },
+    {
+      "type": "bundles_heading",
+      "name": "Bundle Section Heading",
+      "limit": 1,
+      "settings": [
+        { "type": "text", "id": "text", "label": "Heading Text", "default": "Choose your quantity" },
+        { "type": "checkbox", "id": "show_on_desktop", "label": "Show on Desktop", "default": true },
+        { "type": "checkbox", "id": "show_on_mobile", "label": "Show on Mobile", "default": true }
+      ]
+    },
+    {
+      "type": "bundle",
+      "name": "Bundle Option",
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "Bundle Image" },
+        { "type": "richtext", "id": "social_proof", "label": "Social Proof Banner (above card)", "info": "e.g. '<p>92% of customers choose: <strong>Buy 2, Get 1 Free</strong></p>'" },
+        { "type": "text", "id": "save_badge", "label": "Save Badge Text", "default": "Save 51%" },
+        { "type": "checkbox", "id": "best_value", "label": "Show Best Value Badge", "default": false },
+        { "type": "text", "id": "title", "label": "Title", "default": "Buy 1 Bottle" },
+        { "type": "text", "id": "title_highlight", "label": "Title Highlight (colored)", "info": "e.g. '1 Free'" },
+        { "type": "number", "id": "subtitle_price", "label": "Price per unit (base currency, e.g. 12.67)", "info": "Manual override. Auto-converts per market. Leave blank to use Quantity per unit auto-calc." },
+        { "type": "number", "id": "quantity_per_unit", "label": "Quantity per unit (for auto subtitle)", "default": 1, "info": "Divides the variant price by this number to compute per-unit price. Market-aware automatically." },
+        { "type": "text", "id": "subtitle_unit", "label": "Unit label", "default": "/ bottle", "info": "e.g. '/ bottle'" },
+        { "type": "text", "id": "subtitle", "label": "Subtitle (legacy fallback)", "info": "Plain text. Only shown if Price per unit and Quantity per unit are both blank." },
+        { "type": "text", "id": "variant_id", "label": "Variant ID" },
+        { "type": "text", "id": "selling_plan_id", "label": "Selling Plan ID (Optional)" },
+        { "type": "number", "id": "price", "label": "Price Value (Fallback)", "default": 19 },
+        { "type": "number", "id": "compare_price", "label": "Compare Price (Fallback)", "default": 39 },
+        { "type": "checkbox", "id": "show_on_desktop", "label": "Show on Desktop", "default": true },
+        { "type": "checkbox", "id": "show_on_mobile", "label": "Show on Mobile", "default": true }
+      ]
+    },
+    {
+      "type": "subscription",
+      "name": "Subscription Toggle",
+      "limit": 1,
+      "settings": [
+        { "type": "text", "id": "title", "label": "Title", "default": "Save 20% on automatic refills" },
+        { "type": "text", "id": "subtitle", "label": "Subtitle", "default": "Monthly Delivery, Zero Commitment, Cancel Anytime" },
+        { "type": "number", "id": "discount_pct", "label": "Discount Percentage", "default": 20 },
+        { "type": "text", "id": "default_plan_id", "label": "Default Selling Plan ID" },
+        { "type": "checkbox", "id": "show_on_desktop", "label": "Show on Desktop", "default": true },
+        { "type": "checkbox", "id": "show_on_mobile", "label": "Show on Mobile", "default": true }
+      ]
+    },
+    {
+      "type": "add_to_cart",
+      "name": "Add to Cart Button",
+      "limit": 1,
+      "settings": [
+        { "type": "text", "id": "text", "label": "Button Text", "default": "ADD TO CART" },
+        { "type": "range", "id": "atc_gap", "min": 0, "max": 100, "step": 1, "unit": "px", "label": "Desktop Vertical Gap", "default": 20 },
+        { "type": "range", "id": "atc_gap_mobile", "min": 0, "max": 100, "step": 1, "unit": "px", "label": "Mobile Vertical Gap", "default": 10 },
+        { "type": "range", "id": "atc_padding_h_mobile", "min": 0, "max": 60, "step": 1, "unit": "px", "label": "Mobile Horizontal Padding", "default": 16 },
+        { "type": "range", "id": "atc_text_size_mobile", "min": 10, "max": 40, "step": 1, "unit": "px", "label": "Mobile Text Size", "default": 14 },
+        { "type": "checkbox", "id": "show_on_desktop", "label": "Show on Desktop", "default": true },
+        { "type": "checkbox", "id": "show_on_mobile", "label": "Show on Mobile", "default": true }
+      ]
+    },
+    {
+      "type": "trust_signals",
+      "name": "Trust Signals",
+      "limit": 1,
+      "settings": [
+        { "type": "range", "id": "icon_size", "min": 10, "max": 40, "step": 1, "unit": "px", "label": "Global Icon Size", "default": 20 },
+        { "type": "select", "id": "link_type", "label": "Link Behavior", "options": [{"value":"redirect","label":"Redirect"},{"value":"blank","label":"Open in New Tab"},{"value":"popup","label":"Open Popup/Modal"}], "default": "redirect" },
+        { "type": "header", "content": "Trust Signal 1 (Delivery)" },
+        { "type": "inline_richtext", "id": "trust_1", "label": "Text", "default": "In Stock | Available for delivery by: {days}", "info": "Supports ⚡ metafield. Use {days} or XXXXXX for delivery date." },
+        { "type": "range", "id": "trust_1_delivery_days", "min": 1, "max": 20, "step": 1, "label": "Delivery Days (Replaces {days})", "default": 2 },
+        { "type": "checkbox", "id": "trust_1_underline", "label": "Underline Text", "default": false },
+        { "type": "checkbox", "id": "trust_1_pulse", "label": "Show Green Pulse Dot", "default": false },
+        { "type": "image_picker", "id": "trust_1_flag_img", "label": "Country Flag Image" },
+        { "type": "text", "id": "trust_1_flag_text", "label": "Text After Flag", "info": "Optional label shown after the flag image (e.g. 'United States')" },
+        { "type": "image_picker", "id": "trust_1_icon_image", "label": "Custom Icon (Image)" },
+        { "type": "textarea", "id": "trust_1_icon_svg", "label": "Custom Icon (SVG code)" },
+        { "type": "color", "id": "trust_1_color", "label": "Text Color" },
+        { "type": "number", "id": "trust_1_size", "label": "Font Size (px)" },
+        { "type": "text", "id": "trust_1_link", "label": "Link URL" },
+        { "type": "header", "content": "Trust Signal 2" },
+        { "type": "inline_richtext", "id": "trust_2", "label": "Text", "default": "Fast, Tracked Shipping to: United States" },
+        { "type": "checkbox", "id": "trust_2_underline", "label": "Underline Text", "default": false },
+        { "type": "checkbox", "id": "trust_2_pulse", "label": "Show Green Pulse Dot", "default": false },
+        { "type": "image_picker", "id": "trust_2_flag_img", "label": "Country Flag Image" },
+        { "type": "text", "id": "trust_2_flag_text", "label": "Text After Flag", "info": "Optional label shown after the flag image" },
+        { "type": "image_picker", "id": "trust_2_icon_image", "label": "Custom Icon (Image)" },
+        { "type": "textarea", "id": "trust_2_icon_svg", "label": "Custom Icon (SVG code)" },
+        { "type": "color", "id": "trust_2_color", "label": "Text Color" },
+        { "type": "number", "id": "trust_2_size", "label": "Font Size (px)" },
+        { "type": "text", "id": "trust_2_link", "label": "Link URL" },
+        { "type": "header", "content": "Trust Signal 3 (Guarantee)" },
+        { "type": "inline_richtext", "id": "trust_3", "label": "Text", "default": "60 day money back guarantee" },
+        { "type": "checkbox", "id": "trust_3_underline", "label": "Underline Text", "default": false },
+        { "type": "checkbox", "id": "trust_3_pulse", "label": "Show Green Pulse Dot", "default": false },
+        { "type": "image_picker", "id": "trust_3_flag_img", "label": "Country Flag Image" },
+        { "type": "text", "id": "trust_3_flag_text", "label": "Text After Flag", "info": "Optional label shown after the flag image" },
+        { "type": "image_picker", "id": "trust_3_icon_image", "label": "Custom Icon (Image)" },
+        { "type": "textarea", "id": "trust_3_icon_svg", "label": "Custom Icon (SVG code)" },
+        { "type": "color", "id": "trust_3_color", "label": "Text Color" },
+        { "type": "number", "id": "trust_3_size", "label": "Font Size (px)" },
+        { "type": "text", "id": "trust_3_link", "label": "Link URL" },
+        { "type": "header", "content": "Trust Signal 4" },
+        { "type": "inline_richtext", "id": "trust_4", "label": "Text", "default": "Full Ingredients List" },
+        { "type": "checkbox", "id": "trust_4_underline", "label": "Underline Text", "default": false },
+        { "type": "checkbox", "id": "trust_4_pulse", "label": "Show Green Pulse Dot", "default": false },
+        { "type": "image_picker", "id": "trust_4_flag_img", "label": "Country Flag Image" },
+        { "type": "text", "id": "trust_4_flag_text", "label": "Text After Flag", "info": "Optional label shown after the flag image" },
+        { "type": "image_picker", "id": "trust_4_icon_image", "label": "Custom Icon (Image)" },
+        { "type": "textarea", "id": "trust_4_icon_svg", "label": "Custom Icon (SVG code)" },
+        { "type": "color", "id": "trust_4_color", "label": "Text Color" },
+        { "type": "number", "id": "trust_4_size", "label": "Font Size (px)" },
+        { "type": "text", "id": "trust_4_link", "label": "Link URL" },
+        { "type": "header", "content": "Visibility" },
+        { "type": "checkbox", "id": "show_on_desktop", "label": "Show on Desktop", "default": true },
+        { "type": "checkbox", "id": "show_on_mobile", "label": "Show on Mobile", "default": true }
+      ]
+    },
+    {
+      "type": "accordion",
+      "name": "Accordion Block",
+      "settings": [
+        {
+          "type": "select",
+          "id": "column",
+          "label": "Column Placement",
+          "options": [
+            { "value": "left", "label": "Left Column (under images)" },
+            { "value": "right", "label": "Right Column (under cart info)" }
+          ],
+          "default": "right"
+        },
+        { "type": "image_picker", "id": "icon_image", "label": "Custom Icon (Image)", "info": "Placed next to the accordion title" },
+        { "type": "textarea", "id": "icon_svg", "label": "Custom Icon (SVG Raw)", "info": "Overrides image if provided" },
+        { "type": "text", "id": "title", "label": "Title", "default": "Product Description" },
+        { "type": "richtext", "id": "content", "label": "Content", "default": "<p>Content goes here.</p>" },
+        { "type": "checkbox", "id": "show_on_desktop", "label": "Show on Desktop", "default": true },
+        { "type": "checkbox", "id": "show_on_mobile", "label": "Show on Mobile", "default": true }
+      ]
+    },
+    {
+      "type": "icon_block",
+      "name": "Left Column Icon",
+      "settings": [
+        { "type": "text", "id": "title", "label": "Title", "default": "Joint Health Support" },
+        { "type": "image_picker", "id": "icon_image", "label": "Icon Image" },
+        { "type": "textarea", "id": "icon_svg", "label": "Icon SVG (Raw)" },
+        { "type": "checkbox", "id": "show_on_desktop", "label": "Show on Desktop", "default": true },
+        { "type": "checkbox", "id": "show_on_mobile", "label": "Show on Mobile", "default": true }
+      ]
+    },
+    {
+      "type": "media_carousel",
+      "name": "Media Carousel",
+      "settings": [
+        {
+          "type": "select",
+          "id": "column",
+          "label": "Column Placement",
+          "options": [
+            { "value": "left", "label": "Left Column (below images)" },
+            { "value": "right", "label": "Right Column (product info side)" }
+          ],
+          "default": "left"
+        },
+        { "type": "text", "id": "heading", "label": "Heading", "default": "Real Change for Real People" },
+        { "type": "text", "id": "subheading", "label": "Subheading" },
+        { "type": "checkbox", "id": "show_on_desktop", "label": "Show on Desktop", "default": true },
+        { "type": "checkbox", "id": "show_on_mobile", "label": "Show on Mobile", "default": true },
+        {
+          "type": "select",
+          "id": "visible_cards_desktop",
+          "label": "Visible Cards (Desktop)",
+          "options": [
+            { "value": "2", "label": "2 Cards" },
+            { "value": "2.5", "label": "2.5 Cards" },
+            { "value": "3", "label": "3 Cards" },
+            { "value": "3.5", "label": "3.5 Cards" },
+            { "value": "4", "label": "4 Cards" }
+          ],
+          "default": "3"
+        },
+        {
+          "type": "select",
+          "id": "visible_cards_mobile",
+          "label": "Visible Cards (Mobile)",
+          "options": [
+            { "value": "1",   "label": "1 Card" },
+            { "value": "1.2", "label": "1.2 Cards" },
+            { "value": "1.5", "label": "1.5 Cards" },
+            { "value": "2",   "label": "2 Cards" },
+            { "value": "2.5", "label": "2.5 Cards" }
+          ],
+          "default": "1.2"
+        },
+        { "type": "header", "content": "Media Item 1" },
+        { "type": "image_picker", "id": "media1_image", "label": "Image" },
+        { "type": "text", "id": "media1_video", "label": "Video URL (MP4, YouTube, Vimeo)" },
+        { "type": "header", "content": "Media Item 2" },
+        { "type": "image_picker", "id": "media2_image", "label": "Image" },
+        { "type": "text", "id": "media2_video", "label": "Video URL (MP4, YouTube, Vimeo)" },
+        { "type": "header", "content": "Media Item 3" },
+        { "type": "image_picker", "id": "media3_image", "label": "Image" },
+        { "type": "text", "id": "media3_video", "label": "Video URL (MP4, YouTube, Vimeo)" },
+        { "type": "header", "content": "Media Item 4" },
+        { "type": "image_picker", "id": "media4_image", "label": "Image" },
+        { "type": "text", "id": "media4_video", "label": "Video URL (MP4, YouTube, Vimeo)" },
+        { "type": "header", "content": "Media Item 5" },
+        { "type": "image_picker", "id": "media5_image", "label": "Image" },
+        { "type": "text", "id": "media5_video", "label": "Video URL (MP4, YouTube, Vimeo)" },
+        { "type": "header", "content": "Media Item 6" },
+        { "type": "image_picker", "id": "media6_image", "label": "Image" },
+        { "type": "text", "id": "media6_video", "label": "Video URL (MP4, YouTube, Vimeo)" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product Info Advanced",
+      "blocks": [
+        { "type": "rating" },
+        { "type": "brand" },
+        { "type": "title" },
+        { "type": "description" },
+        { "type": "benefit", "settings": { "text": "Ease everyday stiffness" } },
+        { "type": "benefit", "settings": { "text": "Improve daily mobility" } },
+        { "type": "benefit", "settings": { "text": "Support joint comfort" } },
+        { "type": "benefit", "settings": { "text": "Feel more flexible" } },
+        { "type": "bundles_heading" },
+        { "type": "bundle" },
+        { "type": "bundle", "settings": { "title": "Buy 2, Get", "title_highlight": "1 Free", "social_proof": "<p>92% of customers choose: Buy 2, Get 1 Free</p>" } },
+        { "type": "bundle", "settings": { "title": "Buy 3, Get", "title_highlight": "2 Free", "best_value": true } },
+        { "type": "subscription" },
+        { "type": "add_to_cart" },
+        { "type": "trust_signals" },
+        { "type": "accordion", "settings": { "title": "Product Description" } },
+        { "type": "accordion", "settings": { "title": "Ingredients & Nutrition" } }
+      ]
+    }
+  ]
+}
+{% endschema %}
