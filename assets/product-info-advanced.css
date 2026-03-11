@@ -176,11 +176,13 @@
 
 .product-info-advanced__badge {
     position: absolute;
-    top: 12px;
-    right: 12px;
+    top: var(--pia-badge-top, 12px);
+    right: var(--pia-badge-right, 12px);
+    bottom: var(--pia-badge-bottom, auto);
+    left: var(--pia-badge-left, auto);
     background-color: var(--pia-badge-bg);
     color: var(--pia-badge-color);
-    padding: 7px 14px;
+    padding: var(--pia-badge-pad-v, 7px) var(--pia-badge-pad-h, 14px);
     border-radius: 50px;
     display: inline-flex;
     align-items: center;
@@ -188,7 +190,7 @@
     z-index: 2;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
     white-space: nowrap;
-    font-size: 13px;
+    font-size: var(--pia-badge-font-size, 13px);
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 0.06em;
@@ -561,17 +563,18 @@
 .product-info-advanced__bundle-img-wrap {
     position: relative;
     width: var(--pia-bundle-img-size);
-    height: var(--pia-bundle-img-size);
+    height: auto;
+    aspect-ratio: var(--pia-bundle-img-ratio, 1);
     flex-shrink: 0;
     border-radius: 6px;
     overflow: visible;
 }
 
 .product-info-advanced__bundle-img {
-    width: var(--pia-bundle-img-size);
-    height: var(--pia-bundle-img-size);
+    width: 100%;
+    height: 100%;
     border-radius: 6px;
-    object-fit: cover;
+    object-fit: var(--pia-bundle-img-fit, cover);
     display: block;
     background-color: #f7f7f7;
 }
@@ -1255,4 +1258,76 @@
     text-underline-offset: 3px;
     text-decoration-thickness: 1px;
     text-decoration-color: currentColor;
+}
+
+.product-info-advanced__trust-flag-text {
+    font-size: inherit;
+    font-weight: inherit;
+    color: inherit;
+    line-height: 1.3;
+}
+
+/* ========================================
+   TRUST SIGNAL POPUP MODAL
+======================================== */
+#pia-trust-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 100000;
+    align-items: center;
+    justify-content: center;
+}
+
+#pia-trust-modal.is-open {
+    display: flex;
+}
+
+.pia-modal-overlay {
+    position: absolute;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+    cursor: pointer;
+}
+
+.pia-modal-container {
+    position: relative;
+    width: min(92vw, 840px);
+    height: min(88vh, 720px);
+    background: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.35);
+    z-index: 1;
+}
+
+.pia-modal-close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.1);
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+    transition: background 0.15s ease;
+    color: #1a1a1a;
+}
+
+.pia-modal-close:hover {
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.pia-modal-iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    display: block;
 }

@@ -4,6 +4,26 @@
 
 {%- liquid
   assign current_variant = product.selected_or_first_available_variant
+
+  assign _bm = section.settings.badge_margin | default: 12 | append: 'px'
+  assign _badge_top    = 'auto'
+  assign _badge_right  = 'auto'
+  assign _badge_bottom = 'auto'
+  assign _badge_left   = 'auto'
+  case section.settings.badge_position
+    when 'top-left'
+      assign _badge_top  = _bm
+      assign _badge_left = _bm
+    when 'bottom-right'
+      assign _badge_bottom = _bm
+      assign _badge_right  = _bm
+    when 'bottom-left'
+      assign _badge_bottom = _bm
+      assign _badge_left   = _bm
+    else
+      assign _badge_top   = _bm
+      assign _badge_right = _bm
+  endcase
 -%}
 
 <style>
@@ -26,6 +46,8 @@
     --pia-bundle-selected-border:    {{ section.settings.bundle_selected_border }};
     --pia-bundle-selected-width:     {{ section.settings.bundle_selected_border_width }}px;
     --pia-bundle-img-size:           {{ section.settings.bundle_img_size }}px;
+    --pia-bundle-img-fit:            {{ section.settings.bundle_img_fit | default: 'cover' }};
+    --pia-bundle-img-ratio:          {{ section.settings.bundle_img_ratio | default: '1' }};
 
     /* Bundle Typography */
     --pia-bundle-title-size:    {{ section.settings.bundle_title_size }}px;
@@ -76,9 +98,16 @@
     --pia-atc-price-radius: {{ section.settings.atc_price_radius }}px;
 
     /* Main Image Badge */
-    --pia-badge-bg:             {{ section.settings.badge_bg }};
-    --pia-badge-color:          {{ section.settings.badge_color }};
+    --pia-badge-bg:              {{ section.settings.badge_bg }};
+    --pia-badge-color:           {{ section.settings.badge_color }};
     --pia-badge-highlight-color: {{ section.settings.badge_highlight_color }};
+    --pia-badge-font-size:       {{ section.settings.badge_font_size | default: 13 }}px;
+    --pia-badge-pad-v:           {{ section.settings.badge_pad_v | default: 7 }}px;
+    --pia-badge-pad-h:           {{ section.settings.badge_pad_h | default: 14 }}px;
+    --pia-badge-top:             {{ _badge_top }};
+    --pia-badge-right:           {{ _badge_right }};
+    --pia-badge-bottom:          {{ _badge_bottom }};
+    --pia-badge-left:            {{ _badge_left }};
 
     /* Accordions */
     --pia-accordion-bg:       {{ section.settings.accordion_bg }};
@@ -184,6 +213,8 @@
                   <img
                     src="{{ media | image_url: width: 200 }}"
                     alt="{{ media.alt | escape }}"
+                    width="200"
+                    height="200"
                     loading="lazy"
                   >
                 </div>
@@ -411,7 +442,7 @@
                 <li class="product-info-advanced__benefit-item" {{ block.shopify_attributes }}>
                   <span class="product-info-advanced__benefit-icon">
                     {%- if block.settings.icon_image != blank -%}
-                      <img src="{{ block.settings.icon_image | image_url: width: 64 }}" style="width:var(--pia-benefit-icon-size, 16px);height:var(--pia-benefit-icon-size, 16px);object-fit:contain;" alt="" loading="lazy">
+                      <img src="{{ block.settings.icon_image | image_url: width: 64 }}" width="32" height="32" style="width:var(--pia-benefit-icon-size, 16px);height:var(--pia-benefit-icon-size, 16px);object-fit:contain;" alt="" loading="lazy">
                     {%- elsif block.settings.icon_svg != blank -%}
                       <div style="width:var(--pia-benefit-icon-size, 16px);height:var(--pia-benefit-icon-size, 16px);display:flex;align-items:center;justify-content:center;">{{ block.settings.icon_svg }}</div>
                     {%- else -%}
@@ -612,40 +643,39 @@
                     -%}
                     {%- if t_text != blank -%}
                       <div class="product-info-advanced__trust-item" {% if t_color != blank or t_size != blank %}style="{% if t_color != blank %}color:{{ t_color }};{% endif %}{% if t_size != blank %}font-size:{{ t_size }}px;{% endif %}"{% endif %}>
-                        <span class="product-info-advanced__trust-icon" {% if icon_size_style != blank %}style="{{ icon_size_style }}"{% endif %}>
+                        {%- liquid
+                        assign show_pulse = false
+                        if i == 1 and block.settings.trust_1_pulse
+                          assign show_pulse = true
+                        endif
+                        if i == 2 and block.settings.trust_2_pulse
+                          assign show_pulse = true
+                        endif
+                        if i == 3 and block.settings.trust_3_pulse
+                          assign show_pulse = true
+                        endif
+                        if i == 4 and block.settings.trust_4_pulse
+                          assign show_pulse = true
+                        endif
+                      -%}
+                      <span class="product-info-advanced__trust-icon" {% if icon_size_style != blank %}style="{{ icon_size_style }}"{% endif %}>
                           {%- if t_icon != blank -%}
                             {{ t_icon }}
                           {%- elsif t_img != blank -%}
                             <img src="{{ t_img | image_url: width: 80 }}" alt="" width="{{ block.settings.icon_size | default: 20 }}" height="{{ block.settings.icon_size | default: 20 }}" loading="lazy" style="object-fit:contain;width:100%;height:100%;">
+                          {%- elsif show_pulse -%}
+                            <span class="product-info-advanced__pulse-dot"></span>
                           {%- else -%}
-                            {%- assign show_pulse = false -%}
-                            {%- if i == 1 and block.settings.trust_1_pulse -%}{%- assign show_pulse = true -%}{%- endif -%}
-                            {%- if i == 2 and block.settings.trust_2_pulse -%}{%- assign show_pulse = true -%}{%- endif -%}
-                            {%- if i == 3 and block.settings.trust_3_pulse -%}{%- assign show_pulse = true -%}{%- endif -%}
-                            {%- if i == 4 and block.settings.trust_4_pulse -%}{%- assign show_pulse = true -%}{%- endif -%}
-
-                            {%- if show_pulse == false -%}
-                              {%- case i -%}
-                                {%- when 1 -%}<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.686 2 6 4.686 6 8c0 2.21.895 4.21 2.343 5.657A8 8 0 1 0 12 2zm0 2a6 6 0 1 1 0 12A6 6 0 0 1 12 4zm0 2a4 4 0 1 0 0 8 4 4 0 0 0 0-8z"/></svg>
-                                {%- when 2 -%}<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L4 6v6c0 5.25 3.5 10.15 8 11.35C16.5 22.15 20 17.25 20 12V6l-8-4z"/></svg>
-                                {%- when 3 -%}<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 1 0 0 20A10 10 0 0 0 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
-                                {%- when 4 -%}<svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2zm-7 14l-5-5 1.41-1.41L12 14.17l7.59-7.59L21 8l-9 9z"/></svg>
-                              {%- endcase -%}
-                            {%- endif -%}
+                            {%- case i -%}
+                              {%- when 1 -%}<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.686 2 6 4.686 6 8c0 2.21.895 4.21 2.343 5.657A8 8 0 1 0 12 2zm0 2a6 6 0 1 1 0 12A6 6 0 0 1 12 4zm0 2a4 4 0 1 0 0 8 4 4 0 0 0 0-8z"/></svg>
+                              {%- when 2 -%}<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L4 6v6c0 5.25 3.5 10.15 8 11.35C16.5 22.15 20 17.25 20 12V6l-8-4z"/></svg>
+                              {%- when 3 -%}<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 1 0 0 20A10 10 0 0 0 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+                              {%- when 4 -%}<svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2zm-7 14l-5-5 1.41-1.41L12 14.17l7.59-7.59L21 8l-9 9z"/></svg>
+                            {%- endcase -%}
                           {%- endif -%}
                         </span>
                         
                         <div class="product-info-advanced__trust-text-wrap" style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
-                          {%- assign show_pulse = false -%}
-                          {%- if i == 1 and block.settings.trust_1_pulse -%}{%- assign show_pulse = true -%}{%- endif -%}
-                          {%- if i == 2 and block.settings.trust_2_pulse -%}{%- assign show_pulse = true -%}{%- endif -%}
-                          {%- if i == 3 and block.settings.trust_3_pulse -%}{%- assign show_pulse = true -%}{%- endif -%}
-                          {%- if i == 4 and block.settings.trust_4_pulse -%}{%- assign show_pulse = true -%}{%- endif -%}
-
-                          {%- if show_pulse -%}
-                            <span class="product-info-advanced__pulse-dot"></span>
-                          {%- endif -%}
-                          
                           {%- assign t_underline_key = 'trust_' | append: i | append: '_underline' -%}
                           {%- assign apply_underline = block.settings[t_underline_key] -%}
 
@@ -668,10 +698,15 @@
                             {%- endif -%}
                           {%- endif -%}
 
-                          {%- assign t_flag_key = 'trust_' | append: i | append: '_flag_img' -%}
-                          {%- assign t_flag = block.settings[t_flag_key] -%}
+                          {%- assign t_flag_key      = 'trust_' | append: i | append: '_flag_img' -%}
+                          {%- assign t_flag_text_key = 'trust_' | append: i | append: '_flag_text' -%}
+                          {%- assign t_flag          = block.settings[t_flag_key] -%}
+                          {%- assign t_flag_text     = block.settings[t_flag_text_key] -%}
                           {%- if t_flag != blank -%}
                             <img src="{{ t_flag | image_url: width: 44 }}" alt="" width="22" height="15" loading="lazy" class="product-info-advanced__trust-flag">
+                          {%- endif -%}
+                          {%- if t_flag_text != blank -%}
+                            <span class="product-info-advanced__trust-flag-text">{{ t_flag_text }}</span>
                           {%- endif -%}
                       </div>
                     </div>
@@ -877,6 +912,54 @@
       "default": "#fbbf24"
     },
     {
+      "type": "range",
+      "id": "badge_font_size",
+      "label": "Badge Font Size (px)",
+      "min": 8,
+      "max": 28,
+      "step": 1,
+      "default": 13
+    },
+    {
+      "type": "range",
+      "id": "badge_pad_v",
+      "label": "Badge Padding – Vertical (px)",
+      "min": 2,
+      "max": 20,
+      "step": 1,
+      "default": 7
+    },
+    {
+      "type": "range",
+      "id": "badge_pad_h",
+      "label": "Badge Padding – Horizontal (px)",
+      "min": 4,
+      "max": 32,
+      "step": 1,
+      "default": 14
+    },
+    {
+      "type": "select",
+      "id": "badge_position",
+      "label": "Badge Position",
+      "options": [
+        { "value": "top-right",    "label": "Top Right" },
+        { "value": "top-left",     "label": "Top Left" },
+        { "value": "bottom-right", "label": "Bottom Right" },
+        { "value": "bottom-left",  "label": "Bottom Left" }
+      ],
+      "default": "top-right"
+    },
+    {
+      "type": "range",
+      "id": "badge_margin",
+      "label": "Badge Offset from Corner (px)",
+      "min": 4,
+      "max": 40,
+      "step": 2,
+      "default": 12
+    },
+    {
       "type": "header",
       "content": "Bundle Cards"
     },
@@ -970,6 +1053,28 @@
       "max": 120,
       "step": 5,
       "default": 70
+    },
+    {
+      "type": "select",
+      "id": "bundle_img_fit",
+      "label": "Image Fit",
+      "options": [
+        { "value": "cover",   "label": "Cover (crop to fill)" },
+        { "value": "contain", "label": "Contain (show full image)" },
+        { "value": "fill",    "label": "Fill (stretch to fill)" }
+      ],
+      "default": "cover"
+    },
+    {
+      "type": "select",
+      "id": "bundle_img_ratio",
+      "label": "Image Aspect Ratio",
+      "options": [
+        { "value": "1",   "label": "1:1 Square" },
+        { "value": "4/5", "label": "4:5 Portrait" },
+        { "value": "auto","label": "Auto (natural)" }
+      ],
+      "default": "1"
     },
     {
       "type": "range",
@@ -1518,6 +1623,7 @@
         { "type": "checkbox", "id": "trust_1_underline", "label": "Underline Text", "default": false },
         { "type": "checkbox", "id": "trust_1_pulse", "label": "Show Green Pulse Dot", "default": false },
         { "type": "image_picker", "id": "trust_1_flag_img", "label": "Country Flag Image" },
+        { "type": "text", "id": "trust_1_flag_text", "label": "Text After Flag", "info": "Optional label shown after the flag image (e.g. 'United States')" },
         { "type": "image_picker", "id": "trust_1_icon_image", "label": "Custom Icon (Image)" },
         { "type": "textarea", "id": "trust_1_icon_svg", "label": "Custom Icon (SVG code)" },
         { "type": "color", "id": "trust_1_color", "label": "Text Color" },
@@ -1528,6 +1634,7 @@
         { "type": "checkbox", "id": "trust_2_underline", "label": "Underline Text", "default": false },
         { "type": "checkbox", "id": "trust_2_pulse", "label": "Show Green Pulse Dot", "default": false },
         { "type": "image_picker", "id": "trust_2_flag_img", "label": "Country Flag Image" },
+        { "type": "text", "id": "trust_2_flag_text", "label": "Text After Flag", "info": "Optional label shown after the flag image" },
         { "type": "image_picker", "id": "trust_2_icon_image", "label": "Custom Icon (Image)" },
         { "type": "textarea", "id": "trust_2_icon_svg", "label": "Custom Icon (SVG code)" },
         { "type": "color", "id": "trust_2_color", "label": "Text Color" },
@@ -1538,6 +1645,7 @@
         { "type": "checkbox", "id": "trust_3_underline", "label": "Underline Text", "default": false },
         { "type": "checkbox", "id": "trust_3_pulse", "label": "Show Green Pulse Dot", "default": false },
         { "type": "image_picker", "id": "trust_3_flag_img", "label": "Country Flag Image" },
+        { "type": "text", "id": "trust_3_flag_text", "label": "Text After Flag", "info": "Optional label shown after the flag image" },
         { "type": "image_picker", "id": "trust_3_icon_image", "label": "Custom Icon (Image)" },
         { "type": "textarea", "id": "trust_3_icon_svg", "label": "Custom Icon (SVG code)" },
         { "type": "color", "id": "trust_3_color", "label": "Text Color" },
@@ -1548,6 +1656,7 @@
         { "type": "checkbox", "id": "trust_4_underline", "label": "Underline Text", "default": false },
         { "type": "checkbox", "id": "trust_4_pulse", "label": "Show Green Pulse Dot", "default": false },
         { "type": "image_picker", "id": "trust_4_flag_img", "label": "Country Flag Image" },
+        { "type": "text", "id": "trust_4_flag_text", "label": "Text After Flag", "info": "Optional label shown after the flag image" },
         { "type": "image_picker", "id": "trust_4_icon_image", "label": "Custom Icon (Image)" },
         { "type": "textarea", "id": "trust_4_icon_svg", "label": "Custom Icon (SVG code)" },
         { "type": "color", "id": "trust_4_color", "label": "Text Color" },
@@ -1627,10 +1736,11 @@
           "id": "visible_cards_mobile",
           "label": "Visible Cards (Mobile)",
           "options": [
-            { "value": "1", "label": "1 Card" },
+            { "value": "1",   "label": "1 Card" },
             { "value": "1.2", "label": "1.2 Cards" },
             { "value": "1.5", "label": "1.5 Cards" },
-            { "value": "2", "label": "2 Cards" }
+            { "value": "2",   "label": "2 Cards" },
+            { "value": "2.5", "label": "2.5 Cards" }
           ],
           "default": "1.2"
         },

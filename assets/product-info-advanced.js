@@ -45,6 +45,7 @@ class ProductInfoAdvanced {
         this.initBundles();
         this.initSubscription();
         this.initFormSubmit();
+        this.initTrustPopups();
 
         // Initial Render
         if (this.bundles.length > 0) {
@@ -175,6 +176,50 @@ class ProductInfoAdvanced {
         let resizeTimer;
         window.addEventListener('resize', () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(() => goTo(currentIndex), 100); });
         goTo(0);
+    }
+
+    initTrustPopups() {
+        const popupLinks = Array.from(this.container.querySelectorAll('a[data-pia-popup]'));
+        if (!popupLinks.length) return;
+
+        let modal = document.getElementById('pia-trust-modal');
+        if (!modal) {
+            modal = document.createElement('div');
+            modal.id = 'pia-trust-modal';
+            modal.innerHTML = `
+                <div class="pia-modal-overlay" data-pia-modal-close></div>
+                <div class="pia-modal-container">
+                    <button type="button" class="pia-modal-close" data-pia-modal-close aria-label="Close">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="18" height="18">
+                            <line x1="18" y1="6" x2="6" y2="18"/>
+                            <line x1="6" y1="6" x2="18" y2="18"/>
+                        </svg>
+                    </button>
+                    <iframe class="pia-modal-iframe" src="" title="Info" loading="lazy"></iframe>
+                </div>
+            `;
+            document.body.appendChild(modal);
+
+            modal.querySelectorAll('[data-pia-modal-close]').forEach(el => {
+                el.addEventListener('click', () => modal.classList.remove('is-open'));
+            });
+
+            document.addEventListener('keydown', e => {
+                if (e.key === 'Escape') modal.classList.remove('is-open');
+            });
+        }
+
+        const iframe = modal.querySelector('.pia-modal-iframe');
+
+        popupLinks.forEach(link => {
+            link.addEventListener('click', e => {
+                e.preventDefault();
+                const url = link.getAttribute('href');
+                if (!url) return;
+                iframe.src = url;
+                modal.classList.add('is-open');
+            });
+        });
     }
 
     initAccordions() {
