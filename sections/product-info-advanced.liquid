@@ -5,24 +5,24 @@
 {%- liquid
   assign current_variant = product.selected_or_first_available_variant
 
-  assign _bm = section.settings.badge_margin | default: 12 | append: 'px'
-  assign _badge_top    = 'auto'
-  assign _badge_right  = 'auto'
-  assign _badge_bottom = 'auto'
-  assign _badge_left   = 'auto'
+  assign badge_mx     = section.settings.badge_margin | default: 12 | append: 'px'
+  assign badge_pos_top    = 'auto'
+  assign badge_pos_right  = 'auto'
+  assign badge_pos_bottom = 'auto'
+  assign badge_pos_left   = 'auto'
   case section.settings.badge_position
     when 'top-left'
-      assign _badge_top  = _bm
-      assign _badge_left = _bm
+      assign badge_pos_top  = badge_mx
+      assign badge_pos_left = badge_mx
     when 'bottom-right'
-      assign _badge_bottom = _bm
-      assign _badge_right  = _bm
+      assign badge_pos_bottom = badge_mx
+      assign badge_pos_right  = badge_mx
     when 'bottom-left'
-      assign _badge_bottom = _bm
-      assign _badge_left   = _bm
+      assign badge_pos_bottom = badge_mx
+      assign badge_pos_left   = badge_mx
     else
-      assign _badge_top   = _bm
-      assign _badge_right = _bm
+      assign badge_pos_top   = badge_mx
+      assign badge_pos_right = badge_mx
   endcase
 -%}
 
@@ -104,10 +104,10 @@
     --pia-badge-font-size:       {{ section.settings.badge_font_size | default: 13 }}px;
     --pia-badge-pad-v:           {{ section.settings.badge_pad_v | default: 7 }}px;
     --pia-badge-pad-h:           {{ section.settings.badge_pad_h | default: 14 }}px;
-    --pia-badge-top:             {{ _badge_top }};
-    --pia-badge-right:           {{ _badge_right }};
-    --pia-badge-bottom:          {{ _badge_bottom }};
-    --pia-badge-left:            {{ _badge_left }};
+    --pia-badge-top:             {{ badge_pos_top }};
+    --pia-badge-right:          {{ badge_pos_right }};
+    --pia-badge-bottom:         {{ badge_pos_bottom }};
+    --pia-badge-left:           {{ badge_pos_left }};
 
     /* Accordions */
     --pia-accordion-bg:       {{ section.settings.accordion_bg }};
@@ -279,9 +279,9 @@
             {%- endif -%}
             {%- assign mc_has_items = false -%}
             {%- for i in (1..6) -%}
-              {%- assign _img_key = 'media' | append: i | append: '_image' -%}
-              {%- assign _vid_key = 'media' | append: i | append: '_video' -%}
-              {%- if block.settings[_img_key] != blank or block.settings[_vid_key] != blank -%}
+              {%- assign mc_img_key = 'media' | append: i | append: '_image' -%}
+              {%- assign mc_vid_key = 'media' | append: i | append: '_video' -%}
+              {%- if block.settings[mc_img_key] != blank or block.settings[mc_vid_key] != blank -%}
                 {%- assign mc_has_items = true -%}
               {%- endif -%}
             {%- endfor -%}
@@ -289,18 +289,18 @@
               <div class="product-info-advanced__mc-carousel" data-mc-carousel>
                 <div class="product-info-advanced__mc-track" data-mc-track>
                   {%- for i in (1..6) -%}
-                    {%- assign _img_key = 'media' | append: i | append: '_image' -%}
-                    {%- assign _vid_key = 'media' | append: i | append: '_video' -%}
-                    {%- if block.settings[_img_key] != blank or block.settings[_vid_key] != blank -%}
+                    {%- assign mc_img_key = 'media' | append: i | append: '_image' -%}
+                    {%- assign mc_vid_key = 'media' | append: i | append: '_video' -%}
+                    {%- if block.settings[mc_img_key] != blank or block.settings[mc_vid_key] != blank -%}
                       <div class="product-info-advanced__mc-slide" data-mc-slide>
                         <div class="product-info-advanced__review-media">
-                          {%- if block.settings[_img_key] != blank -%}
-                            <img src="{{ block.settings[_img_key] | image_url: width: 600 }}" alt="" class="product-info-advanced__review-img" width="600" height="800" loading="lazy">
+                          {%- if block.settings[mc_img_key] != blank -%}
+                            <img src="{{ block.settings[mc_img_key] | image_url: width: 600 }}" alt="" class="product-info-advanced__review-img" width="600" height="800" loading="lazy">
                           {%- else -%}
                             <div class="product-info-advanced__review-placeholder">&#9654;</div>
                           {%- endif -%}
-                          {%- if block.settings[_vid_key] != blank -%}
-                            <button type="button" class="product-info-advanced__review-play" data-video-url="{{ block.settings[_vid_key] | escape }}" aria-label="Play video">
+                          {%- if block.settings[mc_vid_key] != blank -%}
+                            <button type="button" class="product-info-advanced__review-play" data-video-url="{{ block.settings[mc_vid_key] | escape }}" aria-label="Play video">
                               <svg viewBox="0 0 24 24" fill="currentColor" width="28" height="28"><path d="M8 5v14l11-7z"/></svg>
                             </button>
                           {%- endif -%}
@@ -316,9 +316,9 @@
                 </button>
                 <div class="product-info-advanced__reviews-dots" data-mc-dots>
                   {%- for i in (1..6) -%}
-                    {%- assign _img_key = 'media' | append: i | append: '_image' -%}
-                    {%- assign _vid_key = 'media' | append: i | append: '_video' -%}
-                    {%- if block.settings[_img_key] != blank or block.settings[_vid_key] != blank -%}
+                    {%- assign mc_img_key = 'media' | append: i | append: '_image' -%}
+                    {%- assign mc_vid_key = 'media' | append: i | append: '_video' -%}
+                    {%- if block.settings[mc_img_key] != blank or block.settings[mc_vid_key] != blank -%}
                       <button type="button" class="product-info-advanced__reviews-dot{% if forloop.first %} is-active{% endif %}" data-dot-index="{{ forloop.index0 }}" aria-label="Slide {{ forloop.index }}"></button>
                     {%- endif -%}
                   {%- endfor -%}
@@ -385,7 +385,7 @@
     <div class="product-info-advanced__right">
       <div class="product-info-advanced__details">
         
-        <form method="post" action="/cart/add" class="product-info-advanced__form" data-pia-form>
+        <form method="post" action="{{ routes.cart_add_url }}" class="product-info-advanced__form" data-pia-form>
           <input type="hidden" name="id" value="{{ current_variant.id }}">
           <input type="hidden" name="quantity" value="1">
           <input type="hidden" name="selling_plan" value="" disabled>
@@ -742,9 +742,9 @@
                     {%- endif -%}
                     {%- assign mc_has_items = false -%}
                     {%- for i in (1..6) -%}
-                      {%- assign _img_key = 'media' | append: i | append: '_image' -%}
-                      {%- assign _vid_key = 'media' | append: i | append: '_video' -%}
-                      {%- if block.settings[_img_key] != blank or block.settings[_vid_key] != blank -%}
+                      {%- assign mc_img_key = 'media' | append: i | append: '_image' -%}
+                      {%- assign mc_vid_key = 'media' | append: i | append: '_video' -%}
+                      {%- if block.settings[mc_img_key] != blank or block.settings[mc_vid_key] != blank -%}
                         {%- assign mc_has_items = true -%}
                       {%- endif -%}
                     {%- endfor -%}
@@ -752,18 +752,18 @@
                       <div class="product-info-advanced__mc-carousel" data-mc-carousel>
                         <div class="product-info-advanced__mc-track" data-mc-track>
                           {%- for i in (1..6) -%}
-                            {%- assign _img_key = 'media' | append: i | append: '_image' -%}
-                            {%- assign _vid_key = 'media' | append: i | append: '_video' -%}
-                            {%- if block.settings[_img_key] != blank or block.settings[_vid_key] != blank -%}
+                            {%- assign mc_img_key = 'media' | append: i | append: '_image' -%}
+                            {%- assign mc_vid_key = 'media' | append: i | append: '_video' -%}
+                            {%- if block.settings[mc_img_key] != blank or block.settings[mc_vid_key] != blank -%}
                               <div class="product-info-advanced__mc-slide" data-mc-slide>
                                 <div class="product-info-advanced__review-media">
-                                  {%- if block.settings[_img_key] != blank -%}
-                                    <img src="{{ block.settings[_img_key] | image_url: width: 600 }}" alt="" class="product-info-advanced__review-img" width="600" height="800" loading="lazy">
+                                  {%- if block.settings[mc_img_key] != blank -%}
+                                    <img src="{{ block.settings[mc_img_key] | image_url: width: 600 }}" alt="" class="product-info-advanced__review-img" width="600" height="800" loading="lazy">
                                   {%- else -%}
                                     <div class="product-info-advanced__review-placeholder">&#9654;</div>
                                   {%- endif -%}
-                                  {%- if block.settings[_vid_key] != blank -%}
-                                    <button type="button" class="product-info-advanced__review-play" data-video-url="{{ block.settings[_vid_key] | escape }}" aria-label="Play video">
+                                  {%- if block.settings[mc_vid_key] != blank -%}
+                                    <button type="button" class="product-info-advanced__review-play" data-video-url="{{ block.settings[mc_vid_key] | escape }}" aria-label="Play video">
                                       <svg viewBox="0 0 24 24" fill="currentColor" width="28" height="28"><path d="M8 5v14l11-7z"/></svg>
                                     </button>
                                   {%- endif -%}
@@ -779,9 +779,9 @@
                         </button>
                         <div class="product-info-advanced__reviews-dots" data-mc-dots>
                           {%- for i in (1..6) -%}
-                            {%- assign _img_key = 'media' | append: i | append: '_image' -%}
-                            {%- assign _vid_key = 'media' | append: i | append: '_video' -%}
-                            {%- if block.settings[_img_key] != blank or block.settings[_vid_key] != blank -%}
+                            {%- assign mc_img_key = 'media' | append: i | append: '_image' -%}
+                            {%- assign mc_vid_key = 'media' | append: i | append: '_video' -%}
+                            {%- if block.settings[mc_img_key] != blank or block.settings[mc_vid_key] != blank -%}
                               <button type="button" class="product-info-advanced__reviews-dot{% if forloop.first %} is-active{% endif %}" data-dot-index="{{ forloop.index0 }}" aria-label="Slide {{ forloop.index }}"></button>
                             {%- endif -%}
                           {%- endfor -%}
