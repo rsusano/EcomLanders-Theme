@@ -211,11 +211,13 @@ class ProductInfoAdvanced {
 
         const modalBody = modal.querySelector('.pia-modal-body');
 
-        const showError = (url) => {
+        const showError = (url, detail) => {
+            const debugLine = detail ? `<small style="display:block;margin-top:8px;font-size:11px;color:#9ca3af;word-break:break-all;opacity:.8;">${detail}</small>` : '';
             modalBody.innerHTML = `
                 <div class="pia-modal-error">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="40" height="40"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
                     <p>Could not load content.</p>
+                    ${debugLine}
                     <a href="${url}" target="_blank" rel="noopener">Open in new tab ↗</a>
                 </div>`;
         };
@@ -255,17 +257,22 @@ class ProductInfoAdvanced {
                     }
                 }
 
-                // Last resort: use body but strip nav/header/footer
+                // Last resort: use body but strip nav/header/footer/scripts
                 if (!contentEl) {
                     contentEl = doc.body;
-                    contentEl.querySelectorAll('header, footer, nav, .site-header, .site-footer, .header, .footer, .navigation, .breadcrumb, .announcement-bar').forEach(el => el.remove());
+                    contentEl.querySelectorAll('header, footer, nav, .site-header, .site-footer, .header, .footer, .navigation, .breadcrumb, .announcement-bar, script, style, noscript').forEach(el => el.remove());
+                }
+
+                const finalHtml = contentEl ? contentEl.innerHTML : '';
+                if (!finalHtml || finalHtml.trim().length < 20) {
+                    throw new Error('no usable content found');
                 }
 
                 const titleHtml = titleEl ? `<h2 class="pia-modal-title">${titleEl.textContent.trim()}</h2>` : '';
-                modalBody.innerHTML = titleHtml + '<div class="pia-modal-content">' + contentEl.innerHTML + '</div>';
+                modalBody.innerHTML = titleHtml + '<div class="pia-modal-content">' + finalHtml + '</div>';
             } catch (err) {
-                console.warn('[PIA Modal] Render error:', err);
-                showError(url);
+                console.warn('[PIA Modal] Render error:', err.message);
+                showError(url, 'Parse error: ' + err.message);
             }
         };
 
@@ -278,30 +285,40 @@ class ProductInfoAdvanced {
                 // Always fetch as a same-origin relative path to avoid CORS issues.
                 // Works whether the customizer has a relative (/pages/x) or absolute
                 // (https://store.myshopify.com/pages/x) URL stored.
+                // Always convert to a relative path so fetch is same-origin regardless
+                // of whether the saved URL is absolute or uses a different domain alias.
                 let fetchUrl = rawUrl;
+                let isExternal = false;
                 try {
                     const parsed = new URL(rawUrl, window.location.origin);
-                    if (parsed.origin === window.location.origin) {
-                        fetchUrl = parsed.pathname + parsed.search;
+                    if (parsed.protocol === 'http:' || parsed.protocol === 'https:') {
+                        fetchUrl = parsed.pathname + (parsed.search || '');
+                    } else {
+                        isExternal = true;
                     }
                 } catch (_) { /* keep rawUrl */ }
 
                 modal.classList.add('is-open');
                 modalBody.innerHTML = '<div class="pia-modal-loading"><span></span>Loading…</div>';
 
+                if (isExternal) {
+                    showError(rawUrl, 'External URL: ' + rawUrl);
+                    return;
+                }
+
                 fetch(fetchUrl, {
                     method: 'GET',
-                    credentials: 'same-origin',
-                    headers: { 'Accept': 'text/html' }
+                    credentials: 'include',
+                    headers: { 'Accept': 'text/html, */*' }
                 })
-                    .then(r => {
-                        if (!r.ok) throw new Error('HTTP ' + r.status);
-                        return r.text();
+                    .then(r => r.text())
+                    .then(html => {
+                        if (!html || html.trim().length < 50) throw new Error('empty response');
+                        renderHtml(html, rawUrl);
                     })
-                    .then(html => renderHtml(html, rawUrl))
                     .catch(err => {
-                        console.warn('[PIA Modal] Fetch failed:', fetchUrl, err);
-                        showError(rawUrl);
+                        console.warn('[PIA Modal] Fetch failed:', fetchUrl, err.message);
+                        showError(rawUrl, 'URL tried: ' + fetchUrl + ' — ' + err.message);
                     });
             });
         });
