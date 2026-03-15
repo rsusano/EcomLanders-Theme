@@ -407,19 +407,37 @@
             {%- case block.type -%}
               
               {%- when 'rating' -%}
-                <div class="product-info-advanced__rating{{ bc }}" {{ block.shopify_attributes }}>
+                {%- assign r_text = block.settings.text | replace: '<p>', '' | replace: '</p>', '' | strip -%}
+                {%- assign r_star_count  = block.settings.star_count  | default: 5 -%}
+                {%- assign r_star_filled = block.settings.star_filled | default: 5 -%}
+                <div class="product-info-advanced__rating{{ bc }}" {{ block.shopify_attributes }}
+                  style="
+                    --pia-rating-font-size: {{ block.settings.font_size }}px;
+                    --pia-rating-font-weight: {{ block.settings.font_weight }};
+                    --pia-rating-text-transform: {{ block.settings.text_transform }};
+                    --pia-rating-star-size: {{ block.settings.star_size }}px;
+                    --pia-rating-star-color: {{ block.settings.star_color }};
+                    --pia-rating-star-empty: {{ block.settings.star_empty_color }};
+                  ">
                   <div class="product-info-advanced__stars">
-                    {%- if block.settings.icon_image != blank -%}
-                      <img src="{{ block.settings.icon_image | image_url: width: 32 }}" width="16" height="16" alt="" loading="lazy" style="object-fit: contain;">
-                    {%- elsif block.settings.icon_svg != blank -%}
-                      <div style="width:16px;height:16px;display:flex;align-items:center;justify-content:center;">{{ block.settings.icon_svg }}</div>
-                    {%- else -%}
-                      {%- for i in (1..5) -%}
-                        <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M12 2l3 6.5 7 1-5 5 1 7-6-3.5-6 3.5 1-7-5-5 7-1z"/></svg>
-                      {%- endfor -%}
-                    {%- endif -%}
+                    {%- for i in (1..r_star_count) -%}
+                      {%- if i > r_star_filled -%}
+                        {%- assign r_star_cls = 'product-info-advanced__star-icon product-info-advanced__star-icon--empty' -%}
+                      {%- else -%}
+                        {%- assign r_star_cls = 'product-info-advanced__star-icon' -%}
+                      {%- endif -%}
+                      {%- if block.settings.icon_image != blank -%}
+                        <img src="{{ block.settings.icon_image | image_url: width: 64 }}" class="{{ r_star_cls }}" width="{{ block.settings.star_size }}" height="{{ block.settings.star_size }}" alt="" loading="lazy">
+                      {%- elsif block.settings.icon_svg != blank -%}
+                        <span class="{{ r_star_cls }}">{{ block.settings.icon_svg }}</span>
+                      {%- else -%}
+                        <svg class="{{ r_star_cls }}" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3 6.5 7 1-5 5 1 7-6-3.5-6 3.5 1-7-5-5 7-1z"/></svg>
+                      {%- endif -%}
+                    {%- endfor -%}
                   </div>
-                  <span>{{ block.settings.text }}</span>
+                  {%- if r_text != blank -%}
+                    <span class="product-info-advanced__rating-text">{{ r_text }}</span>
+                  {%- endif -%}
                 </div>
 
               {%- when 'brand' -%}
@@ -1514,9 +1532,94 @@
       "name": "Rating",
       "limit": 1,
       "settings": [
-        { "type": "text", "id": "text", "label": "Rating Text", "default": "Rated 4.8 'Excellent' | 45k+ Customers" },
-        { "type": "image_picker", "id": "icon_image", "label": "Custom Icon (Image)" },
-        { "type": "textarea", "id": "icon_svg", "label": "Custom Icon (SVG Raw)", "info": "Overrides default 5 stars if provided." },
+        { "type": "header", "content": "Rating Text" },
+        {
+          "type": "richtext",
+          "id": "text",
+          "label": "Rating Text",
+          "default": "<p>Rated 4.8 'Excellent' | 45k+ Customers</p>",
+          "info": "Use the editor toolbar to bold or italicise specific words."
+        },
+        {
+          "type": "select",
+          "id": "text_transform",
+          "label": "Text Case",
+          "options": [
+            { "value": "none",      "label": "Original" },
+            { "value": "uppercase", "label": "UPPERCASE" },
+            { "value": "lowercase", "label": "lowercase" }
+          ],
+          "default": "none"
+        },
+        {
+          "type": "range",
+          "id": "font_size",
+          "label": "Font Size",
+          "min": 10, "max": 28, "step": 1, "unit": "px",
+          "default": 13
+        },
+        {
+          "type": "select",
+          "id": "font_weight",
+          "label": "Font Weight",
+          "options": [
+            { "value": "400", "label": "Normal" },
+            { "value": "500", "label": "Medium" },
+            { "value": "600", "label": "Semibold" },
+            { "value": "700", "label": "Bold" },
+            { "value": "800", "label": "Extrabold" }
+          ],
+          "default": "500"
+        },
+        { "type": "header", "content": "Stars" },
+        {
+          "type": "range",
+          "id": "star_count",
+          "label": "Number of Stars",
+          "min": 1, "max": 5, "step": 1,
+          "default": 5
+        },
+        {
+          "type": "range",
+          "id": "star_filled",
+          "label": "Filled Stars",
+          "min": 0, "max": 5, "step": 1,
+          "default": 5,
+          "info": "Stars beyond this count show in the empty color."
+        },
+        {
+          "type": "range",
+          "id": "star_size",
+          "label": "Star Size",
+          "min": 10, "max": 48, "step": 1, "unit": "px",
+          "default": 16
+        },
+        {
+          "type": "color",
+          "id": "star_color",
+          "label": "Filled Star Color",
+          "default": "#F59E0B"
+        },
+        {
+          "type": "color",
+          "id": "star_empty_color",
+          "label": "Empty Star Color",
+          "default": "#D1D5DB"
+        },
+        { "type": "header", "content": "Custom Star Icon" },
+        {
+          "type": "image_picker",
+          "id": "icon_image",
+          "label": "Custom Star Image",
+          "info": "Replaces the default star shape. Repeated for each star."
+        },
+        {
+          "type": "textarea",
+          "id": "icon_svg",
+          "label": "Custom Star SVG",
+          "info": "Paste raw SVG. Replaces the default star shape. Image takes priority if both are set."
+        },
+        { "type": "header", "content": "Visibility" },
         { "type": "checkbox", "id": "show_on_desktop", "label": "Show on Desktop", "default": true },
         { "type": "checkbox", "id": "show_on_mobile", "label": "Show on Mobile", "default": true }
       ]

@@ -384,21 +384,43 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    font-size: 13px;
+    font-size: var(--pia-rating-font-size, 13px);
+    font-weight: var(--pia-rating-font-weight, 500);
+    text-transform: var(--pia-rating-text-transform, none);
     color: var(--color-text);
-    font-weight: 500;
 }
+
+.product-info-advanced__rating-text strong,
+.product-info-advanced__rating-text b { font-weight: 800; }
+
+.product-info-advanced__rating-text em,
+.product-info-advanced__rating-text i { font-style: italic; }
 
 .product-info-advanced__stars {
     display: flex;
-    color: var(--color-star);
+    align-items: center;
     gap: 2px;
 }
 
-.product-info-advanced__stars svg {
-    width: 16px;
-    height: 16px;
+.product-info-advanced__star-icon {
+    display: block;
+    flex-shrink: 0;
+    width: var(--pia-rating-star-size, 16px);
+    height: var(--pia-rating-star-size, 16px);
+    color: var(--pia-rating-star-color, #F59E0B);
     fill: currentColor;
+    object-fit: contain;
+}
+
+.product-info-advanced__star-icon--empty {
+    color: var(--pia-rating-star-empty, #D1D5DB);
+}
+
+.product-info-advanced__star-icon svg {
+    width: 100%;
+    height: 100%;
+    fill: currentColor;
+    display: block;
 }
 
 .product-info-advanced__brand {
