@@ -158,7 +158,7 @@
     {%- comment -%} ================================
       LEFT COLUMN
     ================================ {%- endcomment -%}
-    <div class="product-info-advanced__left{% unless section.settings.left_sticky %} is-not-sticky{% endunless %}" style="--pia-dt-offset: {{ section.settings.image_desktop_offset | default: 0 }}px;">
+    <div class="product-info-advanced__left{% if section.settings.left_sticky == false %} is-not-sticky{% endif %}" style="--pia-dt-offset: {{ section.settings.image_desktop_offset | default: 0 }}px;">
       <div class="product-info-advanced__media">
         
         {%- comment -%} Main Image (wrapped for edge-arrow positioning) {%- endcomment -%}
@@ -311,7 +311,7 @@
             style="--mc-dt-cols: {{ dt_cards }}; --mc-mb-cols: {{ mb_cards }}; --mc-media-aspect: {{ mc_aspect }}; --mc-image-fit: {{ mc_img_fit }};{% if mc_dot_color != blank %} --mc-dot-color: {{ mc_dot_color }};{% endif %}{% if mc_dot_active != blank %} --mc-dot-active: {{ mc_dot_active }};{% endif %}"
             {{ block.shopify_attributes }}>
             {%- if block.settings.heading != blank -%}
-              <h3 class="product-info-advanced__mc-heading">{{ block.settings.heading }}</h3>
+              <h3 class="product-info-advanced__mc-heading" style="{% if block.settings.heading_size %}font-size: {{ block.settings.heading_size }}px; {% endif %}{% if block.settings.heading_color != blank %}color: {{ block.settings.heading_color }}; {% endif %}{% if block.settings.heading_weight %}font-weight: {{ block.settings.heading_weight }}; {% endif %}margin-top: {{ block.settings.heading_margin_top | default: 0 }}px; margin-bottom: {{ block.settings.heading_margin_bottom | default: 8 }}px;">{{ block.settings.heading }}</h3>
             {%- endif -%}
             {%- if block.settings.subheading != blank -%}
               <p class="product-info-advanced__mc-subheading">{{ block.settings.subheading }}</p>
@@ -352,7 +352,7 @@
               {%- if block.settings.show_arrows or block.settings.show_dots -%}
                 {%- assign mc_nav_has_bg = false -%}
                 {%- if block.settings.nav_bg != blank -%}{%- assign mc_nav_has_bg = true -%}{%- endif -%}
-                <div class="product-info-advanced__reviews-nav"{% if mc_nav_has_bg %} style="background: {{ block.settings.nav_bg }}; border-radius: {{ block.settings.nav_radius | default: 40 }}px; padding: {{ block.settings.nav_pad_v | default: 8 }}px {{ block.settings.nav_pad_h | default: 16 }}px;"{% endif %}>
+                <div class="product-info-advanced__reviews-nav"{% if mc_nav_has_bg %} style="background: {{ block.settings.nav_bg }}; border-radius: {{ block.settings.nav_radius | default: 40 }}px; padding: {{ block.settings.nav_pad_v | default: 8 }}px {{ block.settings.nav_pad_h | default: 16 }}px; width: fit-content; margin-left: auto; margin-right: auto;"{% endif %}>
                   {%- if block.settings.show_arrows -%}
                     <button type="button" class="product-info-advanced__reviews-arrow product-info-advanced__mc-prev{% if block.settings.mc_prev_image != blank or block.settings.mc_prev_svg != blank %} is-custom-icon{% endif %}" aria-label="Previous">
                       {%- if block.settings.mc_prev_svg != blank -%}{{ block.settings.mc_prev_svg }}
@@ -920,7 +920,7 @@
                     style="--mc-dt-cols: {{ dt_cards }}; --mc-mb-cols: {{ mb_cards }}; --mc-media-aspect: {{ mc_aspect }}; --mc-image-fit: {{ mc_img_fit }};{% if mc_dot_color != blank %} --mc-dot-color: {{ mc_dot_color }};{% endif %}{% if mc_dot_active != blank %} --mc-dot-active: {{ mc_dot_active }};{% endif %}"
                     {{ block.shopify_attributes }}>
                     {%- if block.settings.heading != blank -%}
-                      <h3 class="product-info-advanced__mc-heading">{{ block.settings.heading }}</h3>
+                      <h3 class="product-info-advanced__mc-heading" style="{% if block.settings.heading_size %}font-size: {{ block.settings.heading_size }}px; {% endif %}{% if block.settings.heading_color != blank %}color: {{ block.settings.heading_color }}; {% endif %}{% if block.settings.heading_weight %}font-weight: {{ block.settings.heading_weight }}; {% endif %}margin-top: {{ block.settings.heading_margin_top | default: 0 }}px; margin-bottom: {{ block.settings.heading_margin_bottom | default: 8 }}px;">{{ block.settings.heading }}</h3>
                     {%- endif -%}
                     {%- if block.settings.subheading != blank -%}
                       <p class="product-info-advanced__mc-subheading">{{ block.settings.subheading }}</p>
@@ -961,7 +961,7 @@
                       {%- if block.settings.show_arrows or block.settings.show_dots -%}
                         {%- assign mc_nav_has_bg = false -%}
                         {%- if block.settings.nav_bg != blank -%}{%- assign mc_nav_has_bg = true -%}{%- endif -%}
-                        <div class="product-info-advanced__reviews-nav"{% if mc_nav_has_bg %} style="background: {{ block.settings.nav_bg }}; border-radius: {{ block.settings.nav_radius | default: 40 }}px; padding: {{ block.settings.nav_pad_v | default: 8 }}px {{ block.settings.nav_pad_h | default: 16 }}px;"{% endif %}>
+                        <div class="product-info-advanced__reviews-nav"{% if mc_nav_has_bg %} style="background: {{ block.settings.nav_bg }}; border-radius: {{ block.settings.nav_radius | default: 40 }}px; padding: {{ block.settings.nav_pad_v | default: 8 }}px {{ block.settings.nav_pad_h | default: 16 }}px; width: fit-content; margin-left: auto; margin-right: auto;"{% endif %}>
                           {%- if block.settings.show_arrows -%}
                             <button type="button" class="product-info-advanced__reviews-arrow product-info-advanced__mc-prev{% if block.settings.mc_prev_image != blank or block.settings.mc_prev_svg != blank %} is-custom-icon{% endif %}" aria-label="Previous">
                               {%- if block.settings.mc_prev_svg != blank -%}{{ block.settings.mc_prev_svg }}
@@ -2209,6 +2209,23 @@
         },
         { "type": "text", "id": "heading", "label": "Heading", "default": "Real Change for Real People" },
         { "type": "text", "id": "subheading", "label": "Subheading" },
+        { "type": "header", "content": "Heading Style" },
+        { "type": "range", "id": "heading_size", "label": "Font Size", "min": 12, "max": 48, "step": 1, "unit": "px", "default": 24 },
+        { "type": "color", "id": "heading_color", "label": "Text Color", "info": "Leave blank to use default theme color." },
+        {
+          "type": "select",
+          "id": "heading_weight",
+          "label": "Font Weight",
+          "options": [
+            { "value": "400", "label": "Regular" },
+            { "value": "600", "label": "Semi Bold" },
+            { "value": "700", "label": "Bold" },
+            { "value": "800", "label": "Extra Bold" }
+          ],
+          "default": "700"
+        },
+        { "type": "number", "id": "heading_margin_top", "label": "Margin Top (px)", "default": 0 },
+        { "type": "number", "id": "heading_margin_bottom", "label": "Margin Bottom (px)", "default": 8 },
         {
           "type": "select",
           "id": "visible_cards_desktop",
