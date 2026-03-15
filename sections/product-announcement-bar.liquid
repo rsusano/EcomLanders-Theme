@@ -38,6 +38,16 @@
     font-weight: {{ section.settings.font_weight }};
     text-transform: {{ section.settings.text_transform }};
   }
+  @media screen and (max-width: 768px) {
+    #shopify-section-{{ section.id }} {
+      margin-top: {{ section.settings.mobile_margin_top }}px;
+      margin-bottom: {{ section.settings.mobile_margin_bottom }}px;
+    }
+    #shopify-section-{{ section.id }} .product-announcement-bar {
+      padding-top: {{ section.settings.mobile_padding_top }}px;
+      padding-bottom: {{ section.settings.mobile_padding_bottom }}px;
+    }
+  }
 </style>
 
 <div class="{{ wrapper_classes }}" data-section-id="{{ section.id }}" data-section-type="product-announcement-bar">
@@ -89,6 +99,28 @@
               </li>
             {%- endif -%}
           {%- endunless -%}
+          {%- if forloop.last and sep_enable and enable_scrolling -%}
+            <li class="product-announcement-bar__separator" aria-hidden="true">
+              <span class="product-announcement-bar__sep-icon">
+                {%- case sep_style -%}
+                  {%- when 'dot'      -%}&bull;
+                  {%- when 'square'   -%}&#9632;
+                  {%- when 'pipe'     -%}&#124;
+                  {%- when 'star'     -%}&#9733;
+                  {%- when 'dash'     -%}&mdash;
+                  {%- when 'diamond'  -%}&#9670;
+                  {%- when 'triangle' -%}&#9650;
+                  {%- when 'custom'   -%}
+                    {%- if section.settings.separator_icon_image != blank -%}
+                      <img src="{{ section.settings.separator_icon_image | image_url: width: 64 }}"
+                           alt="" width="{{ sep_size }}" height="{{ sep_size }}" loading="lazy">
+                    {%- elsif section.settings.separator_icon_svg != blank -%}
+                      {{ section.settings.separator_icon_svg }}
+                    {%- endif -%}
+                {%- endcase -%}
+              </span>
+            </li>
+          {%- endif -%}
         {%- endfor -%}
       </ul>
     {%- endcapture -%}
@@ -198,6 +230,44 @@
       "label": "Margin Bottom (px)",
       "default": 0,
       "info": "Use a negative value to pull the next section up and reduce the gap below."
+    },
+    {
+      "type": "header",
+      "content": "Mobile Spacing"
+    },
+    {
+      "type": "range",
+      "id": "mobile_padding_top",
+      "label": "Mobile Padding Top",
+      "min": 0,
+      "max": 60,
+      "step": 1,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "mobile_padding_bottom",
+      "label": "Mobile Padding Bottom",
+      "min": 0,
+      "max": 60,
+      "step": 1,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "number",
+      "id": "mobile_margin_top",
+      "label": "Mobile Margin Top (px)",
+      "default": 0,
+      "info": "Use a negative value to reduce the gap above on mobile."
+    },
+    {
+      "type": "number",
+      "id": "mobile_margin_bottom",
+      "label": "Mobile Margin Bottom (px)",
+      "default": 0,
+      "info": "Use a negative value to reduce the gap below on mobile."
     },
     {
       "type": "header",
