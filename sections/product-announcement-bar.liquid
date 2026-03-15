@@ -2,10 +2,10 @@
 {{ 'product-announcement-bar.css' | asset_url | stylesheet_tag }}
 
 {%- liquid
-  assign text_color = section.settings.text_color
-  assign bg_color = section.settings.bg_color
+  assign text_color    = section.settings.text_color
+  assign bg_color      = section.settings.bg_color
   assign enable_scrolling = section.settings.enable_scrolling
-  assign speed = section.settings.speed
+  assign speed         = section.settings.speed
 
   assign wrapper_classes = 'product-announcement-bar'
   if enable_scrolling
@@ -20,32 +20,75 @@
 -%}
 
 <style>
+  #shopify-section-{{ section.id }} {
+    margin-top: {{ section.settings.margin_top }}px;
+    margin-bottom: {{ section.settings.margin_bottom }}px;
+    --pab-sep-size: {{ section.settings.separator_size }}px;
+    --pab-sep-color: {{ section.settings.separator_color }};
+  }
   #shopify-section-{{ section.id }} .product-announcement-bar {
     background-color: {{ bg_color }};
     color: {{ text_color }};
     --scroll-speed: {{ speed }}s;
+    padding-top: {{ section.settings.padding_top }}px;
+    padding-bottom: {{ section.settings.padding_bottom }}px;
+  }
+  #shopify-section-{{ section.id }} .product-announcement-bar__text {
+    font-size: {{ section.settings.font_size }}px;
+    font-weight: {{ section.settings.font_weight }};
+    text-transform: {{ section.settings.text_transform }};
   }
 </style>
 
 <div class="{{ wrapper_classes }}" data-section-id="{{ section.id }}" data-section-type="product-announcement-bar">
   {%- if section.blocks.size > 0 -%}
     {%- capture announcement_content -%}
+      {%- liquid
+        assign sep_enable = section.settings.separator_enable
+        assign sep_style  = section.settings.separator_style
+        assign sep_size   = section.settings.separator_size
+      -%}
       <ul class="product-announcement-bar__list">
         {%- for block in section.blocks -%}
+          {%- assign text_clean = block.settings.text | replace: '<p>', '' | replace: '</p>', '' | strip -%}
           <li class="product-announcement-bar__item" {{ block.shopify_attributes }}>
             {%- if block.settings.icon_image != blank -%}
-              <span class="product-announcement-bar__icon">
-                <img src="{{ block.settings.icon_image | image_url: width: 32 }}" alt="{{ block.settings.text | escape }}" width="16" height="16" loading="lazy">
+              <span class="product-announcement-bar__icon" style="width:{{ block.settings.icon_size }}px;height:{{ block.settings.icon_size }}px;">
+                <img src="{{ block.settings.icon_image | image_url: width: 64 }}" alt="" width="{{ block.settings.icon_size }}" height="{{ block.settings.icon_size }}" loading="lazy">
               </span>
             {%- elsif block.settings.icon_svg != blank -%}
-              <span class="product-announcement-bar__icon">
+              <span class="product-announcement-bar__icon" style="width:{{ block.settings.icon_size }}px;height:{{ block.settings.icon_size }}px;">
                 {{ block.settings.icon_svg }}
               </span>
             {%- endif -%}
-            {%- if block.settings.text != blank -%}
-              <span class="product-announcement-bar__text">{{ block.settings.text }}</span>
+            {%- if text_clean != blank -%}
+              <span class="product-announcement-bar__text">{{ text_clean }}</span>
             {%- endif -%}
           </li>
+          {%- unless forloop.last -%}
+            {%- if sep_enable -%}
+              <li class="product-announcement-bar__separator" aria-hidden="true">
+                <span class="product-announcement-bar__sep-icon">
+                  {%- case sep_style -%}
+                    {%- when 'dot'      -%}&bull;
+                    {%- when 'square'   -%}&#9632;
+                    {%- when 'pipe'     -%}&#124;
+                    {%- when 'star'     -%}&#9733;
+                    {%- when 'dash'     -%}&mdash;
+                    {%- when 'diamond'  -%}&#9670;
+                    {%- when 'triangle' -%}&#9650;
+                    {%- when 'custom'   -%}
+                      {%- if section.settings.separator_icon_image != blank -%}
+                        <img src="{{ section.settings.separator_icon_image | image_url: width: 64 }}"
+                             alt="" width="{{ sep_size }}" height="{{ sep_size }}" loading="lazy">
+                      {%- elsif section.settings.separator_icon_svg != blank -%}
+                        {{ section.settings.separator_icon_svg }}
+                      {%- endif -%}
+                  {%- endcase -%}
+                </span>
+              </li>
+            {%- endif -%}
+          {%- endunless -%}
         {%- endfor -%}
       </ul>
     {%- endcapture -%}
@@ -78,6 +121,144 @@
       "id": "text_color",
       "label": "Text Color",
       "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "range",
+      "id": "font_size",
+      "label": "Font Size",
+      "min": 10,
+      "max": 28,
+      "step": 1,
+      "unit": "px",
+      "default": 13
+    },
+    {
+      "type": "select",
+      "id": "font_weight",
+      "label": "Font Weight",
+      "options": [
+        { "value": "400", "label": "Normal" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semibold" },
+        { "value": "700", "label": "Bold" },
+        { "value": "800", "label": "Extrabold" }
+      ],
+      "default": "600"
+    },
+    {
+      "type": "select",
+      "id": "text_transform",
+      "label": "Text Case",
+      "options": [
+        { "value": "none",       "label": "Original" },
+        { "value": "uppercase",  "label": "UPPERCASE" },
+        { "value": "lowercase",  "label": "lowercase" },
+        { "value": "capitalize", "label": "Capitalize Each Word" }
+      ],
+      "default": "uppercase"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding Top",
+      "min": 0,
+      "max": 60,
+      "step": 1,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding Bottom",
+      "min": 0,
+      "max": 60,
+      "step": 1,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "number",
+      "id": "margin_top",
+      "label": "Margin Top (px)",
+      "default": 0,
+      "info": "Use a negative value to pull the bar up and reduce the gap above it."
+    },
+    {
+      "type": "number",
+      "id": "margin_bottom",
+      "label": "Margin Bottom (px)",
+      "default": 0,
+      "info": "Use a negative value to pull the next section up and reduce the gap below."
+    },
+    {
+      "type": "header",
+      "content": "Separator"
+    },
+    {
+      "type": "checkbox",
+      "id": "separator_enable",
+      "label": "Show separator between messages",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "separator_style",
+      "label": "Separator Style",
+      "options": [
+        { "value": "dot",      "label": "Dot  •" },
+        { "value": "square",   "label": "Square  ■" },
+        { "value": "pipe",     "label": "Pipe  |" },
+        { "value": "star",     "label": "Star  ★" },
+        { "value": "dash",     "label": "Dash  —" },
+        { "value": "diamond",  "label": "Diamond  ◆" },
+        { "value": "triangle", "label": "Triangle  ▲" },
+        { "value": "custom",   "label": "Custom Icon" }
+      ],
+      "default": "dot"
+    },
+    {
+      "type": "range",
+      "id": "separator_size",
+      "label": "Separator Size",
+      "min": 6,
+      "max": 48,
+      "step": 1,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "color",
+      "id": "separator_color",
+      "label": "Separator Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "Custom Separator Icon"
+    },
+    {
+      "type": "image_picker",
+      "id": "separator_icon_image",
+      "label": "Icon Image"
+    },
+    {
+      "type": "textarea",
+      "id": "separator_icon_svg",
+      "label": "Icon (SVG code)",
+      "info": "Paste raw SVG here. Used only when style is Custom Icon."
+    },
+    {
+      "type": "header",
+      "content": "Scrolling"
     },
     {
       "type": "checkbox",
@@ -118,21 +299,36 @@
       "name": "Message",
       "settings": [
         {
-          "type": "text",
+          "type": "richtext",
           "id": "text",
           "label": "Text",
-          "default": "LIMITED TIME OFFER - SAVE UP TO 71% OFF"
+          "info": "Use the editor toolbar to bold or italicise specific words.",
+          "default": "<p>LIMITED TIME OFFER - SAVE UP TO 71% OFF</p>"
+        },
+        {
+          "type": "header",
+          "content": "Icon (optional)"
         },
         {
           "type": "image_picker",
           "id": "icon_image",
-          "label": "Custom Icon (Image)"
+          "label": "Icon Image"
         },
         {
           "type": "textarea",
           "id": "icon_svg",
-          "label": "Custom Icon (SVG Raw)",
-          "info": "Paste raw SVG code here. Overrides image if both are present."
+          "label": "Icon (SVG code)",
+          "info": "Paste raw SVG here. Overrides the image if both are set."
+        },
+        {
+          "type": "range",
+          "id": "icon_size",
+          "label": "Icon Size",
+          "min": 12,
+          "max": 48,
+          "step": 1,
+          "unit": "px",
+          "default": 16
         }
       ]
     }
@@ -144,13 +340,13 @@
         {
           "type": "announcement",
           "settings": {
-            "text": "LIMITED TIME OFFER - SAVE UP TO 71% OFF"
+            "text": "<p>LIMITED TIME OFFER - SAVE UP TO 71% OFF</p>"
           }
         },
         {
           "type": "announcement",
           "settings": {
-            "text": "FREE SHIPPING WORLDWIDE"
+            "text": "<p>FREE SHIPPING WORLDWIDE</p>"
           }
         }
       ]
