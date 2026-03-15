@@ -112,26 +112,94 @@ class ProductInfoAdvanced {
 
         if (!track || slides.length === 0) return;
 
-        let currentIndex = 0;
-        const getGap = () => 12;
-        const getMaxIndex = () => Math.max(0, slides.length - 1);
+        const isInfinite = carouselEl.dataset.mcInfinite === 'true';
+        const isAutoplay = carouselEl.dataset.mcAutoplay === 'true';
+        const autoplaySpeed = parseInt(carouselEl.dataset.mcAutoplaySpeed) || 3000;
+        const isMarquee = carouselEl.dataset.mcMarquee === 'true';
+        const marqueeSpeed = parseInt(carouselEl.dataset.mcMarqueeSpeed) || 60;
 
-        const goTo = (index) => {
-            const max = getMaxIndex();
-            currentIndex = Math.max(0, Math.min(index, max));
-            const slideEl = slides[0];
-            const slideWidth = slideEl.getBoundingClientRect().width;
-            const gap = getGap();
-            const offset = currentIndex * (slideWidth + gap);
-            track.style.transform = `translateX(-${offset}px)`;
-            dots.forEach((dot, i) => dot.classList.toggle('is-active', i === currentIndex));
-            if (prevBtn) prevBtn.disabled = currentIndex === 0;
-            if (nextBtn) nextBtn.disabled = currentIndex >= max;
+        const GAP = 12;
+        let currentIndex = 0;
+        let autoplayTimer = null;
+
+        // ── Marquee mode ──────────────────────────────────────────────
+        if (isMarquee) {
+            // Duplicate slides so the loop is seamless
+            const origSlides = Array.from(track.querySelectorAll('[data-mc-slide]'));
+            origSlides.forEach(s => track.appendChild(s.cloneNode(true)));
+            let pos = 0;
+            let rafId;
+            let lastTs = null;
+            const animate = (ts) => {
+                if (lastTs !== null) {
+                    const dt = ts - lastTs;
+                    pos += (marqueeSpeed * dt) / 1000;
+                    // Compute total width of original slides only
+                    const origW = origSlides.reduce((acc, s) => acc + s.offsetWidth + GAP, 0);
+                    if (pos >= origW) pos -= origW;
+                    track.style.transform = `translateX(-${pos}px)`;
+                }
+                lastTs = ts;
+                rafId = requestAnimationFrame(animate);
+            };
+            rafId = requestAnimationFrame(animate);
+            // Pause on hover
+            carouselEl.addEventListener('mouseenter', () => { cancelAnimationFrame(rafId); lastTs = null; });
+            carouselEl.addEventListener('mouseleave', () => { rafId = requestAnimationFrame(animate); });
+            return; // Marquee doesn't need the rest of the setup
+        }
+
+        const getSlideWidth = () => (slides[0] ? slides[0].getBoundingClientRect().width : 0);
+
+        const getMaxOffset = () => {
+            const containerW = track.parentElement ? track.parentElement.getBoundingClientRect().width : 0;
+            const totalW = slides.reduce((acc, s) => acc + s.getBoundingClientRect().width + GAP, 0) - GAP;
+            return Math.max(0, totalW - containerW);
         };
 
-        if (prevBtn) prevBtn.addEventListener('click', () => goTo(currentIndex - 1));
-        if (nextBtn) nextBtn.addEventListener('click', () => goTo(currentIndex + 1));
-        dots.forEach(dot => dot.addEventListener('click', () => goTo(parseInt(dot.dataset.dotIndex, 10))));
+        const getTotalSlides = () => slides.length;
+
+        const goTo = (index, instant = false) => {
+            const total = getTotalSlides();
+            if (isInfinite) {
+                currentIndex = ((index % total) + total) % total;
+            } else {
+                currentIndex = Math.max(0, Math.min(index, total - 1));
+            }
+            const slideW = getSlideWidth();
+            const rawOffset = currentIndex * (slideW + GAP);
+            const offset = isInfinite ? rawOffset : Math.min(rawOffset, getMaxOffset());
+
+            if (instant) {
+                track.style.transition = 'none';
+                track.style.transform = `translateX(-${offset}px)`;
+                track.getBoundingClientRect(); // force reflow
+                track.style.transition = '';
+            } else {
+                track.style.transform = `translateX(-${offset}px)`;
+            }
+
+            dots.forEach((dot, i) => dot.classList.toggle('is-active', i === currentIndex));
+            if (prevBtn) prevBtn.disabled = !isInfinite && currentIndex === 0;
+            if (nextBtn) nextBtn.disabled = !isInfinite && currentIndex >= total - 1;
+        };
+
+        const resetAutoplay = () => {
+            if (!isAutoplay) return;
+            clearInterval(autoplayTimer);
+            autoplayTimer = setInterval(() => goTo(currentIndex + 1), autoplaySpeed);
+        };
+
+        if (prevBtn) prevBtn.addEventListener('click', () => { goTo(currentIndex - 1); resetAutoplay(); });
+        if (nextBtn) nextBtn.addEventListener('click', () => { goTo(currentIndex + 1); resetAutoplay(); });
+        dots.forEach(dot => dot.addEventListener('click', () => { goTo(parseInt(dot.dataset.dotIndex, 10)); resetAutoplay(); }));
+
+        if (isAutoplay) {
+            autoplayTimer = setInterval(() => goTo(currentIndex + 1), autoplaySpeed);
+            // Pause on hover
+            carouselEl.addEventListener('mouseenter', () => clearInterval(autoplayTimer));
+            carouselEl.addEventListener('mouseleave', () => resetAutoplay());
+        }
 
         // Video playback
         playBtns.forEach(btn => {
@@ -155,8 +223,12 @@ class ProductInfoAdvanced {
                     embedEl.allow = 'autoplay; fullscreen';
                     embedEl.allowFullscreen = true;
                 } else {
+                    // Handles MP4, CDN (cdn.shopify.com), and other direct video URLs
                     embedEl = document.createElement('video');
-                    embedEl.src = url; embedEl.controls = true; embedEl.autoplay = true; embedEl.playsInline = true;
+                    embedEl.src = url;
+                    embedEl.controls = true;
+                    embedEl.autoplay = true;
+                    embedEl.playsInline = true;
                 }
                 embedEl.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;border:none;object-fit:cover;';
                 mediaWrap.innerHTML = '';
@@ -170,11 +242,11 @@ class ProductInfoAdvanced {
         track.addEventListener('touchend', e => {
             const dx = touchStartX - e.changedTouches[0].clientX;
             const dy = Math.abs(touchStartY - e.changedTouches[0].clientY);
-            if (Math.abs(dx) > 40 && Math.abs(dx) > dy) goTo(currentIndex + (dx > 0 ? 1 : -1));
+            if (Math.abs(dx) > 40 && Math.abs(dx) > dy) { goTo(currentIndex + (dx > 0 ? 1 : -1)); resetAutoplay(); }
         }, { passive: true });
 
         let resizeTimer;
-        window.addEventListener('resize', () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(() => goTo(currentIndex), 100); });
+        window.addEventListener('resize', () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(() => goTo(currentIndex, true), 100); });
         goTo(0);
     }
 

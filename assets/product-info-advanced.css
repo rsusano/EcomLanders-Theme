@@ -128,9 +128,12 @@
 }
 
 @media screen and (min-width: 769px) {
-    .product-info-advanced__left {
+    .product-info-advanced__left.is-sticky {
         position: sticky;
-        top: 40px;
+        top: var(--pia-sticky-top, 40px);
+    }
+    .product-info-advanced__left {
+        margin-top: var(--pia-dt-offset, 0px);
     }
 }
 
@@ -230,8 +233,8 @@
 .product-info-advanced__gallery-arrows {
     position: absolute;
     top: 50%;
-    left: -22px;
-    right: -22px;
+    left: calc(var(--pia-gallery-arrow-size, 44px) / -2);
+    right: calc(var(--pia-gallery-arrow-size, 44px) / -2);
     transform: translateY(-50%);
     display: flex;
     justify-content: space-between;
@@ -240,8 +243,8 @@
 }
 
 .product-info-advanced__gallery-nav {
-    width: 44px;
-    height: 44px;
+    width: var(--pia-gallery-arrow-size, 44px);
+    height: var(--pia-gallery-arrow-size, 44px);
     border-radius: 50%;
     background-color: var(--pia-gallery-arrow-bg, #fff);
     color: var(--pia-gallery-arrow-color, var(--color-brand));
@@ -445,8 +448,8 @@
 }
 
 .product-info-advanced__description {
-    font-size: 14px;
-    color: var(--color-text);
+    font-size: var(--pia-desc-size, 14px);
+    color: var(--pia-desc-color, var(--color-text));
     line-height: 1.5;
     margin: 0;
 }
@@ -486,6 +489,50 @@
 .product-info-advanced__benefit-icon svg {
     width: 100%;
     height: 100%;
+}
+
+/* ================================
+   BENEFITS GRID (single block)
+================================ */
+.product-info-advanced__benefits-grid {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(var(--pia-bg-cols, 2), 1fr);
+    gap: var(--pia-bg-gap, 8px);
+}
+
+.product-info-advanced__bg-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: var(--pia-bg-font, 13px);
+    font-weight: 500;
+    color: var(--pia-bg-text-color, var(--color-text));
+    min-width: 0;
+}
+
+.product-info-advanced__bg-text {
+    min-width: 0;
+    line-height: 1.3;
+}
+
+.product-info-advanced__bg-icon {
+    color: var(--pia-bg-icon-color, var(--color-brand));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: var(--pia-bg-icon, 16px);
+    height: var(--pia-bg-icon, 16px);
+}
+
+.product-info-advanced__bg-icon svg,
+.product-info-advanced__bg-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
 }
 
 /* ================================
@@ -1054,7 +1101,7 @@
 .product-info-advanced__review-media {
     position: relative;
     width: 100%;
-    aspect-ratio: 3/4;
+    aspect-ratio: var(--mc-media-aspect, 3/4);
     background-color: #1a1a1a;
     border-radius: var(--border-radius);
     overflow: hidden;
@@ -1064,7 +1111,7 @@
     display: block;
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: var(--mc-image-fit, cover);
 }
 
 .product-info-advanced__review-placeholder {
@@ -1166,7 +1213,7 @@
     width: 8px;
     height: 8px;
     border-radius: 4px;
-    background-color: var(--color-border, #e2e8f0);
+    background-color: var(--mc-dot-color, var(--color-border, #e2e8f0));
     border: none;
     cursor: pointer;
     padding: 0;
@@ -1175,7 +1222,7 @@
 }
 
 .product-info-advanced__reviews-dot.is-active {
-    background-color: var(--color-brand);
+    background-color: var(--mc-dot-active, var(--color-brand));
     width: 24px;
 }
 
@@ -1227,6 +1274,12 @@
     .product-info-advanced__mc-slide {
         flex: 0 0 calc(100% / var(--mc-mb-cols) - 12px);
     }
+}
+
+/* Marquee mode — JS drives translateX continuously, no CSS transition */
+.product-info-advanced__media-carousel[data-mc-marquee="true"] .product-info-advanced__mc-track {
+    transition: none;
+    will-change: transform;
 }
 
 /* ========================================
