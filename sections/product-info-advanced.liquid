@@ -430,6 +430,8 @@
                     .pia-rating-{{ block.id }} {
                       --pia-rating-font-size: {{ block.settings.mobile_font_size }}px;
                       --pia-rating-star-size: {{ block.settings.mobile_star_size }}px;
+                      --pia-rating-star-gap: {{ block.settings.mobile_star_gap }}px;
+                      --pia-rating-text-gap: {{ block.settings.mobile_star_text_gap }}px;
                     }
                   }
                 </style>
@@ -1692,6 +1694,22 @@
           "label": "Star Size (Mobile)",
           "min": 8, "max": 40, "step": 1, "unit": "px",
           "default": 14,
+          "info": "Applies on screens 768px and below."
+        },
+        {
+          "type": "range",
+          "id": "mobile_star_gap",
+          "label": "Gap Between Stars (Mobile)",
+          "min": 0, "max": 16, "step": 1, "unit": "px",
+          "default": 2,
+          "info": "Applies on screens 768px and below."
+        },
+        {
+          "type": "range",
+          "id": "mobile_star_text_gap",
+          "label": "Gap: Stars to Text (Mobile)",
+          "min": 0, "max": 32, "step": 1, "unit": "px",
+          "default": 8,
           "info": "Applies on screens 768px and below."
         },
         { "type": "header", "content": "Visibility" },
