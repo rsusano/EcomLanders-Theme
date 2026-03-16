@@ -75,7 +75,7 @@
     margin: 0 auto;
     padding: clamp(20px, 4vw, 40px) 20px;
     box-sizing: border-box;
-    overflow-x: hidden;
+    overflow-x: clip;
 }
 
 .product-info-advanced * {
