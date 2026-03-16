@@ -103,35 +103,135 @@ class ProductInfoAdvanced {
 
     _initSingleCarousel(carouselEl) {
         const track = carouselEl.querySelector('[data-mc-track]');
-        const slides = Array.from(carouselEl.querySelectorAll('[data-mc-slide]'));
+        const origSlides = Array.from(carouselEl.querySelectorAll('[data-mc-slide]'));
         const dotsContainer = carouselEl.querySelector('[data-mc-dots]');
-        const dots = dotsContainer ? Array.from(dotsContainer.querySelectorAll('[data-dot-index]')) : [];
+        const origDots = dotsContainer ? Array.from(dotsContainer.querySelectorAll('[data-dot-index]')) : [];
         const prevBtn = carouselEl.querySelector('.product-info-advanced__mc-prev');
         const nextBtn = carouselEl.querySelector('.product-info-advanced__mc-next');
         const playBtns = Array.from(carouselEl.querySelectorAll('[data-video-url]'));
 
-        if (!track || slides.length === 0) return;
+        if (!track || origSlides.length === 0) return;
 
-        let currentIndex = 0;
-        const getGap = () => 12;
-        const getMaxIndex = () => Math.max(0, slides.length - 1);
+        const isInfinite = carouselEl.dataset.mcInfinite === 'true';
+        const isAutoplay = carouselEl.dataset.mcAutoplay === 'true';
+        const autoplaySpeed = parseInt(carouselEl.dataset.mcAutoplaySpeed) || 3000;
+        const isMarquee = carouselEl.dataset.mcMarquee === 'true';
+        const marqueeSpeed = parseInt(carouselEl.dataset.mcMarqueeSpeed) || 60;
+        const GAP = 12;
 
-        const goTo = (index) => {
-            const max = getMaxIndex();
-            currentIndex = Math.max(0, Math.min(index, max));
-            const slideEl = slides[0];
-            const slideWidth = slideEl.getBoundingClientRect().width;
-            const gap = getGap();
-            const offset = currentIndex * (slideWidth + gap);
-            track.style.transform = `translateX(-${offset}px)`;
-            dots.forEach((dot, i) => dot.classList.toggle('is-active', i === currentIndex));
-            if (prevBtn) prevBtn.disabled = currentIndex === 0;
-            if (nextBtn) nextBtn.disabled = currentIndex >= max;
+        // ── MARQUEE ────────────────────────────────────────────────
+        if (isMarquee) {
+            origSlides.forEach(s => track.appendChild(s.cloneNode(true)));
+            let pos = 0, lastTs = null, rafId;
+            const animate = (ts) => {
+                if (lastTs !== null) {
+                    pos += (marqueeSpeed * (ts - lastTs)) / 1000;
+                    const origW = origSlides.reduce((acc, s) => acc + s.offsetWidth + GAP, 0);
+                    if (pos >= origW) pos -= origW;
+                    track.style.transform = `translateX(-${pos}px)`;
+                }
+                lastTs = ts;
+                rafId = requestAnimationFrame(animate);
+            };
+            rafId = requestAnimationFrame(animate);
+            carouselEl.addEventListener('mouseenter', () => { cancelAnimationFrame(rafId); lastTs = null; });
+            carouselEl.addEventListener('mouseleave', () => { rafId = requestAnimationFrame(animate); });
+            return;
+        }
+
+        // ── INFINITE: clone slides at both ends for seamless wrap ──
+        const N = origSlides.length;
+        let allSlides = origSlides;
+        let offset0 = 0;
+
+        if (isInfinite && N > 1) {
+            [...origSlides].reverse().forEach(s => {
+                const c = s.cloneNode(true); c.setAttribute('aria-hidden', 'true');
+                track.insertBefore(c, track.firstChild);
+            });
+            origSlides.forEach(s => {
+                const c = s.cloneNode(true); c.setAttribute('aria-hidden', 'true');
+                track.appendChild(c);
+            });
+            allSlides = Array.from(track.querySelectorAll('[data-mc-slide]'));
+            offset0 = N;
+        }
+
+        let idx = offset0;
+        let autoplayTimer = null;
+
+        const slideW = () => allSlides[0] ? allSlides[0].getBoundingClientRect().width : 0;
+
+        const maxScrollOff = () => {
+            if (isInfinite) return Infinity;
+            const cw = track.parentElement ? track.parentElement.getBoundingClientRect().width : 0;
+            const tw = origSlides.reduce((a, s) => a + s.getBoundingClientRect().width + GAP, 0) - GAP;
+            return Math.max(0, tw - cw);
         };
 
-        if (prevBtn) prevBtn.addEventListener('click', () => goTo(currentIndex - 1));
-        if (nextBtn) nextBtn.addEventListener('click', () => goTo(currentIndex + 1));
-        dots.forEach(dot => dot.addEventListener('click', () => goTo(parseInt(dot.dataset.dotIndex, 10))));
+        const applyPos = (i, instant) => {
+            const sw = slideW();
+            let off = i * (sw + GAP);
+            if (!isInfinite) off = Math.min(off, maxScrollOff());
+            if (instant) {
+                const prev = track.style.transition;
+                track.style.transition = 'none';
+                track.style.transform = `translateX(-${off}px)`;
+                track.getBoundingClientRect();
+                track.style.transition = prev;
+            } else {
+                track.style.transform = `translateX(-${off}px)`;
+            }
+        };
+
+        const realIdx = (vi) => ((vi - offset0) % N + N) % N;
+        const syncDots = (ri) => origDots.forEach((d, i) => d.classList.toggle('is-active', i === ri));
+        const syncBtns = () => {
+            if (isInfinite) { if (prevBtn) prevBtn.disabled = false; if (nextBtn) nextBtn.disabled = false; return; }
+            if (prevBtn) prevBtn.disabled = idx === 0;
+            if (nextBtn) nextBtn.disabled = idx >= N - 1;
+        };
+
+        const goTo = (newIdx, instant = false) => {
+            if (!isInfinite) {
+                newIdx = Math.max(0, Math.min(newIdx, N - 1));
+                const sw = slideW(); const maxOff = maxScrollOff();
+                const curOff = Math.min(idx * (sw + GAP), maxOff);
+                const newOff = Math.min(newIdx * (sw + GAP), maxOff);
+                if (Math.abs(newOff - curOff) < 0.5) { idx = newIdx; syncDots(idx); syncBtns(); return; }
+            }
+            idx = newIdx;
+            applyPos(idx, instant);
+            syncDots(isInfinite ? realIdx(idx) : idx);
+            syncBtns();
+        };
+
+        if (isInfinite) {
+            track.addEventListener('transitionend', (e) => {
+                if (e.propertyName !== 'transform') return;
+                if (idx >= offset0 + N) { idx -= N; applyPos(idx, true); }
+                else if (idx < offset0) { idx += N; applyPos(idx, true); }
+            });
+        }
+
+        const resetAutoplay = () => {
+            if (!isAutoplay) return;
+            clearInterval(autoplayTimer);
+            autoplayTimer = setInterval(() => goTo(idx + 1), autoplaySpeed);
+        };
+
+        if (prevBtn) prevBtn.addEventListener('click', () => { goTo(idx - 1); resetAutoplay(); });
+        if (nextBtn) nextBtn.addEventListener('click', () => { goTo(idx + 1); resetAutoplay(); });
+        origDots.forEach(d => d.addEventListener('click', () => {
+            const ri = parseInt(d.dataset.dotIndex, 10);
+            goTo(isInfinite ? ri + offset0 : ri); resetAutoplay();
+        }));
+
+        if (isAutoplay) {
+            autoplayTimer = setInterval(() => goTo(idx + 1), autoplaySpeed);
+            carouselEl.addEventListener('mouseenter', () => clearInterval(autoplayTimer));
+            carouselEl.addEventListener('mouseleave', () => resetAutoplay());
+        }
 
         // Video playback
         playBtns.forEach(btn => {
@@ -139,43 +239,46 @@ class ProductInfoAdvanced {
                 const url = btn.dataset.videoUrl;
                 const mediaWrap = btn.closest('.product-info-advanced__review-media');
                 if (!mediaWrap || !url) return;
-                let embedEl;
+                let el;
                 if (url.includes('youtube.com') || url.includes('youtu.be')) {
                     const id = url.match(/(?:v=|youtu\.be\/)([^&?/]+)/)?.[1];
                     if (!id) return;
-                    embedEl = document.createElement('iframe');
-                    embedEl.src = `https://www.youtube.com/embed/${id}?autoplay=1`;
-                    embedEl.allow = 'autoplay; encrypted-media; fullscreen';
-                    embedEl.allowFullscreen = true;
+                    el = document.createElement('iframe');
+                    el.src = `https://www.youtube.com/embed/${id}?autoplay=1`;
+                    el.allow = 'autoplay; encrypted-media; fullscreen';
+                    el.allowFullscreen = true;
                 } else if (url.includes('vimeo.com')) {
                     const id = url.match(/vimeo\.com\/(\d+)/)?.[1];
                     if (!id) return;
-                    embedEl = document.createElement('iframe');
-                    embedEl.src = `https://player.vimeo.com/video/${id}?autoplay=1`;
-                    embedEl.allow = 'autoplay; fullscreen';
-                    embedEl.allowFullscreen = true;
+                    el = document.createElement('iframe');
+                    el.src = `https://player.vimeo.com/video/${id}?autoplay=1`;
+                    el.allow = 'autoplay; fullscreen';
+                    el.allowFullscreen = true;
                 } else {
-                    embedEl = document.createElement('video');
-                    embedEl.src = url; embedEl.controls = true; embedEl.autoplay = true; embedEl.playsInline = true;
+                    el = document.createElement('video');
+                    el.src = url; el.controls = true; el.autoplay = true; el.playsInline = true;
                 }
-                embedEl.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;border:none;object-fit:cover;';
+                el.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;border:none;object-fit:cover;';
                 mediaWrap.innerHTML = '';
-                mediaWrap.appendChild(embedEl);
+                mediaWrap.appendChild(el);
             });
         });
 
         // Touch swipe
-        let touchStartX = 0, touchStartY = 0;
-        track.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; touchStartY = e.touches[0].clientY; }, { passive: true });
+        let tx = 0, ty = 0;
+        track.addEventListener('touchstart', e => { tx = e.touches[0].clientX; ty = e.touches[0].clientY; }, { passive: true });
         track.addEventListener('touchend', e => {
-            const dx = touchStartX - e.changedTouches[0].clientX;
-            const dy = Math.abs(touchStartY - e.changedTouches[0].clientY);
-            if (Math.abs(dx) > 40 && Math.abs(dx) > dy) goTo(currentIndex + (dx > 0 ? 1 : -1));
+            const dx = tx - e.changedTouches[0].clientX;
+            const dy = Math.abs(ty - e.changedTouches[0].clientY);
+            if (Math.abs(dx) > 40 && Math.abs(dx) > dy) { goTo(idx + (dx > 0 ? 1 : -1)); resetAutoplay(); }
         }, { passive: true });
 
         let resizeTimer;
-        window.addEventListener('resize', () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(() => goTo(currentIndex), 100); });
-        goTo(0);
+        window.addEventListener('resize', () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(() => { applyPos(idx, true); syncBtns(); }, 100); });
+
+        applyPos(idx, true);
+        syncDots(isInfinite ? realIdx(idx) : idx);
+        syncBtns();
     }
 
     initTrustPopups() {
