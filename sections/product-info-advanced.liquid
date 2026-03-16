@@ -159,6 +159,7 @@
       LEFT COLUMN
     ================================ {%- endcomment -%}
     <div class="product-info-advanced__left{% if section.settings.left_sticky == false %} is-not-sticky{% endif %}" style="--pia-dt-offset: {{ section.settings.image_desktop_offset | default: 0 }}px;">
+      <div class="product-info-advanced__left-inner">
       <div class="product-info-advanced__media">
         
         {%- comment -%} Main Image (wrapped for edge-arrow positioning) {%- endcomment -%}
@@ -352,7 +353,7 @@
               {%- if block.settings.show_arrows or block.settings.show_dots -%}
                 {%- assign mc_nav_has_bg = false -%}
                 {%- if block.settings.nav_bg != blank -%}{%- assign mc_nav_has_bg = true -%}{%- endif -%}
-                <div class="product-info-advanced__reviews-nav"{% if mc_nav_has_bg %} style="background: {{ block.settings.nav_bg }}; border-radius: {{ block.settings.nav_radius | default: 40 }}px; padding: {{ block.settings.nav_pad_v | default: 8 }}px {{ block.settings.nav_pad_h | default: 16 }}px; width: fit-content; margin-left: auto; margin-right: auto;"{% endif %}>
+                <div class="product-info-advanced__reviews-nav">
                   {%- if block.settings.show_arrows -%}
                     <button type="button" class="product-info-advanced__reviews-arrow product-info-advanced__mc-prev{% if block.settings.mc_prev_image != blank or block.settings.mc_prev_svg != blank %} is-custom-icon{% endif %}" aria-label="Previous">
                       {%- if block.settings.mc_prev_svg != blank -%}{{ block.settings.mc_prev_svg }}
@@ -361,7 +362,7 @@
                     </button>
                   {%- endif -%}
                   {%- if block.settings.show_dots -%}
-                    <div class="product-info-advanced__reviews-dots" data-mc-dots>
+                    <div class="product-info-advanced__reviews-dots" data-mc-dots{% if mc_nav_has_bg %} style="background: {{ block.settings.nav_bg }}; border-radius: {{ block.settings.nav_radius | default: 40 }}px; padding: {{ block.settings.nav_pad_v | default: 8 }}px {{ block.settings.nav_pad_h | default: 16 }}px;"{% endif %}>
                       {%- for i in (1..6) -%}
                         {%- assign mc_img_key = 'media' | append: i | append: '_image' -%}
                         {%- assign mc_vid_key = 'media' | append: i | append: '_video' -%}
@@ -430,6 +431,7 @@
         </div>
       {%- endif -%}
 
+      </div>{%- comment -%} /product-info-advanced__left-inner {%- endcomment -%}
     </div>
 
     {%- comment -%} ================================
@@ -961,7 +963,7 @@
                       {%- if block.settings.show_arrows or block.settings.show_dots -%}
                         {%- assign mc_nav_has_bg = false -%}
                         {%- if block.settings.nav_bg != blank -%}{%- assign mc_nav_has_bg = true -%}{%- endif -%}
-                        <div class="product-info-advanced__reviews-nav"{% if mc_nav_has_bg %} style="background: {{ block.settings.nav_bg }}; border-radius: {{ block.settings.nav_radius | default: 40 }}px; padding: {{ block.settings.nav_pad_v | default: 8 }}px {{ block.settings.nav_pad_h | default: 16 }}px; width: fit-content; margin-left: auto; margin-right: auto;"{% endif %}>
+                        <div class="product-info-advanced__reviews-nav">
                           {%- if block.settings.show_arrows -%}
                             <button type="button" class="product-info-advanced__reviews-arrow product-info-advanced__mc-prev{% if block.settings.mc_prev_image != blank or block.settings.mc_prev_svg != blank %} is-custom-icon{% endif %}" aria-label="Previous">
                               {%- if block.settings.mc_prev_svg != blank -%}{{ block.settings.mc_prev_svg }}
@@ -970,7 +972,7 @@
                             </button>
                           {%- endif -%}
                           {%- if block.settings.show_dots -%}
-                            <div class="product-info-advanced__reviews-dots" data-mc-dots>
+                            <div class="product-info-advanced__reviews-dots" data-mc-dots{% if mc_nav_has_bg %} style="background: {{ block.settings.nav_bg }}; border-radius: {{ block.settings.nav_radius | default: 40 }}px; padding: {{ block.settings.nav_pad_v | default: 8 }}px {{ block.settings.nav_pad_h | default: 16 }}px;"{% endif %}>
                               {%- for i in (1..6) -%}
                                 {%- assign mc_img_key = 'media' | append: i | append: '_image' -%}
                                 {%- assign mc_vid_key = 'media' | append: i | append: '_video' -%}

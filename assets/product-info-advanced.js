@@ -188,9 +188,8 @@ class ProductInfoAdvanced {
         const syncDots = (ri) => origDots.forEach((d, i) => d.classList.toggle('is-active', i === ri));
         const syncBtns = () => {
             if (isInfinite) { if (prevBtn) prevBtn.disabled = false; if (nextBtn) nextBtn.disabled = false; return; }
-            const sw = slideW(); const maxOff = maxScrollOff(); const curOff = Math.min(idx * (sw + GAP), maxOff);
             if (prevBtn) prevBtn.disabled = idx === 0;
-            if (nextBtn) nextBtn.disabled = curOff >= maxOff - 0.5;
+            if (nextBtn) nextBtn.disabled = idx >= N - 1;
         };
 
         const goTo = (newIdx, instant = false) => {

@@ -121,7 +121,7 @@
 /* ================================
    MEDIA GALLERY (Left Column)
 ================================ */
-.product-info-advanced__left {
+.product-info-advanced__left-inner {
     display: flex;
     flex-direction: column;
     gap: 16px;
@@ -129,11 +129,14 @@
 
 @media screen and (min-width: 769px) {
     .product-info-advanced__left {
-        position: sticky;
-        top: var(--pia-sticky-top, 40px);
+        align-self: stretch;
         margin-top: var(--pia-dt-offset, 0px);
     }
-    .product-info-advanced__left.is-not-sticky {
+    .product-info-advanced__left-inner {
+        position: sticky;
+        top: var(--pia-sticky-top, 40px);
+    }
+    .product-info-advanced__left.is-not-sticky .product-info-advanced__left-inner {
         position: static;
     }
 }
