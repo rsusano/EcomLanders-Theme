@@ -13,3 +13,9 @@ UnclosedHTMLElement:
 # "Unknown at rule" warnings for this and other modern CSS features.
 CSSLint:
   enabled: false
+
+# Header reuses the same static block (header-menu) for menu, drawer, and nav bar
+# variants — intentional pattern. Each content_for uses variant: to switch context.
+UniqueStaticBlockId:
+  ignore:
+    - sections/header.liquid

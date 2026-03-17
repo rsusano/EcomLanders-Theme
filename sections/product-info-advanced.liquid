@@ -5,58 +5,58 @@
 {%- liquid
   assign current_variant = product.selected_or_first_available_variant
 
-  assign badge_mx     = section.settings.badge_margin | default: 12 | append: 'px'
-  assign mobile_badge_mx  = section.settings.mobile_badge_margin | default: section.settings.badge_margin | default: 12 | append: 'px'
-  assign badge_pos_top    = 'auto'
-  assign badge_pos_right  = 'auto'
+  assign badge_mx = section.settings.badge_margin | default: 12 | append: 'px'
+  assign mobile_badge_mx = section.settings.mobile_badge_margin | default: section.settings.badge_margin | default: 12 | append: 'px'
+  assign badge_pos_top = 'auto'
+  assign badge_pos_right = 'auto'
   assign badge_pos_bottom = 'auto'
-  assign badge_pos_left   = 'auto'
+  assign badge_pos_left = 'auto'
   assign mobile_badge_top = 'auto'
   assign mobile_badge_right = 'auto'
   assign mobile_badge_bottom = 'auto'
   assign mobile_badge_left = 'auto'
   case section.settings.badge_position
     when 'top-left'
-      assign badge_pos_top  = badge_mx
+      assign badge_pos_top = badge_mx
       assign badge_pos_left = badge_mx
     when 'bottom-right'
       assign badge_pos_bottom = badge_mx
-      assign badge_pos_right  = badge_mx
+      assign badge_pos_right = badge_mx
     when 'bottom-left'
       assign badge_pos_bottom = badge_mx
-      assign badge_pos_left   = badge_mx
+      assign badge_pos_left = badge_mx
     else
-      assign badge_pos_top   = badge_mx
+      assign badge_pos_top = badge_mx
       assign badge_pos_right = badge_mx
   endcase
   if section.settings.mobile_badge_position != blank
     case section.settings.mobile_badge_position
       when 'top-left'
-        assign mobile_badge_top  = mobile_badge_mx
+        assign mobile_badge_top = mobile_badge_mx
         assign mobile_badge_left = mobile_badge_mx
       when 'bottom-right'
         assign mobile_badge_bottom = mobile_badge_mx
-        assign mobile_badge_right  = mobile_badge_mx
+        assign mobile_badge_right = mobile_badge_mx
       when 'bottom-left'
         assign mobile_badge_bottom = mobile_badge_mx
-        assign mobile_badge_left   = mobile_badge_mx
+        assign mobile_badge_left = mobile_badge_mx
       else
-        assign mobile_badge_top   = mobile_badge_mx
+        assign mobile_badge_top = mobile_badge_mx
         assign mobile_badge_right = mobile_badge_mx
     endcase
   else
     case section.settings.badge_position
       when 'top-left'
-        assign mobile_badge_top  = mobile_badge_mx
+        assign mobile_badge_top = mobile_badge_mx
         assign mobile_badge_left = mobile_badge_mx
       when 'bottom-right'
         assign mobile_badge_bottom = mobile_badge_mx
-        assign mobile_badge_right  = mobile_badge_mx
+        assign mobile_badge_right = mobile_badge_mx
       when 'bottom-left'
         assign mobile_badge_bottom = mobile_badge_mx
-        assign mobile_badge_left   = mobile_badge_mx
+        assign mobile_badge_left = mobile_badge_mx
       else
-        assign mobile_badge_top   = mobile_badge_mx
+        assign mobile_badge_top = mobile_badge_mx
         assign mobile_badge_right = mobile_badge_mx
     endcase
   endif
@@ -198,240 +198,375 @@
 
 <div class="product-info-advanced" data-section-id="{{ section.id }}" data-section-type="product-info-advanced">
   <div class="product-info-advanced__grid">
-    
-    {%- comment -%} ================================
-      LEFT COLUMN
-    ================================ {%- endcomment -%}
-    <div class="product-info-advanced__left{% if section.settings.left_sticky == false %} is-not-sticky{% endif %}" style="--pia-dt-offset: {{ section.settings.image_desktop_offset | default: 0 }}px;">
+    {%- comment -%}
+      ================================
+        LEFT COLUMN
+      ================================
+    {%- endcomment -%}
+    <div
+      class="product-info-advanced__left{% if section.settings.left_sticky == false %} is-not-sticky{% endif %}"
+      style="--pia-dt-offset: {{ section.settings.image_desktop_offset | default: 0 }}px;"
+    >
       <div class="product-info-advanced__left-inner">
-      <div class="product-info-advanced__media">
-        
-        {%- comment -%} Main Image (wrapped for edge-arrow positioning) {%- endcomment -%}
-        <div class="product-info-advanced__image-with-nav">
-          {%- if product.media.size > 1 -%}
-            <div class="product-info-advanced__gallery-arrows">
-              <button type="button" class="product-info-advanced__gallery-nav product-info-advanced__gallery-prev" aria-label="Previous image"{% if section.settings.gallery_prev_image != blank or section.settings.gallery_prev_svg != blank %} data-icon-type="custom"{% endif %}>
-                {%- if section.settings.gallery_prev_svg != blank -%}
-                  {{ section.settings.gallery_prev_svg }}
-                {%- elsif section.settings.gallery_prev_image != blank -%}
-                  <img src="{{ section.settings.gallery_prev_image | image_url: width: 100 }}" alt="" width="44" height="44" loading="lazy">
-                {%- else -%}
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
-                {%- endif -%}
-              </button>
-              <button type="button" class="product-info-advanced__gallery-nav product-info-advanced__gallery-next" aria-label="Next image"{% if section.settings.gallery_next_image != blank or section.settings.gallery_next_svg != blank %} data-icon-type="custom"{% endif %}>
-                {%- if section.settings.gallery_next_svg != blank -%}
-                  {{ section.settings.gallery_next_svg }}
-                {%- elsif section.settings.gallery_next_image != blank -%}
-                  <img src="{{ section.settings.gallery_next_image | image_url: width: 100 }}" alt="" width="44" height="44" loading="lazy">
-                {%- else -%}
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-                {%- endif -%}
-              </button>
-            </div>
-          {%- endif -%}
-
-          <div class="product-info-advanced__main-image-wrap">
-            {%- if section.settings.show_badge and section.settings.badge_text != blank -%}
-              <div class="product-info-advanced__badge">
-                <span class="product-info-advanced__badge-icon">
-                  {%- if section.settings.badge_icon_svg != blank -%}
-                    {{ section.settings.badge_icon_svg }}
-                  {%- elsif section.settings.badge_icon_image != blank -%}
-                    <img src="{{ section.settings.badge_icon_image | image_url: width: 32 }}" width="14" height="14" alt="" loading="lazy">
+        <div class="product-info-advanced__media">
+          {%- comment -%} Main Image (wrapped for edge-arrow positioning) {%- endcomment -%}
+          <div class="product-info-advanced__image-with-nav">
+            {%- if product.media.size > 1 -%}
+              <div class="product-info-advanced__gallery-arrows">
+                <button
+                  type="button"
+                  class="product-info-advanced__gallery-nav product-info-advanced__gallery-prev"
+                  aria-label="Previous image"
+                  {% if section.settings.gallery_prev_image != blank or section.settings.gallery_prev_svg != blank %}
+                    data-icon-type="custom"
+                  {% endif %}
+                >
+                  {%- if section.settings.gallery_prev_svg != blank -%}
+                    {{ section.settings.gallery_prev_svg }}
+                  {%- elsif section.settings.gallery_prev_image != blank -%}
+                    <img
+                      src="{{ section.settings.gallery_prev_image | image_url: width: 100 }}"
+                      alt=""
+                      width="44"
+                      height="44"
+                      loading="lazy"
+                    >
                   {%- else -%}
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M12 2l3 6.5 7 1-5 5 1 7-6-3.5-6 3.5 1-7-5-5 7-1z"/>
+                    <svg
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2.5"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>
                     </svg>
                   {%- endif -%}
-                </span>
-                <span class="product-info-advanced__badge-text">{{ section.settings.badge_text | strip_html | strip }}</span>
+                </button>
+                <button
+                  type="button"
+                  class="product-info-advanced__gallery-nav product-info-advanced__gallery-next"
+                  aria-label="Next image"
+                  {% if section.settings.gallery_next_image != blank or section.settings.gallery_next_svg != blank %}
+                    data-icon-type="custom"
+                  {% endif %}
+                >
+                  {%- if section.settings.gallery_next_svg != blank -%}
+                    {{ section.settings.gallery_next_svg }}
+                  {%- elsif section.settings.gallery_next_image != blank -%}
+                    <img
+                      src="{{ section.settings.gallery_next_image | image_url: width: 100 }}"
+                      alt=""
+                      width="44"
+                      height="44"
+                      loading="lazy"
+                    >
+                  {%- else -%}
+                    <svg
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2.5"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+                    </svg>
+                  {%- endif -%}
+                </button>
               </div>
             {%- endif -%}
 
-            {%- if product.featured_media != blank -%}
-              <img
-                data-pia-main-image
-                src="{{ product.featured_media | image_url: width: 800 }}"
-                alt="{{ product.featured_media.alt | escape }}"
-                width="800"
-                height="800"
-                loading="lazy"
-              >
-            {%- else -%}
-              {{ 'product-1' | placeholder_svg_tag: 'placeholder-svg' }}
-            {%- endif -%}
-          </div>
-        </div>
-
-        {%- comment -%} Thumbnails {%- endcomment -%}
-        {%- if product.media.size > 1 -%}
-          <div class="product-info-advanced__thumbnails-wrap">
-            <div class="product-info-advanced__thumbnails">
-              {%- for media in product.media limit: 5 -%}
-                <div
-                  class="product-info-advanced__thumb{% if forloop.first %} is-active{% endif %}"
-                  data-pia-thumb
-                  data-src="{{ media | image_url: width: 800 }}"
-                >
-                  <img
-                    src="{{ media | image_url: width: 200 }}"
-                    alt="{{ media.alt | escape }}"
-                    width="200"
-                    height="200"
-                    loading="lazy"
-                  >
+            <div class="product-info-advanced__main-image-wrap">
+              {%- if section.settings.show_badge and section.settings.badge_text != blank -%}
+                <div class="product-info-advanced__badge">
+                  <span class="product-info-advanced__badge-icon">
+                    {%- if section.settings.badge_icon_svg != blank -%}
+                      {{ section.settings.badge_icon_svg }}
+                    {%- elsif section.settings.badge_icon_image != blank -%}
+                      <img
+                        src="{{ section.settings.badge_icon_image | image_url: width: 32 }}"
+                        width="14"
+                        height="14"
+                        alt=""
+                        loading="lazy"
+                      >
+                    {%- else -%}
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2l3 6.5 7 1-5 5 1 7-6-3.5-6 3.5 1-7-5-5 7-1z"/>
+                      </svg>
+                    {%- endif -%}
+                  </span>
+                  <span class="product-info-advanced__badge-text">
+                    {{- section.settings.badge_text | strip_html | strip -}}
+                  </span>
                 </div>
-              {%- endfor -%}
-            </div>
-          </div>
-        {%- endif -%}
-      </div>
+              {%- endif -%}
 
-      {%- comment -%} Left Column Blocks {%- endcomment -%}
-      {%- assign icon_blocks = section.blocks | where: 'type', 'icon_block' -%}
-      {%- if icon_blocks.size > 0 -%}
-        <div class="product-info-advanced__icons">
-          {%- for block in icon_blocks -%}
-            {%- liquid
-              assign block_classes = 'product-info-advanced__icon-item'
-              unless block.settings.show_on_mobile
-                assign block_classes = block_classes | append: ' hide-mobile'
-              endunless
-              unless block.settings.show_on_desktop
-                assign block_classes = block_classes | append: ' hide-desktop'
-              endunless
-            -%}
-            <div class="{{ block_classes }}" {{ block.shopify_attributes }}>
-              {%- if block.settings.icon_image != blank -%}
-                <img 
-                  src="{{ block.settings.icon_image | image_url: width: 64 }}" 
-                  alt="{{ block.settings.title | escape }}"
-                  width="32"
-                  height="32"
+              {%- if product.featured_media != blank -%}
+                <img
+                  data-pia-main-image
+                  src="{{ product.featured_media | image_url: width: 800 }}"
+                  alt="{{ product.featured_media.alt | escape }}"
+                  width="800"
+                  height="800"
                   loading="lazy"
                 >
-              {%- elsif block.settings.icon_svg != blank -%}
-                {{ block.settings.icon_svg }}
+              {%- else -%}
+                {{ 'product-1' | placeholder_svg_tag: 'placeholder-svg' }}
               {%- endif -%}
-              <span class="product-info-advanced__icon-label">{{ block.settings.title }}</span>
             </div>
-          {%- endfor -%}
-        </div>
-      {%- endif -%}
+          </div>
 
-      {%- comment -%} Media Carousel Blocks (Left Column) {%- endcomment -%}
-      {%- for block in section.blocks -%}
-        {%- if block.type == 'media_carousel' and block.settings.column == 'left' -%}
-          {%- liquid
-            assign mc_classes = 'product-info-advanced__media-carousel'
-            unless block.settings.show_on_mobile
-              assign mc_classes = mc_classes | append: ' hide-mobile'
-            endunless
-            unless block.settings.show_on_desktop
-              assign mc_classes = mc_classes | append: ' hide-desktop'
-            endunless
-            assign dt_cards = block.settings.visible_cards_desktop
-            assign mb_cards = block.settings.visible_cards_mobile
-            assign mc_aspect = block.settings.media_aspect | default: '3/4'
-            assign mc_img_fit = block.settings.image_fit | default: 'cover'
-            assign mc_dot_color = block.settings.dot_color
-            assign mc_dot_active = block.settings.dot_active_color
-            assign mc_arrow_sz = block.settings.mc_arrow_size | default: 44
-            assign mc_arrow_mob = block.settings.mc_arrow_mobile_size | default: 36
-          -%}
-          <style>
-            [data-pia-media-carousel="{{ block.id }}"] { --mc-arrow-sz: {{ mc_arrow_sz }}px; }
-            @media screen and (max-width: 768px) { [data-pia-media-carousel="{{ block.id }}"] { --mc-arrow-sz: {{ mc_arrow_mob }}px; } }
-          </style>
-          <div class="{{ mc_classes }}"
-            data-pia-media-carousel="{{ block.id }}"
-            data-cards-desktop="{{ dt_cards }}"
-            data-cards-mobile="{{ mb_cards }}"
-            data-mc-infinite="{{ block.settings.enable_infinite }}"
-            data-mc-autoplay="{{ block.settings.enable_autoplay }}"
-            data-mc-autoplay-speed="{{ block.settings.autoplay_speed | default: 3000 }}"
-            data-mc-marquee="{{ block.settings.enable_marquee }}"
-            data-mc-marquee-speed="{{ block.settings.marquee_speed | default: 40 }}"
-            style="--mc-dt-cols: {{ dt_cards }}; --mc-mb-cols: {{ mb_cards }}; --mc-media-aspect: {{ mc_aspect }}; --mc-image-fit: {{ mc_img_fit }};{% if mc_dot_color != blank %} --mc-dot-color: {{ mc_dot_color }};{% endif %}{% if mc_dot_active != blank %} --mc-dot-active: {{ mc_dot_active }};{% endif %}"
-            {{ block.shopify_attributes }}>
-            {%- if block.settings.heading != blank -%}
-              <h3 class="product-info-advanced__mc-heading" style="{% if block.settings.heading_size %}font-size: {{ block.settings.heading_size }}px; {% endif %}{% if block.settings.heading_color != blank %}color: {{ block.settings.heading_color }}; {% endif %}{% if block.settings.heading_weight %}font-weight: {{ block.settings.heading_weight }}; {% endif %}margin-top: {{ block.settings.heading_margin_top | default: 0 }}px; margin-bottom: {{ block.settings.heading_margin_bottom | default: 8 }}px;">{{ block.settings.heading }}</h3>
-            {%- endif -%}
-            {%- if block.settings.subheading != blank -%}
-              <p class="product-info-advanced__mc-subheading">{{ block.settings.subheading }}</p>
-            {%- endif -%}
-            {%- assign mc_has_items = false -%}
-            {%- for i in (1..6) -%}
-              {%- assign mc_img_key = 'media' | append: i | append: '_image' -%}
-              {%- assign mc_vid_key = 'media' | append: i | append: '_video' -%}
-              {%- if block.settings[mc_img_key] != blank or block.settings[mc_vid_key] != blank -%}
-                {%- assign mc_has_items = true -%}
-              {%- endif -%}
-            {%- endfor -%}
-            {%- if mc_has_items -%}
-              <div class="product-info-advanced__mc-carousel" data-mc-carousel>
-                <div class="product-info-advanced__mc-track" data-mc-track>
-                  {%- for i in (1..6) -%}
-                    {%- assign mc_img_key = 'media' | append: i | append: '_image' -%}
-                    {%- assign mc_vid_key = 'media' | append: i | append: '_video' -%}
-                    {%- if block.settings[mc_img_key] != blank or block.settings[mc_vid_key] != blank -%}
-                      <div class="product-info-advanced__mc-slide" data-mc-slide>
-                        <div class="product-info-advanced__review-media">
-                          {%- if block.settings[mc_img_key] != blank -%}
-                            <img src="{{ block.settings[mc_img_key] | image_url: width: 600 }}" alt="" class="product-info-advanced__review-img" width="600" height="800" loading="lazy">
-                          {%- else -%}
-                            <div class="product-info-advanced__review-placeholder">&#9654;</div>
-                          {%- endif -%}
-                          {%- if block.settings[mc_vid_key] != blank -%}
-                            <button type="button" class="product-info-advanced__review-play" data-video-url="{{ block.settings[mc_vid_key] | escape }}" aria-label="Play video">
-                              <svg viewBox="0 0 24 24" fill="currentColor" width="28" height="28"><path d="M8 5v14l11-7z"/></svg>
-                            </button>
-                          {%- endif -%}
-                        </div>
-                      </div>
-                    {%- endif -%}
-                  {%- endfor -%}
-                </div>
+          {%- comment -%} Thumbnails {%- endcomment -%}
+          {%- if product.media.size > 1 -%}
+            <div class="product-info-advanced__thumbnails-wrap">
+              <div class="product-info-advanced__thumbnails">
+                {%- for media in product.media limit: 5 -%}
+                  <div
+                    class="product-info-advanced__thumb{% if forloop.first %} is-active{% endif %}"
+                    data-pia-thumb
+                    data-src="{{ media | image_url: width: 800 }}"
+                  >
+                    <img
+                      src="{{ media | image_url: width: 200 }}"
+                      alt="{{ media.alt | escape }}"
+                      width="200"
+                      height="200"
+                      loading="lazy"
+                    >
+                  </div>
+                {%- endfor -%}
               </div>
-              {%- if block.settings.show_arrows or block.settings.show_dots -%}
-                {%- assign mc_nav_has_bg = false -%}
-                {%- if block.settings.nav_bg != blank -%}{%- assign mc_nav_has_bg = true -%}{%- endif -%}
-                <div class="product-info-advanced__reviews-nav">
-                  {%- if block.settings.show_arrows -%}
-                    <button type="button" class="product-info-advanced__reviews-arrow product-info-advanced__mc-prev{% if block.settings.mc_prev_image != blank or block.settings.mc_prev_svg != blank %} is-custom-icon{% endif %}" aria-label="Previous">
-                      {%- if block.settings.mc_prev_svg != blank -%}{{ block.settings.mc_prev_svg }}
-                      {%- elsif block.settings.mc_prev_image != blank -%}<img src="{{ block.settings.mc_prev_image | image_url: width: 100 }}" alt="" width="44" height="44" loading="lazy">
-                      {%- else -%}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>{%- endif -%}
-                    </button>
-                  {%- endif -%}
-                  {%- if block.settings.show_dots -%}
-                    <div class="product-info-advanced__reviews-dots" data-mc-dots{% if mc_nav_has_bg %} style="background: {{ block.settings.nav_bg }}; border-radius: {{ block.settings.nav_radius | default: 40 }}px; padding: {{ block.settings.nav_pad_v | default: 8 }}px {{ block.settings.nav_pad_h | default: 16 }}px;"{% endif %}>
-                      {%- for i in (1..6) -%}
-                        {%- assign mc_img_key = 'media' | append: i | append: '_image' -%}
-                        {%- assign mc_vid_key = 'media' | append: i | append: '_video' -%}
-                        {%- if block.settings[mc_img_key] != blank or block.settings[mc_vid_key] != blank -%}
-                          <button type="button" class="product-info-advanced__reviews-dot{% if forloop.first %} is-active{% endif %}" data-dot-index="{{ forloop.index0 }}" aria-label="Slide {{ forloop.index }}"></button>
-                        {%- endif -%}
-                      {%- endfor -%}
-                    </div>
-                  {%- endif -%}
-                  {%- if block.settings.show_arrows -%}
-                    <button type="button" class="product-info-advanced__reviews-arrow product-info-advanced__mc-next{% if block.settings.mc_next_image != blank or block.settings.mc_next_svg != blank %} is-custom-icon{% endif %}" aria-label="Next">
-                      {%- if block.settings.mc_next_svg != blank -%}{{ block.settings.mc_next_svg }}
-                      {%- elsif block.settings.mc_next_image != blank -%}<img src="{{ block.settings.mc_next_image | image_url: width: 100 }}" alt="" width="44" height="44" loading="lazy">
-                      {%- else -%}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>{%- endif -%}
-                    </button>
-                  {%- endif -%}
-                </div>
-              {%- endif -%}
-            {%- endif -%}
+            </div>
+          {%- endif -%}
+        </div>
+
+        {%- comment -%} Left Column Blocks {%- endcomment -%}
+        {%- assign icon_blocks = section.blocks | where: 'type', 'icon_block' -%}
+        {%- if icon_blocks.size > 0 -%}
+          <div class="product-info-advanced__icons">
+            {%- for block in icon_blocks -%}
+              {%- liquid
+                assign block_classes = 'product-info-advanced__icon-item'
+                unless block.settings.show_on_mobile
+                  assign block_classes = block_classes | append: ' hide-mobile'
+                endunless
+                unless block.settings.show_on_desktop
+                  assign block_classes = block_classes | append: ' hide-desktop'
+                endunless
+              -%}
+              <div class="{{ block_classes }}" {{ block.shopify_attributes }}>
+                {%- if block.settings.icon_image != blank -%}
+                  <img
+                    src="{{ block.settings.icon_image | image_url: width: 64 }}"
+                    alt="{{ block.settings.title | escape }}"
+                    width="32"
+                    height="32"
+                    loading="lazy"
+                  >
+                {%- elsif block.settings.icon_svg != blank -%}
+                  {{ block.settings.icon_svg }}
+                {%- endif -%}
+                <span class="product-info-advanced__icon-label">{{ block.settings.title }}</span>
+              </div>
+            {%- endfor -%}
           </div>
         {%- endif -%}
-      {%- endfor -%}
 
-      {%- comment -%} Accordions (Left) {%- endcomment -%}
-      {%- capture left_accordions_html -%}
+        {%- comment -%} Media Carousel Blocks (Left Column) {%- endcomment -%}
+        {%- for block in section.blocks -%}
+          {%- if block.type == 'media_carousel' and block.settings.column == 'left' -%}
+            {%- liquid
+              assign mc_classes = 'product-info-advanced__media-carousel'
+              unless block.settings.show_on_mobile
+                assign mc_classes = mc_classes | append: ' hide-mobile'
+              endunless
+              unless block.settings.show_on_desktop
+                assign mc_classes = mc_classes | append: ' hide-desktop'
+              endunless
+              assign dt_cards = block.settings.visible_cards_desktop
+              assign mb_cards = block.settings.visible_cards_mobile
+              assign mc_aspect = block.settings.media_aspect | default: '3/4'
+              assign mc_img_fit = block.settings.image_fit | default: 'cover'
+              assign mc_dot_color = block.settings.dot_color
+              assign mc_dot_active = block.settings.dot_active_color
+              assign mc_arrow_sz = block.settings.mc_arrow_size | default: 44
+              assign mc_arrow_mob = block.settings.mc_arrow_mobile_size | default: 36
+            -%}
+            <style>
+              [data-pia-media-carousel="{{ block.id }}"] { --mc-arrow-sz: {{ mc_arrow_sz }}px; }
+              @media screen and (max-width: 768px) { [data-pia-media-carousel="{{ block.id }}"] { --mc-arrow-sz: {{ mc_arrow_mob }}px; } }
+            </style>
+            <div
+              class="{{ mc_classes }}"
+              data-pia-media-carousel="{{ block.id }}"
+              data-cards-desktop="{{ dt_cards }}"
+              data-cards-mobile="{{ mb_cards }}"
+              data-mc-infinite="{{ block.settings.enable_infinite }}"
+              data-mc-autoplay="{{ block.settings.enable_autoplay }}"
+              data-mc-autoplay-speed="{{ block.settings.autoplay_speed | default: 3000 }}"
+              data-mc-marquee="{{ block.settings.enable_marquee }}"
+              data-mc-marquee-speed="{{ block.settings.marquee_speed | default: 40 }}"
+              style="--mc-dt-cols: {{ dt_cards }}; --mc-mb-cols: {{ mb_cards }}; --mc-media-aspect: {{ mc_aspect }}; --mc-image-fit: {{ mc_img_fit }};{% if mc_dot_color != blank %} --mc-dot-color: {{ mc_dot_color }};{% endif %}{% if mc_dot_active != blank %} --mc-dot-active: {{ mc_dot_active }};{% endif %}"
+              {{ block.shopify_attributes }}
+            >
+              {%- if block.settings.heading != blank -%}
+                <h3
+                  class="product-info-advanced__mc-heading"
+                  style="{% if block.settings.heading_size %}font-size: {{ block.settings.heading_size }}px; {% endif %}{% if block.settings.heading_color != blank %}color: {{ block.settings.heading_color }}; {% endif %}{% if block.settings.heading_weight %}font-weight: {{ block.settings.heading_weight }}; {% endif %}margin-top: {{ block.settings.heading_margin_top | default: 0 }}px; margin-bottom: {{ block.settings.heading_margin_bottom | default: 8 }}px;"
+                >
+                  {{ block.settings.heading }}
+                </h3>
+              {%- endif -%}
+              {%- if block.settings.subheading != blank -%}
+                <p class="product-info-advanced__mc-subheading">{{ block.settings.subheading }}</p>
+              {%- endif -%}
+              {%- assign mc_has_items = false -%}
+              {%- for i in (1..6) -%}
+                {%- assign mc_img_key = 'media' | append: i | append: '_image' -%}
+                {%- assign mc_vid_key = 'media' | append: i | append: '_video' -%}
+                {%- if block.settings[mc_img_key] != blank or block.settings[mc_vid_key] != blank -%}
+                  {%- assign mc_has_items = true -%}
+                {%- endif -%}
+              {%- endfor -%}
+              {%- if mc_has_items -%}
+                <div class="product-info-advanced__mc-carousel" data-mc-carousel>
+                  <div class="product-info-advanced__mc-track" data-mc-track>
+                    {%- for i in (1..6) -%}
+                      {%- assign mc_img_key = 'media' | append: i | append: '_image' -%}
+                      {%- assign mc_vid_key = 'media' | append: i | append: '_video' -%}
+                      {%- if block.settings[mc_img_key] != blank or block.settings[mc_vid_key] != blank -%}
+                        <div class="product-info-advanced__mc-slide" data-mc-slide>
+                          <div class="product-info-advanced__review-media">
+                            {%- if block.settings[mc_img_key] != blank -%}
+                              <img
+                                src="{{ block.settings[mc_img_key] | image_url: width: 600 }}"
+                                alt=""
+                                class="product-info-advanced__review-img"
+                                width="600"
+                                height="800"
+                                loading="lazy"
+                              >
+                            {%- else -%}
+                              <div class="product-info-advanced__review-placeholder">&#9654;</div>
+                            {%- endif -%}
+                            {%- if block.settings[mc_vid_key] != blank -%}
+                              <button
+                                type="button"
+                                class="product-info-advanced__review-play"
+                                data-video-url="{{ block.settings[mc_vid_key] | escape }}"
+                                aria-label="Play video"
+                              >
+                                <svg viewBox="0 0 24 24" fill="currentColor" width="28" height="28">
+                                  <path d="M8 5v14l11-7z"/>
+                                </svg>
+                              </button>
+                            {%- endif -%}
+                          </div>
+                        </div>
+                      {%- endif -%}
+                    {%- endfor -%}
+                  </div>
+                </div>
+                {%- if block.settings.show_arrows or block.settings.show_dots -%}
+                  {%- assign mc_nav_has_bg = false -%}
+                  {%- if block.settings.nav_bg != blank -%}{%- assign mc_nav_has_bg = true -%}{%- endif -%}
+                  <div class="product-info-advanced__reviews-nav">
+                    {%- if block.settings.show_arrows -%}
+                      <button
+                        type="button"
+                        class="product-info-advanced__reviews-arrow product-info-advanced__mc-prev{% if block.settings.mc_prev_image != blank or block.settings.mc_prev_svg != blank %} is-custom-icon{% endif %}"
+                        aria-label="Previous"
+                      >
+                        {%- if block.settings.mc_prev_svg != blank -%}
+                          {{ block.settings.mc_prev_svg }}
+                        {%- elsif block.settings.mc_prev_image != blank -%}
+                          <img
+                            src="{{ block.settings.mc_prev_image | image_url: width: 100 }}"
+                            alt=""
+                            width="44"
+                            height="44"
+                            loading="lazy"
+                          >
+                        {%- else -%}
+                          <svg
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2.5"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                          >
+                            <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>
+                          </svg>
+                        {%- endif -%}
+                      </button>
+                    {%- endif -%}
+                    {%- if block.settings.show_dots -%}
+                      <div
+                        class="product-info-advanced__reviews-dots"
+                        data-mc-dots
+                        {% if mc_nav_has_bg %}
+                          style="background: {{ block.settings.nav_bg }}; border-radius: {{ block.settings.nav_radius | default: 40 }}px; padding: {{ block.settings.nav_pad_v | default: 8 }}px {{ block.settings.nav_pad_h | default: 16 }}px;"
+                        {% endif %}
+                      >
+                        {%- for i in (1..6) -%}
+                          {%- assign mc_img_key = 'media' | append: i | append: '_image' -%}
+                          {%- assign mc_vid_key = 'media' | append: i | append: '_video' -%}
+                          {%- if block.settings[mc_img_key] != blank or block.settings[mc_vid_key] != blank -%}
+                            <button
+                              type="button"
+                              class="product-info-advanced__reviews-dot{% if forloop.first %} is-active{% endif %}"
+                              data-dot-index="{{ forloop.index0 }}"
+                              aria-label="Slide {{ forloop.index }}"
+                            ></button>
+                          {%- endif -%}
+                        {%- endfor -%}
+                      </div>
+                    {%- endif -%}
+                    {%- if block.settings.show_arrows -%}
+                      <button
+                        type="button"
+                        class="product-info-advanced__reviews-arrow product-info-advanced__mc-next{% if block.settings.mc_next_image != blank or block.settings.mc_next_svg != blank %} is-custom-icon{% endif %}"
+                        aria-label="Next"
+                      >
+                        {%- if block.settings.mc_next_svg != blank -%}
+                          {{ block.settings.mc_next_svg }}
+                        {%- elsif block.settings.mc_next_image != blank -%}
+                          <img
+                            src="{{ block.settings.mc_next_image | image_url: width: 100 }}"
+                            alt=""
+                            width="44"
+                            height="44"
+                            loading="lazy"
+                          >
+                        {%- else -%}
+                          <svg
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2.5"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                          >
+                            <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+                          </svg>
+                        {%- endif -%}
+                      </button>
+                    {%- endif -%}
+                  </div>
+                {%- endif -%}
+              {%- endif -%}
+            </div>
+          {%- endif -%}
+        {%- endfor -%}
+
+        {%- comment -%} Accordions (Left) {%- endcomment -%}
+        {%- capture left_accordions_html -%}
         {%- for block in section.blocks -%}
           {%- if block.type == 'accordion' and block.settings.column == 'left' -%}
             {%- liquid
@@ -469,21 +604,22 @@
         {%- endfor -%}
       {%- endcapture -%}
 
-      {%- if left_accordions_html != blank -%}
-        <div class="product-info-advanced__accordions">
-          {{ left_accordions_html }}
-        </div>
-      {%- endif -%}
-
-      </div>{%- comment -%} /product-info-advanced__left-inner {%- endcomment -%}
+        {%- if left_accordions_html != blank -%}
+          <div class="product-info-advanced__accordions">
+            {{ left_accordions_html }}
+          </div>
+        {%- endif -%}
+      </div>
+      {%- comment -%} /product-info-advanced__left-inner {%- endcomment -%}
     </div>
 
-    {%- comment -%} ================================
-      RIGHT COLUMN
-    ================================ {%- endcomment -%}
+    {%- comment -%}
+      ================================
+        RIGHT COLUMN
+      ================================
+    {%- endcomment -%}
     <div class="product-info-advanced__right">
       <div class="product-info-advanced__details">
-        
         <form method="post" action="{{ routes.cart_add_url }}" class="product-info-advanced__form" data-pia-form>
           <input type="hidden" name="id" value="{{ current_variant.id }}">
           <input type="hidden" name="quantity" value="1">
@@ -503,16 +639,15 @@
             -%}
 
             {%- case block.type -%}
-              
               {%- when 'rating' -%}
                 {%- assign r_text = block.settings.text | replace: '<p>', '' | replace: '</p>', '' | strip -%}
-                {%- assign r_star_count   = block.settings.star_count | default: 5 -%}
-                {%- assign r_filled_raw   = block.settings.star_filled | default: '5' -%}
+                {%- assign r_star_count = block.settings.star_count | default: 5 -%}
+                {%- assign r_filled_raw = block.settings.star_filled | default: '5' -%}
                 {%- assign r_filled_parts = r_filled_raw | split: '.' -%}
-                {%- assign r_filled_int   = r_filled_parts[0] | plus: 0 -%}
-                {%- assign r_has_half     = false -%}
+                {%- assign r_filled_int = r_filled_parts[0] | plus: 0 -%}
+                {%- assign r_has_half = false -%}
                 {%- if r_filled_parts[1] == '5' -%}{%- assign r_has_half = true -%}{%- endif -%}
-                {%- assign r_half_pos     = r_filled_int | plus: 1 -%}
+                {%- assign r_half_pos = r_filled_int | plus: 1 -%}
                 <style>
                   .pia-rating-{{ block.id }} {
                     --pia-rating-font-size: {{ block.settings.font_size }}px;
@@ -533,22 +668,43 @@
                     }
                   }
                 </style>
-                <div class="product-info-advanced__rating{{ bc }} pia-rating-{{ block.id }}" {{ block.shopify_attributes }}>
+                <div
+                  class="product-info-advanced__rating{{ bc }} pia-rating-{{ block.id }}"
+                  {{ block.shopify_attributes }}
+                >
                   <div class="product-info-advanced__stars">
                     {%- for i in (1..r_star_count) -%}
                       {%- if i <= r_filled_int -%}
                         {%- if block.settings.icon_image != blank -%}
-                          <img src="{{ block.settings.icon_image | image_url: width: 64 }}" class="product-info-advanced__star-icon" width="{{ block.settings.star_size }}" height="{{ block.settings.star_size }}" alt="" loading="lazy">
+                          <img
+                            src="{{ block.settings.icon_image | image_url: width: 64 }}"
+                            class="product-info-advanced__star-icon"
+                            width="{{ block.settings.star_size }}"
+                            height="{{ block.settings.star_size }}"
+                            alt=""
+                            loading="lazy"
+                          >
                         {%- elsif block.settings.icon_svg != blank -%}
                           <span class="product-info-advanced__star-icon">{{ block.settings.icon_svg }}</span>
                         {%- else -%}
-                          <svg class="product-info-advanced__star-icon" viewBox="0 0 24 24"><path d="M12 2l3 6.5 7 1-5 5 1 7-6-3.5-6 3.5 1-7-5-5 7-1z"/></svg>
+                          <svg class="product-info-advanced__star-icon" viewBox="0 0 24 24">
+                            <path d="M12 2l3 6.5 7 1-5 5 1 7-6-3.5-6 3.5 1-7-5-5 7-1z"/>
+                          </svg>
                         {%- endif -%}
                       {%- elsif r_has_half and i == r_half_pos -%}
                         {%- if block.settings.icon_image != blank -%}
-                          <img src="{{ block.settings.icon_image | image_url: width: 64 }}" class="product-info-advanced__star-icon product-info-advanced__star-icon--half" width="{{ block.settings.star_size }}" height="{{ block.settings.star_size }}" alt="" loading="lazy">
+                          <img
+                            src="{{ block.settings.icon_image | image_url: width: 64 }}"
+                            class="product-info-advanced__star-icon product-info-advanced__star-icon--half"
+                            width="{{ block.settings.star_size }}"
+                            height="{{ block.settings.star_size }}"
+                            alt=""
+                            loading="lazy"
+                          >
                         {%- elsif block.settings.icon_svg != blank -%}
-                          <span class="product-info-advanced__star-icon product-info-advanced__star-icon--half">{{ block.settings.icon_svg }}</span>
+                          <span class="product-info-advanced__star-icon product-info-advanced__star-icon--half">
+                            {{- block.settings.icon_svg -}}
+                          </span>
                         {%- else -%}
                           <svg class="product-info-advanced__star-icon" viewBox="0 0 24 24">
                             <defs><clipPath id="pia-rhalf-{{ block.id }}"><rect x="0" y="0" width="12" height="24"/></clipPath></defs>
@@ -558,11 +714,25 @@
                         {%- endif -%}
                       {%- else -%}
                         {%- if block.settings.icon_image != blank -%}
-                          <img src="{{ block.settings.icon_image | image_url: width: 64 }}" class="product-info-advanced__star-icon product-info-advanced__star-icon--empty" width="{{ block.settings.star_size }}" height="{{ block.settings.star_size }}" alt="" loading="lazy">
+                          <img
+                            src="{{ block.settings.icon_image | image_url: width: 64 }}"
+                            class="product-info-advanced__star-icon product-info-advanced__star-icon--empty"
+                            width="{{ block.settings.star_size }}"
+                            height="{{ block.settings.star_size }}"
+                            alt=""
+                            loading="lazy"
+                          >
                         {%- elsif block.settings.icon_svg != blank -%}
-                          <span class="product-info-advanced__star-icon product-info-advanced__star-icon--empty">{{ block.settings.icon_svg }}</span>
+                          <span class="product-info-advanced__star-icon product-info-advanced__star-icon--empty">
+                            {{- block.settings.icon_svg -}}
+                          </span>
                         {%- else -%}
-                          <svg class="product-info-advanced__star-icon product-info-advanced__star-icon--empty" viewBox="0 0 24 24"><path d="M12 2l3 6.5 7 1-5 5 1 7-6-3.5-6 3.5 1-7-5-5 7-1z"/></svg>
+                          <svg
+                            class="product-info-advanced__star-icon product-info-advanced__star-icon--empty"
+                            viewBox="0 0 24 24"
+                          >
+                            <path d="M12 2l3 6.5 7 1-5 5 1 7-6-3.5-6 3.5 1-7-5-5 7-1z"/>
+                          </svg>
                         {%- endif -%}
                       {%- endif -%}
                     {%- endfor -%}
@@ -573,7 +743,9 @@
                 </div>
 
               {%- when 'brand' -%}
-                <p class="product-info-advanced__brand{{ bc }}" {{ block.shopify_attributes }}>{{ block.settings.text }}</p>
+                <p class="product-info-advanced__brand{{ bc }}" {{ block.shopify_attributes }}>
+                  {{ block.settings.text }}
+                </p>
 
               {%- when 'title' -%}
                 <h1 class="product-info-advanced__title{{ bc }}" {{ block.shopify_attributes }}>
@@ -592,7 +764,10 @@
                     .pia-desc-{{ block.id }} { --pia-desc-size: {{ desc_mob_size }}px; {%- if block.settings.mobile_text_color != blank %}--pia-desc-color: {{ block.settings.mobile_text_color }};{%- endif %} }
                   }
                 </style>
-                <div class="product-info-advanced__description pia-desc-{{ block.id }}{{ bc }}" {{ block.shopify_attributes }}>
+                <div
+                  class="product-info-advanced__description pia-desc-{{ block.id }}{{ bc }}"
+                  {{ block.shopify_attributes }}
+                >
                   {{ block.settings.content }}
                 </div>
 
@@ -600,16 +775,34 @@
                 {%- if prev_type != 'benefit' -%}
                   <ul class="product-info-advanced__benefits{{ bc }}">
                 {%- endif -%}
-                
+
                 <li class="product-info-advanced__benefit-item" {{ block.shopify_attributes }}>
                   <span class="product-info-advanced__benefit-icon">
                     {%- if block.settings.icon_image != blank -%}
-                      <img src="{{ block.settings.icon_image | image_url: width: 64 }}" width="32" height="32" style="width:var(--pia-benefit-icon-size, 16px);height:var(--pia-benefit-icon-size, 16px);object-fit:contain;" alt="" loading="lazy">
+                      <img
+                        src="{{ block.settings.icon_image | image_url: width: 64 }}"
+                        width="32"
+                        height="32"
+                        style="width:var(--pia-benefit-icon-size, 16px);height:var(--pia-benefit-icon-size, 16px);object-fit:contain;"
+                        alt=""
+                        loading="lazy"
+                      >
                     {%- elsif block.settings.icon_svg != blank -%}
-                      <div style="width:var(--pia-benefit-icon-size, 16px);height:var(--pia-benefit-icon-size, 16px);display:flex;align-items:center;justify-content:center;">{{ block.settings.icon_svg }}</div>
+                      <div style="width:var(--pia-benefit-icon-size, 16px);height:var(--pia-benefit-icon-size, 16px);display:flex;align-items:center;justify-content:center;">
+                        {{ block.settings.icon_svg }}
+                      </div>
                     {%- else -%}
                       <div style="width:var(--pia-benefit-icon-size, 16px);height:var(--pia-benefit-icon-size, 16px);display:flex;align-items:center;justify-content:center;">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" width="100%" height="100%"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                        <svg
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="3"
+                          width="100%"
+                          height="100%"
+                        >
+                          <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
                       </div>
                     {%- endif -%}
                   </span>
@@ -624,13 +817,13 @@
 
               {%- when 'benefits_grid' -%}
                 {%- liquid
-                  assign bg_dt_cols  = block.settings.desktop_columns | default: 2
-                  assign bg_mb_cols  = block.settings.mobile_columns | default: 2
-                  assign bg_font     = block.settings.font_size | default: 13
-                  assign bg_icon     = block.settings.icon_size | default: 16
+                  assign bg_dt_cols = block.settings.desktop_columns | default: 2
+                  assign bg_mb_cols = block.settings.mobile_columns | default: 2
+                  assign bg_font = block.settings.font_size | default: 13
+                  assign bg_icon = block.settings.icon_size | default: 16
                   assign bg_mob_font = block.settings.mobile_font_size | default: bg_font
                   assign bg_mob_icon = block.settings.mobile_icon_size | default: bg_icon
-                  assign bg_gap      = block.settings.item_gap | default: 8
+                  assign bg_gap = block.settings.item_gap | default: 8
                 -%}
                 <style>
                   .pia-bg-{{ block.id }} {
@@ -649,20 +842,38 @@
                     }
                   }
                 </style>
-                <ul class="product-info-advanced__benefits-grid pia-bg-{{ block.id }}{{ bc }}" {{ block.shopify_attributes }}>
+                <ul
+                  class="product-info-advanced__benefits-grid pia-bg-{{ block.id }}{{ bc }}"
+                  {{ block.shopify_attributes }}
+                >
                   {%- for i in (1..9) -%}
                     {%- assign bg_text_key = 'item' | append: i | append: '_text' -%}
-                    {%- assign bg_img_key  = 'item' | append: i | append: '_icon_image' -%}
-                    {%- assign bg_svg_key  = 'item' | append: i | append: '_icon_svg' -%}
+                    {%- assign bg_img_key = 'item' | append: i | append: '_icon_image' -%}
+                    {%- assign bg_svg_key = 'item' | append: i | append: '_icon_svg' -%}
                     {%- if block.settings[bg_text_key] != blank -%}
                       <li class="product-info-advanced__bg-item">
                         <span class="product-info-advanced__bg-icon">
                           {%- if block.settings[bg_img_key] != blank -%}
-                            <img src="{{ block.settings[bg_img_key] | image_url: width: 64 }}" width="32" height="32" alt="" loading="lazy">
+                            <img
+                              src="{{ block.settings[bg_img_key] | image_url: width: 64 }}"
+                              width="32"
+                              height="32"
+                              alt=""
+                              loading="lazy"
+                            >
                           {%- elsif block.settings[bg_svg_key] != blank -%}
                             {{ block.settings[bg_svg_key] }}
                           {%- else -%}
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" width="100%" height="100%"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                            <svg
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              stroke-width="3"
+                              width="100%"
+                              height="100%"
+                            >
+                              <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
                           {%- endif -%}
                         </span>
                         <span class="product-info-advanced__bg-text">{{ block.settings[bg_text_key] }}</span>
@@ -672,7 +883,9 @@
                 </ul>
 
               {%- when 'bundles_heading' -%}
-                <p class="product-info-advanced__bundles-heading{{ bc }}" {{ block.shopify_attributes }}>{{ block.settings.text }}</p>
+                <p class="product-info-advanced__bundles-heading{{ bc }}" {{ block.shopify_attributes }}>
+                  {{ block.settings.text }}
+                </p>
 
               {%- when 'bundle' -%}
                 {%- if prev_type != 'bundle' -%}
@@ -717,15 +930,21 @@
                   endif
                   assign subtitle_cents = bundle_price | divided_by: bundle_qty
                 -%}
-                
+
                 <div class="product-info-advanced__bundle-wrapper{{ bc }}" {{ block.shopify_attributes }}>
                   {%- if block.settings.social_proof != blank -%}
-                    <div class="product-info-advanced__social-proof" data-pia-social-proof style="{% if block.settings.social_proof_font_size != blank and block.settings.social_proof_font_size > 0 %}font-size: {{ block.settings.social_proof_font_size }}px; {% endif %}{% if block.settings.social_proof_font_weight %}font-weight: {{ block.settings.social_proof_font_weight }}; {% endif %}">{{ block.settings.social_proof }}</div>
+                    <div
+                      class="product-info-advanced__social-proof"
+                      data-pia-social-proof
+                      style="{% if block.settings.social_proof_font_size != blank and block.settings.social_proof_font_size > 0 %}font-size: {{ block.settings.social_proof_font_size }}px; {% endif %}{% if block.settings.social_proof_font_weight %}font-weight: {{ block.settings.social_proof_font_weight }}; {% endif %}"
+                    >
+                      {{ block.settings.social_proof }}
+                    </div>
                   {%- endif -%}
-                  
-                  <div 
-                    class="product-info-advanced__bundle" 
-                    data-pia-bundle 
+
+                  <div
+                    class="product-info-advanced__bundle"
+                    data-pia-bundle
                     data-variant-id="{{ block.settings.variant_id | default: current_variant.id }}"
                     data-selling-plan-id="{{ bundle_plan_id }}"
                     data-price="{{ bundle_price }}"
@@ -736,9 +955,23 @@
                     {%- comment -%} Image with save badge overlapping bottom-left {%- endcomment -%}
                     <div class="product-info-advanced__bundle-img-wrap">
                       {%- if block.settings.image != blank -%}
-                        <img class="product-info-advanced__bundle-img" src="{{ block.settings.image | image_url: width: 140 }}" alt="{{ block.settings.title | escape }}" width="70" height="70" loading="lazy">
+                        <img
+                          class="product-info-advanced__bundle-img"
+                          src="{{ block.settings.image | image_url: width: 140 }}"
+                          alt="{{ block.settings.title | escape }}"
+                          width="70"
+                          height="70"
+                          loading="lazy"
+                        >
                       {%- elsif product.featured_media != blank -%}
-                        <img class="product-info-advanced__bundle-img" src="{{ product.featured_media | image_url: width: 140 }}" alt="{{ product.title | escape }}" width="70" height="70" loading="lazy">
+                        <img
+                          class="product-info-advanced__bundle-img"
+                          src="{{ product.featured_media | image_url: width: 140 }}"
+                          alt="{{ product.title | escape }}"
+                          width="70"
+                          height="70"
+                          loading="lazy"
+                        >
                       {%- endif -%}
                       {%- if block.settings.save_badge != blank -%}
                         <span class="product-info-advanced__bundle-save">{{ block.settings.save_badge }}</span>
@@ -746,24 +979,43 @@
                     </div>
 
                     <div class="product-info-advanced__bundle-info">
-                      <span class="product-info-advanced__bundle-title">{{ block.settings.title }}<em> {{ block.settings.title_highlight }}</em></span>
+                      <span class="product-info-advanced__bundle-title">
+                        {{- block.settings.title -}}
+                        <em> {{ block.settings.title_highlight }}</em></span
+                      >
                       {%- if block.settings.quantity_per_unit != blank and block.settings.quantity_per_unit > 0 -%}
                         {%- comment -%} Auto per-unit: variant price ÷ quantity — always market-aware (uses live variant price in visitor's currency) {%- endcomment -%}
-                        <span class="product-info-advanced__bundle-subtitle">{{ subtitle_cents | money }} {{ block.settings.subtitle_unit }}</span>
+                        <span class="product-info-advanced__bundle-subtitle">
+                          {{- subtitle_cents | money }}
+                          {{ block.settings.subtitle_unit -}}
+                        </span>
                       {%- elsif block.settings.subtitle_price != blank and b_variant == blank -%}
                         {%- comment -%} Static fallback: only used when no variant ID is linked (no live price available). NOT market-aware — use quantity_per_unit instead when a variant exists. {%- endcomment -%}
                         {%- assign subtitle_price_cents = block.settings.subtitle_price | times: 100 | round -%}
-                        <span class="product-info-advanced__bundle-subtitle">{{ subtitle_price_cents | money }} {{ block.settings.subtitle_unit }}</span>
+                        <span class="product-info-advanced__bundle-subtitle">
+                          {{- subtitle_price_cents | money }}
+                          {{ block.settings.subtitle_unit -}}
+                        </span>
                       {%- elsif block.settings.subtitle != blank -%}
                         <span class="product-info-advanced__bundle-subtitle">{{ block.settings.subtitle }}</span>
                       {%- endif -%}
                     </div>
 
                     <div class="product-info-advanced__bundle-pricing">
-                      <span class="product-info-advanced__bundle-price" data-pia-bundle-price>{{ bundle_price | money }}</span>
-                      <span class="product-info-advanced__bundle-was" data-pia-bundle-was {% unless bundle_compare_valid %}style="display:none;"{% endunless %}>{{ bundle_compare | money }}</span>
+                      <span class="product-info-advanced__bundle-price" data-pia-bundle-price>
+                        {{- bundle_price | money -}}
+                      </span>
+                      <span
+                        class="product-info-advanced__bundle-was"
+                        data-pia-bundle-was
+                        {% unless bundle_compare_valid %}
+                          style="display:none;"
+                        {% endunless %}
+                      >
+                        {{- bundle_compare | money -}}
+                      </span>
                     </div>
-                    
+
                     {%- if block.settings.best_value -%}
                       <div class="product-info-advanced__bundle-best">Best Value</div>
                     {%- endif -%}
@@ -777,15 +1029,17 @@
                 {%- endif -%}
 
               {%- when 'subscription' -%}
-                <div 
-                  class="product-info-advanced__subscription{{ bc }}" 
-                  data-pia-subscription 
+                <div
+                  class="product-info-advanced__subscription{{ bc }}"
+                  data-pia-subscription
                   data-discount-pct="{{ block.settings.discount_pct }}"
                   data-default-plan-id="{{ block.settings.default_plan_id }}"
                   {{ block.shopify_attributes }}
                 >
                   <div class="product-info-advanced__sub-checkbox">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" width="12" height="12"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" width="12" height="12">
+                      <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
                   </div>
                   <div class="product-info-advanced__sub-text">
                     <p class="product-info-advanced__sub-title">{{ block.settings.title }}</p>
@@ -794,9 +1048,10 @@
                 </div>
 
               {%- when 'add_to_cart' -%}
-                <button type="submit" 
-                  class="product-info-advanced__submit{{ bc }}" 
-                  data-pia-submit 
+                <button
+                  type="submit"
+                  class="product-info-advanced__submit{{ bc }}"
+                  data-pia-submit
                   style="
                     --pia-atc-gap: {{ block.settings.atc_gap }}px;
                     --pia-atc-gap-mobile: {{ block.settings.atc_gap_mobile }}px;
@@ -808,8 +1063,16 @@
                 >
                   <span class="product-info-advanced__submit-text">{{ block.settings.text }}</span>
                   <div class="product-info-advanced__submit-price-wrap">
-                    <span data-pia-submit-price>{%- if current_variant -%}{{ current_variant.price | money }}{%- endif -%}</span>
-                    <span class="product-info-advanced__submit-was" data-pia-submit-was {% unless current_variant.compare_at_price > current_variant.price %}style="display:none;"{% endunless %}>
+                    <span data-pia-submit-price>
+                      {%- if current_variant -%}{{ current_variant.price | money }}{%- endif -%}
+                    </span>
+                    <span
+                      class="product-info-advanced__submit-was"
+                      data-pia-submit-was
+                      {% unless current_variant.compare_at_price > current_variant.price %}
+                        style="display:none;"
+                      {% endunless %}
+                    >
                       {%- if current_variant -%}{{ current_variant.compare_at_price | money }}{%- endif -%}
                     </span>
                   </div>
@@ -817,34 +1080,39 @@
 
               {%- when 'trust_signals' -%}
                 <div class="product-info-advanced__trust{{ bc }}" {{ block.shopify_attributes }}>
-                  {%- assign current_time = "now" | date: "%s" | plus: 0 -%}
+                  {%- assign current_time = 'now' | date: '%s' | plus: 0 -%}
                   {%- assign seconds_to_add = block.settings.trust_1_delivery_days | times: 86400 -%}
-                  {%- assign delivery_date = current_time | plus: seconds_to_add | date: "%B %d" -%}
+                  {%- assign delivery_date = current_time | plus: seconds_to_add | date: '%B %d' -%}
                   {%- assign icon_size_style = '' -%}
                   {%- if block.settings.icon_size != blank -%}
-                    {%- assign icon_size_style = 'width:' | append: block.settings.icon_size | append: 'px;height:' | append: block.settings.icon_size | append: 'px;flex-shrink:0;' -%}
+                    {%- assign icon_size_style = 'width:'
+                      | append: block.settings.icon_size
+                      | append: 'px;height:'
+                      | append: block.settings.icon_size
+                      | append: 'px;flex-shrink:0;'
+                    -%}
                   {%- endif -%}
 
                   {%- for i in (1..4) -%}
                     {%- liquid
-                      assign t_text_key   = 'trust_' | append: i
-                      assign t_icon_key   = 'trust_' | append: i | append: '_icon_svg'
-                      assign t_img_key    = 'trust_' | append: i | append: '_icon_image'
-                      assign t_color_key  = 'trust_' | append: i | append: '_color'
-                      assign t_size_key   = 'trust_' | append: i | append: '_size'
-                      assign t_link_key   = 'trust_' | append: i | append: '_link'
-                      
-                      assign t_text  = block.settings[t_text_key]
-                      assign t_icon  = block.settings[t_icon_key]
-                      assign t_img   = block.settings[t_img_key]
+                      assign t_text_key = 'trust_' | append: i
+                      assign t_icon_key = 'trust_' | append: i | append: '_icon_svg'
+                      assign t_img_key = 'trust_' | append: i | append: '_icon_image'
+                      assign t_color_key = 'trust_' | append: i | append: '_color'
+                      assign t_size_key = 'trust_' | append: i | append: '_size'
+                      assign t_link_key = 'trust_' | append: i | append: '_link'
+
+                      assign t_text = block.settings[t_text_key]
+                      assign t_icon = block.settings[t_icon_key]
+                      assign t_img = block.settings[t_img_key]
                       assign t_color = block.settings[t_color_key]
-                      assign t_size  = block.settings[t_size_key]
-                      assign t_link  = block.settings[t_link_key]
+                      assign t_size = block.settings[t_size_key]
+                      assign t_link = block.settings[t_link_key]
 
                       if i == 1
                         assign t_text = t_text | replace: '{days}', delivery_date | replace: 'XXXXXX', delivery_date
                       endif
-                      
+
                       assign target_attr = ''
                       if block.settings.link_type == 'blank'
                         assign target_attr = ' target="_blank" rel="noopener"'
@@ -853,74 +1121,116 @@
                       endif
                     -%}
                     {%- if t_text != blank -%}
-                      <div class="product-info-advanced__trust-item" {% if t_color != blank or t_size != blank %}style="{% if t_color != blank %}color:{{ t_color }};{% endif %}{% if t_size != blank %}font-size:{{ t_size }}px;{% endif %}"{% endif %}>
+                      <div
+                        class="product-info-advanced__trust-item"
+                        {% if t_color != blank or t_size != blank %}
+                          style="{% if t_color != blank %}color:{{ t_color }};{% endif %}{% if t_size != blank %}font-size:{{ t_size }}px;{% endif %}"
+                        {% endif %}
+                      >
                         {%- liquid
-                        assign show_pulse = false
-                        if i == 1 and block.settings.trust_1_pulse
-                          assign show_pulse = true
-                        endif
-                        if i == 2 and block.settings.trust_2_pulse
-                          assign show_pulse = true
-                        endif
-                        if i == 3 and block.settings.trust_3_pulse
-                          assign show_pulse = true
-                        endif
-                        if i == 4 and block.settings.trust_4_pulse
-                          assign show_pulse = true
-                        endif
-                      -%}
-                      <span class="product-info-advanced__trust-icon" {% if icon_size_style != blank %}style="{{ icon_size_style }}"{% endif %}>
+                          assign show_pulse = false
+                          if i == 1 and block.settings.trust_1_pulse
+                            assign show_pulse = true
+                          endif
+                          if i == 2 and block.settings.trust_2_pulse
+                            assign show_pulse = true
+                          endif
+                          if i == 3 and block.settings.trust_3_pulse
+                            assign show_pulse = true
+                          endif
+                          if i == 4 and block.settings.trust_4_pulse
+                            assign show_pulse = true
+                          endif
+                        -%}
+                        <span
+                          class="product-info-advanced__trust-icon"
+                          {% if icon_size_style != blank %}
+                            style="{{ icon_size_style }}"
+                          {% endif %}
+                        >
                           {%- if t_icon != blank -%}
                             {{ t_icon }}
                           {%- elsif t_img != blank -%}
-                            <img src="{{ t_img | image_url: width: 80 }}" alt="" width="{{ block.settings.icon_size | default: 20 }}" height="{{ block.settings.icon_size | default: 20 }}" loading="lazy" style="object-fit:contain;width:100%;height:100%;">
+                            <img
+                              src="{{ t_img | image_url: width: 80 }}"
+                              alt=""
+                              width="{{ block.settings.icon_size | default: 20 }}"
+                              height="{{ block.settings.icon_size | default: 20 }}"
+                              loading="lazy"
+                              style="object-fit:contain;width:100%;height:100%;"
+                            >
                           {%- elsif show_pulse -%}
                             <span class="product-info-advanced__pulse-dot"></span>
                           {%- else -%}
                             {%- case i -%}
-                              {%- when 1 -%}<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.686 2 6 4.686 6 8c0 2.21.895 4.21 2.343 5.657A8 8 0 1 0 12 2zm0 2a6 6 0 1 1 0 12A6 6 0 0 1 12 4zm0 2a4 4 0 1 0 0 8 4 4 0 0 0 0-8z"/></svg>
-                              {%- when 2 -%}<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L4 6v6c0 5.25 3.5 10.15 8 11.35C16.5 22.15 20 17.25 20 12V6l-8-4z"/></svg>
-                              {%- when 3 -%}<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 1 0 0 20A10 10 0 0 0 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
-                              {%- when 4 -%}<svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2zm-7 14l-5-5 1.41-1.41L12 14.17l7.59-7.59L21 8l-9 9z"/></svg>
+                              {%- when 1 -%}
+                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                  <path d="M12 2C8.686 2 6 4.686 6 8c0 2.21.895 4.21 2.343 5.657A8 8 0 1 0 12 2zm0 2a6 6 0 1 1 0 12A6 6 0 0 1 12 4zm0 2a4 4 0 1 0 0 8 4 4 0 0 0 0-8z"/>
+                                </svg>
+                              {%- when 2 -%}
+                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                  <path d="M12 2L4 6v6c0 5.25 3.5 10.15 8 11.35C16.5 22.15 20 17.25 20 12V6l-8-4z"/>
+                                </svg>
+                              {%- when 3 -%}
+                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                  <path d="M12 2a10 10 0 1 0 0 20A10 10 0 0 0 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
+                                </svg>
+                              {%- when 4 -%}
+                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                  <path d="M19 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2zm-7 14l-5-5 1.41-1.41L12 14.17l7.59-7.59L21 8l-9 9z"/>
+                                </svg>
                             {%- endcase -%}
                           {%- endif -%}
                         </span>
-                        
-                        <div class="product-info-advanced__trust-text-wrap" style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+
+                        <div
+                          class="product-info-advanced__trust-text-wrap"
+                          style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;"
+                        >
                           {%- assign t_underline_key = 'trust_' | append: i | append: '_underline' -%}
                           {%- assign apply_underline = block.settings[t_underline_key] -%}
 
                           {%- assign parsed_text = t_text -%}
                           {%- if parsed_text contains '[' and parsed_text contains ']' -%}
-                            {%- assign parsed_text = parsed_text | replace: '[', '<u class="pia-underline">' | replace: ']', '</u>' -%}
+                            {%- assign parsed_text = parsed_text
+                              | replace: '[', '<u class="pia-underline">'
+                              | replace: ']', '</u>'
+                            -%}
                           {%- endif -%}
 
                           {%- if apply_underline -%}
                             {%- if t_link != blank -%}
-                              <a href="{{ t_link }}"{{ target_attr }} class="pia-underline">{{ parsed_text }}</a>
+                              <a href="{{ t_link }}" {{ target_attr }} class="pia-underline">{{ parsed_text }}</a>
                             {%- else -%}
                               <span class="pia-underline">{{ parsed_text }}</span>
                             {%- endif -%}
                           {%- else -%}
                             {%- if t_link != blank -%}
-                              <a href="{{ t_link }}"{{ target_attr }}>{{ parsed_text }}</a>
+                              <a href="{{ t_link }}" {{ target_attr }}>{{ parsed_text }}</a>
                             {%- else -%}
                               <span>{{ parsed_text }}</span>
                             {%- endif -%}
                           {%- endif -%}
 
-                          {%- assign t_flag_key      = 'trust_' | append: i | append: '_flag_img' -%}
+                          {%- assign t_flag_key = 'trust_' | append: i | append: '_flag_img' -%}
                           {%- assign t_flag_text_key = 'trust_' | append: i | append: '_flag_text' -%}
-                          {%- assign t_flag          = block.settings[t_flag_key] -%}
-                          {%- assign t_flag_text     = block.settings[t_flag_text_key] -%}
+                          {%- assign t_flag = block.settings[t_flag_key] -%}
+                          {%- assign t_flag_text = block.settings[t_flag_text_key] -%}
                           {%- if t_flag != blank -%}
-                            <img src="{{ t_flag | image_url: width: 44 }}" alt="" width="22" height="15" loading="lazy" class="product-info-advanced__trust-flag">
+                            <img
+                              src="{{ t_flag | image_url: width: 44 }}"
+                              alt=""
+                              width="22"
+                              height="15"
+                              loading="lazy"
+                              class="product-info-advanced__trust-flag"
+                            >
                           {%- endif -%}
                           {%- if t_flag_text != blank -%}
                             <span class="product-info-advanced__trust-flag-text">{{ t_flag_text }}</span>
                           {%- endif -%}
+                        </div>
                       </div>
-                    </div>
                     {%- endif -%}
                   {%- endfor -%}
                 </div>
@@ -954,7 +1264,8 @@
                     [data-pia-media-carousel="{{ block.id }}"] { --mc-arrow-sz: {{ mc_arrow_sz }}px; }
                     @media screen and (max-width: 768px) { [data-pia-media-carousel="{{ block.id }}"] { --mc-arrow-sz: {{ mc_arrow_mob }}px; } }
                   </style>
-                  <div class="{{ mc_classes }}"
+                  <div
+                    class="{{ mc_classes }}"
                     data-pia-media-carousel="{{ block.id }}"
                     data-cards-desktop="{{ dt_cards }}"
                     data-cards-mobile="{{ mb_cards }}"
@@ -964,9 +1275,15 @@
                     data-mc-marquee="{{ block.settings.enable_marquee }}"
                     data-mc-marquee-speed="{{ block.settings.marquee_speed | default: 40 }}"
                     style="--mc-dt-cols: {{ dt_cards }}; --mc-mb-cols: {{ mb_cards }}; --mc-media-aspect: {{ mc_aspect }}; --mc-image-fit: {{ mc_img_fit }};{% if mc_dot_color != blank %} --mc-dot-color: {{ mc_dot_color }};{% endif %}{% if mc_dot_active != blank %} --mc-dot-active: {{ mc_dot_active }};{% endif %}"
-                    {{ block.shopify_attributes }}>
+                    {{ block.shopify_attributes }}
+                  >
                     {%- if block.settings.heading != blank -%}
-                      <h3 class="product-info-advanced__mc-heading" style="{% if block.settings.heading_size %}font-size: {{ block.settings.heading_size }}px; {% endif %}{% if block.settings.heading_color != blank %}color: {{ block.settings.heading_color }}; {% endif %}{% if block.settings.heading_weight %}font-weight: {{ block.settings.heading_weight }}; {% endif %}margin-top: {{ block.settings.heading_margin_top | default: 0 }}px; margin-bottom: {{ block.settings.heading_margin_bottom | default: 8 }}px;">{{ block.settings.heading }}</h3>
+                      <h3
+                        class="product-info-advanced__mc-heading"
+                        style="{% if block.settings.heading_size %}font-size: {{ block.settings.heading_size }}px; {% endif %}{% if block.settings.heading_color != blank %}color: {{ block.settings.heading_color }}; {% endif %}{% if block.settings.heading_weight %}font-weight: {{ block.settings.heading_weight }}; {% endif %}margin-top: {{ block.settings.heading_margin_top | default: 0 }}px; margin-bottom: {{ block.settings.heading_margin_bottom | default: 8 }}px;"
+                      >
+                        {{ block.settings.heading }}
+                      </h3>
                     {%- endif -%}
                     {%- if block.settings.subheading != blank -%}
                       <p class="product-info-advanced__mc-subheading">{{ block.settings.subheading }}</p>
@@ -989,13 +1306,27 @@
                               <div class="product-info-advanced__mc-slide" data-mc-slide>
                                 <div class="product-info-advanced__review-media">
                                   {%- if block.settings[mc_img_key] != blank -%}
-                                    <img src="{{ block.settings[mc_img_key] | image_url: width: 600 }}" alt="" class="product-info-advanced__review-img" width="600" height="800" loading="lazy">
+                                    <img
+                                      src="{{ block.settings[mc_img_key] | image_url: width: 600 }}"
+                                      alt=""
+                                      class="product-info-advanced__review-img"
+                                      width="600"
+                                      height="800"
+                                      loading="lazy"
+                                    >
                                   {%- else -%}
                                     <div class="product-info-advanced__review-placeholder">&#9654;</div>
                                   {%- endif -%}
                                   {%- if block.settings[mc_vid_key] != blank -%}
-                                    <button type="button" class="product-info-advanced__review-play" data-video-url="{{ block.settings[mc_vid_key] | escape }}" aria-label="Play video">
-                                      <svg viewBox="0 0 24 24" fill="currentColor" width="28" height="28"><path d="M8 5v14l11-7z"/></svg>
+                                    <button
+                                      type="button"
+                                      class="product-info-advanced__review-play"
+                                      data-video-url="{{ block.settings[mc_vid_key] | escape }}"
+                                      aria-label="Play video"
+                                    >
+                                      <svg viewBox="0 0 24 24" fill="currentColor" width="28" height="28">
+                                        <path d="M8 5v14l11-7z"/>
+                                      </svg>
                                     </button>
                                   {%- endif -%}
                                 </div>
@@ -1009,28 +1340,85 @@
                         {%- if block.settings.nav_bg != blank -%}{%- assign mc_nav_has_bg = true -%}{%- endif -%}
                         <div class="product-info-advanced__reviews-nav">
                           {%- if block.settings.show_arrows -%}
-                            <button type="button" class="product-info-advanced__reviews-arrow product-info-advanced__mc-prev{% if block.settings.mc_prev_image != blank or block.settings.mc_prev_svg != blank %} is-custom-icon{% endif %}" aria-label="Previous">
-                              {%- if block.settings.mc_prev_svg != blank -%}{{ block.settings.mc_prev_svg }}
-                              {%- elsif block.settings.mc_prev_image != blank -%}<img src="{{ block.settings.mc_prev_image | image_url: width: 100 }}" alt="" width="44" height="44" loading="lazy">
-                              {%- else -%}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>{%- endif -%}
+                            <button
+                              type="button"
+                              class="product-info-advanced__reviews-arrow product-info-advanced__mc-prev{% if block.settings.mc_prev_image != blank or block.settings.mc_prev_svg != blank %} is-custom-icon{% endif %}"
+                              aria-label="Previous"
+                            >
+                              {%- if block.settings.mc_prev_svg != blank -%}
+                                {{ block.settings.mc_prev_svg }}
+                              {%- elsif block.settings.mc_prev_image != blank -%}
+                                <img
+                                  src="{{ block.settings.mc_prev_image | image_url: width: 100 }}"
+                                  alt=""
+                                  width="44"
+                                  height="44"
+                                  loading="lazy"
+                                >
+                              {%- else -%}
+                                <svg
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  stroke-width="2.5"
+                                  stroke-linecap="round"
+                                  stroke-linejoin="round"
+                                >
+                                  <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>
+                                </svg>
+                              {%- endif -%}
                             </button>
                           {%- endif -%}
                           {%- if block.settings.show_dots -%}
-                            <div class="product-info-advanced__reviews-dots" data-mc-dots{% if mc_nav_has_bg %} style="background: {{ block.settings.nav_bg }}; border-radius: {{ block.settings.nav_radius | default: 40 }}px; padding: {{ block.settings.nav_pad_v | default: 8 }}px {{ block.settings.nav_pad_h | default: 16 }}px;"{% endif %}>
+                            <div
+                              class="product-info-advanced__reviews-dots"
+                              data-mc-dots
+                              {% if mc_nav_has_bg %}
+                                style="background: {{ block.settings.nav_bg }}; border-radius: {{ block.settings.nav_radius | default: 40 }}px; padding: {{ block.settings.nav_pad_v | default: 8 }}px {{ block.settings.nav_pad_h | default: 16 }}px;"
+                              {% endif %}
+                            >
                               {%- for i in (1..6) -%}
                                 {%- assign mc_img_key = 'media' | append: i | append: '_image' -%}
                                 {%- assign mc_vid_key = 'media' | append: i | append: '_video' -%}
                                 {%- if block.settings[mc_img_key] != blank or block.settings[mc_vid_key] != blank -%}
-                                  <button type="button" class="product-info-advanced__reviews-dot{% if forloop.first %} is-active{% endif %}" data-dot-index="{{ forloop.index0 }}" aria-label="Slide {{ forloop.index }}"></button>
+                                  <button
+                                    type="button"
+                                    class="product-info-advanced__reviews-dot{% if forloop.first %} is-active{% endif %}"
+                                    data-dot-index="{{ forloop.index0 }}"
+                                    aria-label="Slide {{ forloop.index }}"
+                                  ></button>
                                 {%- endif -%}
                               {%- endfor -%}
                             </div>
                           {%- endif -%}
                           {%- if block.settings.show_arrows -%}
-                            <button type="button" class="product-info-advanced__reviews-arrow product-info-advanced__mc-next{% if block.settings.mc_next_image != blank or block.settings.mc_next_svg != blank %} is-custom-icon{% endif %}" aria-label="Next">
-                              {%- if block.settings.mc_next_svg != blank -%}{{ block.settings.mc_next_svg }}
-                              {%- elsif block.settings.mc_next_image != blank -%}<img src="{{ block.settings.mc_next_image | image_url: width: 100 }}" alt="" width="44" height="44" loading="lazy">
-                              {%- else -%}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>{%- endif -%}
+                            <button
+                              type="button"
+                              class="product-info-advanced__reviews-arrow product-info-advanced__mc-next{% if block.settings.mc_next_image != blank or block.settings.mc_next_svg != blank %} is-custom-icon{% endif %}"
+                              aria-label="Next"
+                            >
+                              {%- if block.settings.mc_next_svg != blank -%}
+                                {{ block.settings.mc_next_svg }}
+                              {%- elsif block.settings.mc_next_image != blank -%}
+                                <img
+                                  src="{{ block.settings.mc_next_image | image_url: width: 100 }}"
+                                  alt=""
+                                  width="44"
+                                  height="44"
+                                  loading="lazy"
+                                >
+                              {%- else -%}
+                                <svg
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  stroke-width="2.5"
+                                  stroke-linecap="round"
+                                  stroke-linejoin="round"
+                                >
+                                  <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+                                </svg>
+                              {%- endif -%}
                             </button>
                           {%- endif -%}
                         </div>
@@ -1041,14 +1429,26 @@
 
               {%- when 'accordion' -%}
                 {%- if block.settings.column == 'right' -%}
-                  <div class="product-info-advanced__accordion{{ bc }}" data-pia-accordion {{ block.shopify_attributes }}>
+                  <div
+                    class="product-info-advanced__accordion{{ bc }}"
+                    data-pia-accordion
+                    {{ block.shopify_attributes }}
+                  >
                     <button type="button" class="product-info-advanced__accordion-trigger" data-pia-accordion-trigger>
                       <span class="product-info-advanced__accordion-title-wrap">
                         {%- if block.settings.icon_svg != blank -%}
-                          <span class="product-info-advanced__accordion-custom-icon">{{ block.settings.icon_svg }}</span>
+                          <span class="product-info-advanced__accordion-custom-icon">
+                            {{- block.settings.icon_svg -}}
+                          </span>
                         {%- elsif block.settings.icon_image != blank -%}
                           <span class="product-info-advanced__accordion-custom-icon">
-                            <img src="{{ block.settings.icon_image | image_url: width: 40 }}" alt="" width="20" height="20" loading="lazy">
+                            <img
+                              src="{{ block.settings.icon_image | image_url: width: 40 }}"
+                              alt=""
+                              width="20"
+                              height="20"
+                              loading="lazy"
+                            >
                           </span>
                         {%- endif -%}
                         {{ block.settings.title }}
@@ -1064,17 +1464,14 @@
                     </div>
                   </div>
                 {%- endif -%}
-
             {%- endcase -%}
-            
+
             {%- assign prev_type = block.type -%}
           {%- endfor -%}
         </form>
-
       </div>
     </div>
   </div>
-
 </div>
 
 {% schema %}
@@ -1188,10 +1585,10 @@
       "id": "badge_position",
       "label": "Badge Position",
       "options": [
-        { "value": "top-right",    "label": "Top Right" },
-        { "value": "top-left",     "label": "Top Left" },
+        { "value": "top-right", "label": "Top Right" },
+        { "value": "top-left", "label": "Top Left" },
         { "value": "bottom-right", "label": "Bottom Right" },
-        { "value": "bottom-left",  "label": "Bottom Left" }
+        { "value": "bottom-left", "label": "Bottom Left" }
       ],
       "default": "top-right"
     },
@@ -1268,10 +1665,10 @@
       "label": "Badge Position (Mobile)",
       "options": [
         { "value": "", "label": "Same as desktop" },
-        { "value": "top-right",    "label": "Top Right" },
-        { "value": "top-left",     "label": "Top Left" },
+        { "value": "top-right", "label": "Top Right" },
+        { "value": "top-left", "label": "Top Left" },
         { "value": "bottom-right", "label": "Bottom Right" },
-        { "value": "bottom-left",  "label": "Bottom Left" }
+        { "value": "bottom-left", "label": "Bottom Left" }
       ],
       "default": "",
       "info": "Override position on mobile. Leave empty to match desktop."
@@ -1387,9 +1784,9 @@
       "id": "bundle_img_fit",
       "label": "Image Fit",
       "options": [
-        { "value": "cover",   "label": "Cover (crop to fill)" },
+        { "value": "cover", "label": "Cover (crop to fill)" },
         { "value": "contain", "label": "Contain (show full image)" },
-        { "value": "fill",    "label": "Fill (stretch to fill)" }
+        { "value": "fill", "label": "Fill (stretch to fill)" }
       ],
       "default": "cover"
     },
@@ -1398,9 +1795,9 @@
       "id": "bundle_img_ratio",
       "label": "Image Aspect Ratio",
       "options": [
-        { "value": "1",   "label": "1:1 Square" },
+        { "value": "1", "label": "1:1 Square" },
         { "value": "4/5", "label": "4:5 Portrait" },
-        { "value": "auto","label": "Auto (natural)" }
+        { "value": "auto", "label": "Auto (natural)" }
       ],
       "default": "1"
     },
@@ -1801,7 +2198,10 @@
       "type": "range",
       "id": "left_sticky_top",
       "label": "Sticky Top Offset (Desktop)",
-      "min": 0, "max": 200, "step": 4, "unit": "px",
+      "min": 0,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
       "default": 40
     },
     {
@@ -1837,14 +2237,20 @@
       "type": "range",
       "id": "gallery_arrow_size",
       "label": "Arrow Button Size (Desktop)",
-      "min": 24, "max": 80, "step": 2, "unit": "px",
+      "min": 24,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
       "default": 44
     },
     {
       "type": "range",
       "id": "gallery_arrow_mobile_size",
       "label": "Arrow Button Size (Mobile)",
-      "min": 20, "max": 64, "step": 2, "unit": "px",
+      "min": 20,
+      "max": 64,
+      "step": 2,
+      "unit": "px",
       "default": 36
     },
     {
@@ -1901,7 +2307,7 @@
           "id": "text_transform",
           "label": "Text Case",
           "options": [
-            { "value": "none",      "label": "Original" },
+            { "value": "none", "label": "Original" },
             { "value": "uppercase", "label": "UPPERCASE" },
             { "value": "lowercase", "label": "lowercase" }
           ],
@@ -1911,7 +2317,10 @@
           "type": "range",
           "id": "font_size",
           "label": "Font Size",
-          "min": 10, "max": 28, "step": 1, "unit": "px",
+          "min": 10,
+          "max": 28,
+          "step": 1,
+          "unit": "px",
           "default": 13
         },
         {
@@ -1932,7 +2341,9 @@
           "type": "range",
           "id": "star_count",
           "label": "Number of Stars",
-          "min": 1, "max": 5, "step": 1,
+          "min": 1,
+          "max": 5,
+          "step": 1,
           "default": 5
         },
         {
@@ -1940,17 +2351,17 @@
           "id": "star_filled",
           "label": "Filled Stars",
           "options": [
-            { "value": "0",   "label": "0" },
+            { "value": "0", "label": "0" },
             { "value": "0.5", "label": "0.5" },
-            { "value": "1",   "label": "1" },
+            { "value": "1", "label": "1" },
             { "value": "1.5", "label": "1.5" },
-            { "value": "2",   "label": "2" },
+            { "value": "2", "label": "2" },
             { "value": "2.5", "label": "2.5" },
-            { "value": "3",   "label": "3" },
+            { "value": "3", "label": "3" },
             { "value": "3.5", "label": "3.5" },
-            { "value": "4",   "label": "4" },
+            { "value": "4", "label": "4" },
             { "value": "4.5", "label": "4.5" },
-            { "value": "5",   "label": "5" }
+            { "value": "5", "label": "5" }
           ],
           "default": "5",
           "info": "Half values (e.g. 4.5) render a half-filled star."
@@ -1959,21 +2370,30 @@
           "type": "range",
           "id": "star_size",
           "label": "Star Size",
-          "min": 10, "max": 48, "step": 1, "unit": "px",
+          "min": 10,
+          "max": 48,
+          "step": 1,
+          "unit": "px",
           "default": 16
         },
         {
           "type": "range",
           "id": "star_gap",
           "label": "Gap Between Stars",
-          "min": 0, "max": 16, "step": 1, "unit": "px",
+          "min": 0,
+          "max": 16,
+          "step": 1,
+          "unit": "px",
           "default": 2
         },
         {
           "type": "range",
           "id": "star_text_gap",
           "label": "Gap: Stars to Text",
-          "min": 0, "max": 32, "step": 1, "unit": "px",
+          "min": 0,
+          "max": 32,
+          "step": 1,
+          "unit": "px",
           "default": 8
         },
         {
@@ -2006,7 +2426,10 @@
           "type": "range",
           "id": "mobile_font_size",
           "label": "Font Size (Mobile)",
-          "min": 8, "max": 24, "step": 1, "unit": "px",
+          "min": 8,
+          "max": 24,
+          "step": 1,
+          "unit": "px",
           "default": 11,
           "info": "Applies on screens 768px and below."
         },
@@ -2014,7 +2437,10 @@
           "type": "range",
           "id": "mobile_star_size",
           "label": "Star Size (Mobile)",
-          "min": 8, "max": 40, "step": 1, "unit": "px",
+          "min": 8,
+          "max": 40,
+          "step": 1,
+          "unit": "px",
           "default": 14,
           "info": "Applies on screens 768px and below."
         },
@@ -2022,7 +2448,10 @@
           "type": "range",
           "id": "mobile_star_gap",
           "label": "Gap Between Stars (Mobile)",
-          "min": 0, "max": 16, "step": 1, "unit": "px",
+          "min": 0,
+          "max": 16,
+          "step": 1,
+          "unit": "px",
           "default": 2,
           "info": "Applies on screens 768px and below."
         },
@@ -2030,7 +2459,10 @@
           "type": "range",
           "id": "mobile_star_text_gap",
           "label": "Gap: Stars to Text (Mobile)",
-          "min": 0, "max": 32, "step": 1, "unit": "px",
+          "min": 0,
+          "max": 32,
+          "step": 1,
+          "unit": "px",
           "default": 8,
           "info": "Applies on screens 768px and below."
         },
@@ -2064,13 +2496,41 @@
       "name": "Description",
       "limit": 1,
       "settings": [
-        { "type": "richtext", "id": "content", "label": "Content", "default": "<p>A natural formula, once-a-day, to ease everyday stiffness and keep you active.</p>" },
+        {
+          "type": "richtext",
+          "id": "content",
+          "label": "Content",
+          "default": "<p>A natural formula, once-a-day, to ease everyday stiffness and keep you active.</p>"
+        },
         { "type": "header", "content": "Typography" },
-        { "type": "range", "id": "font_size", "label": "Font Size (Desktop)", "min": 10, "max": 24, "step": 1, "unit": "px", "default": 14 },
+        {
+          "type": "range",
+          "id": "font_size",
+          "label": "Font Size (Desktop)",
+          "min": 10,
+          "max": 24,
+          "step": 1,
+          "unit": "px",
+          "default": 14
+        },
         { "type": "color", "id": "text_color", "label": "Text Color (Desktop)" },
         { "type": "header", "content": "Mobile" },
-        { "type": "range", "id": "mobile_font_size", "label": "Font Size (Mobile)", "min": 10, "max": 22, "step": 1, "unit": "px", "default": 13 },
-        { "type": "color", "id": "mobile_text_color", "label": "Text Color (Mobile)", "info": "Leave blank to use the desktop color." },
+        {
+          "type": "range",
+          "id": "mobile_font_size",
+          "label": "Font Size (Mobile)",
+          "min": 10,
+          "max": 22,
+          "step": 1,
+          "unit": "px",
+          "default": 13
+        },
+        {
+          "type": "color",
+          "id": "mobile_text_color",
+          "label": "Text Color (Mobile)",
+          "info": "Leave blank to use the desktop color."
+        },
         { "type": "header", "content": "Visibility" },
         { "type": "checkbox", "id": "show_on_desktop", "label": "Show on Desktop", "default": true },
         { "type": "checkbox", "id": "show_on_mobile", "label": "Show on Mobile", "default": true }
@@ -2113,15 +2573,65 @@
           ],
           "default": "2"
         },
-        { "type": "range", "id": "item_gap", "label": "Gap Between Items", "min": 4, "max": 32, "step": 2, "unit": "px", "default": 8 },
+        {
+          "type": "range",
+          "id": "item_gap",
+          "label": "Gap Between Items",
+          "min": 4,
+          "max": 32,
+          "step": 2,
+          "unit": "px",
+          "default": 8
+        },
         { "type": "header", "content": "Typography & Icons" },
-        { "type": "range", "id": "font_size", "label": "Font Size (Desktop)", "min": 10, "max": 20, "step": 1, "unit": "px", "default": 13 },
-        { "type": "range", "id": "icon_size", "label": "Icon Size (Desktop)", "min": 10, "max": 40, "step": 2, "unit": "px", "default": 16 },
+        {
+          "type": "range",
+          "id": "font_size",
+          "label": "Font Size (Desktop)",
+          "min": 10,
+          "max": 20,
+          "step": 1,
+          "unit": "px",
+          "default": 13
+        },
+        {
+          "type": "range",
+          "id": "icon_size",
+          "label": "Icon Size (Desktop)",
+          "min": 10,
+          "max": 40,
+          "step": 2,
+          "unit": "px",
+          "default": 16
+        },
         { "type": "color", "id": "icon_color", "label": "Icon Color", "info": "Leave blank to use the brand color." },
-        { "type": "color", "id": "text_color", "label": "Text Color", "info": "Leave blank to use the default text color." },
+        {
+          "type": "color",
+          "id": "text_color",
+          "label": "Text Color",
+          "info": "Leave blank to use the default text color."
+        },
         { "type": "header", "content": "Mobile" },
-        { "type": "range", "id": "mobile_font_size", "label": "Font Size (Mobile)", "min": 10, "max": 18, "step": 1, "unit": "px", "default": 12 },
-        { "type": "range", "id": "mobile_icon_size", "label": "Icon Size (Mobile)", "min": 10, "max": 32, "step": 2, "unit": "px", "default": 14 },
+        {
+          "type": "range",
+          "id": "mobile_font_size",
+          "label": "Font Size (Mobile)",
+          "min": 10,
+          "max": 18,
+          "step": 1,
+          "unit": "px",
+          "default": 12
+        },
+        {
+          "type": "range",
+          "id": "mobile_icon_size",
+          "label": "Icon Size (Mobile)",
+          "min": 10,
+          "max": 32,
+          "step": 2,
+          "unit": "px",
+          "default": 14
+        },
         { "type": "header", "content": "Item 1" },
         { "type": "text", "id": "item1_text", "label": "Text", "default": "Ease everyday stiffness" },
         { "type": "image_picker", "id": "item1_icon_image", "label": "Custom Icon (Image)" },
@@ -2178,17 +2688,68 @@
       "name": "Bundle Option",
       "settings": [
         { "type": "image_picker", "id": "image", "label": "Bundle Image" },
-        { "type": "richtext", "id": "social_proof", "label": "Social Proof Banner (above card)", "info": "Bold = bold. Italic = italic. Use [[ and ]] to highlight words with a color. Example: 92% of customers choose: [[Buy 2, Get 1 Free]]" },
-        { "type": "range", "id": "social_proof_font_size", "label": "Font Size", "min": 10, "max": 24, "step": 1, "unit": "px", "default": 0, "info": "Override section size. 0 = use section default." },
-        { "type": "select", "id": "social_proof_font_weight", "label": "Font Weight", "options": [ { "value": "", "label": "Section default (700)" }, { "value": "400", "label": "Normal" }, { "value": "500", "label": "Medium" }, { "value": "600", "label": "Semibold" }, { "value": "700", "label": "Bold" }, { "value": "800", "label": "Extrabold" } ], "default": "", "info": "Base weight. Bold text will be heavier." },
+        {
+          "type": "richtext",
+          "id": "social_proof",
+          "label": "Social Proof Banner (above card)",
+          "info": "Bold = bold. Italic = italic. Use [[ and ]] to highlight words with a color. Example: 92% of customers choose: [[Buy 2, Get 1 Free]]"
+        },
+        {
+          "type": "range",
+          "id": "social_proof_font_size",
+          "label": "Font Size",
+          "min": 0,
+          "max": 24,
+          "step": 1,
+          "unit": "px",
+          "default": 0,
+          "info": "Override section size. 0 = use section default."
+        },
+        {
+          "type": "select",
+          "id": "social_proof_font_weight",
+          "label": "Font Weight",
+          "options": [
+            { "value": "", "label": "Section default (700)" },
+            { "value": "400", "label": "Normal" },
+            { "value": "500", "label": "Medium" },
+            { "value": "600", "label": "Semibold" },
+            { "value": "700", "label": "Bold" },
+            { "value": "800", "label": "Extrabold" }
+          ],
+          "default": "",
+          "info": "Base weight. Bold text will be heavier."
+        },
         { "type": "text", "id": "save_badge", "label": "Save Badge Text", "default": "Save 51%" },
         { "type": "checkbox", "id": "best_value", "label": "Show Best Value Badge", "default": false },
         { "type": "text", "id": "title", "label": "Title", "default": "Buy 1 Bottle" },
         { "type": "text", "id": "title_highlight", "label": "Title Highlight (colored)", "info": "e.g. '1 Free'" },
-        { "type": "number", "id": "subtitle_price", "label": "Price per unit (base currency, e.g. 12.67)", "info": "Manual override. Auto-converts per market. Leave blank to use Quantity per unit auto-calc." },
-        { "type": "number", "id": "quantity_per_unit", "label": "Quantity per unit (for auto subtitle)", "default": 1, "info": "Divides the variant price by this number to compute per-unit price. Market-aware automatically." },
-        { "type": "text", "id": "subtitle_unit", "label": "Unit label", "default": "/ bottle", "info": "e.g. '/ bottle'" },
-        { "type": "text", "id": "subtitle", "label": "Subtitle (legacy fallback)", "info": "Plain text. Only shown if Price per unit and Quantity per unit are both blank." },
+        {
+          "type": "number",
+          "id": "subtitle_price",
+          "label": "Price per unit (base currency, e.g. 12.67)",
+          "info": "Manual override. Auto-converts per market. Leave blank to use Quantity per unit auto-calc."
+        },
+        {
+          "type": "number",
+          "id": "quantity_per_unit",
+          "label": "Quantity per unit (for auto subtitle)",
+          "default": 1,
+          "info": "Divides the variant price by this number to compute per-unit price. Market-aware automatically."
+        },
+        {
+          "type": "text",
+          "id": "subtitle_unit",
+          "label": "Unit label",
+          "default": "/ bottle",
+          "info": "e.g. '/ bottle'"
+        },
+        {
+          "type": "text",
+          "id": "subtitle",
+          "label": "Subtitle (legacy fallback)",
+          "info": "Plain text. Only shown if Price per unit and Quantity per unit are both blank."
+        },
         { "type": "text", "id": "variant_id", "label": "Variant ID" },
         { "type": "text", "id": "selling_plan_id", "label": "Selling Plan ID (Optional)" },
         { "type": "number", "id": "price", "label": "Price Value (Fallback)", "default": 19 },
@@ -2203,7 +2764,12 @@
       "limit": 1,
       "settings": [
         { "type": "text", "id": "title", "label": "Title", "default": "Save 20% on automatic refills" },
-        { "type": "text", "id": "subtitle", "label": "Subtitle", "default": "Monthly Delivery, Zero Commitment, Cancel Anytime" },
+        {
+          "type": "text",
+          "id": "subtitle",
+          "label": "Subtitle",
+          "default": "Monthly Delivery, Zero Commitment, Cancel Anytime"
+        },
         { "type": "number", "id": "discount_pct", "label": "Discount Percentage", "default": 20 },
         { "type": "text", "id": "default_plan_id", "label": "Default Selling Plan ID" },
         { "type": "checkbox", "id": "show_on_desktop", "label": "Show on Desktop", "default": true },
@@ -2216,10 +2782,46 @@
       "limit": 1,
       "settings": [
         { "type": "text", "id": "text", "label": "Button Text", "default": "ADD TO CART" },
-        { "type": "range", "id": "atc_gap", "min": 0, "max": 100, "step": 1, "unit": "px", "label": "Desktop Vertical Gap", "default": 20 },
-        { "type": "range", "id": "atc_gap_mobile", "min": 0, "max": 100, "step": 1, "unit": "px", "label": "Mobile Vertical Gap", "default": 10 },
-        { "type": "range", "id": "atc_padding_h_mobile", "min": 0, "max": 60, "step": 1, "unit": "px", "label": "Mobile Horizontal Padding", "default": 16 },
-        { "type": "range", "id": "atc_text_size_mobile", "min": 10, "max": 40, "step": 1, "unit": "px", "label": "Mobile Text Size", "default": 14 },
+        {
+          "type": "range",
+          "id": "atc_gap",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "unit": "px",
+          "label": "Desktop Vertical Gap",
+          "default": 20
+        },
+        {
+          "type": "range",
+          "id": "atc_gap_mobile",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "unit": "px",
+          "label": "Mobile Vertical Gap",
+          "default": 10
+        },
+        {
+          "type": "range",
+          "id": "atc_padding_h_mobile",
+          "min": 0,
+          "max": 60,
+          "step": 1,
+          "unit": "px",
+          "label": "Mobile Horizontal Padding",
+          "default": 16
+        },
+        {
+          "type": "range",
+          "id": "atc_text_size_mobile",
+          "min": 10,
+          "max": 40,
+          "step": 1,
+          "unit": "px",
+          "label": "Mobile Text Size",
+          "default": 14
+        },
         { "type": "checkbox", "id": "show_on_desktop", "label": "Show on Desktop", "default": true },
         { "type": "checkbox", "id": "show_on_mobile", "label": "Show on Mobile", "default": true }
       ]
@@ -2229,26 +2831,74 @@
       "name": "Trust Signals",
       "limit": 1,
       "settings": [
-        { "type": "range", "id": "icon_size", "min": 10, "max": 40, "step": 1, "unit": "px", "label": "Global Icon Size", "default": 20 },
-        { "type": "select", "id": "link_type", "label": "Link Behavior", "options": [{"value":"redirect","label":"Redirect"},{"value":"blank","label":"Open in New Tab"},{"value":"popup","label":"Open Popup/Modal"}], "default": "redirect" },
+        {
+          "type": "range",
+          "id": "icon_size",
+          "min": 10,
+          "max": 40,
+          "step": 1,
+          "unit": "px",
+          "label": "Global Icon Size",
+          "default": 20
+        },
+        {
+          "type": "select",
+          "id": "link_type",
+          "label": "Link Behavior",
+          "options": [
+            { "value": "redirect", "label": "Redirect" },
+            { "value": "blank", "label": "Open in New Tab" },
+            { "value": "popup", "label": "Open Popup/Modal" }
+          ],
+          "default": "redirect"
+        },
         { "type": "header", "content": "Trust Signal 1 (Delivery)" },
-        { "type": "inline_richtext", "id": "trust_1", "label": "Text", "default": "In Stock | Available for delivery by: {days}", "info": "Supports ⚡ metafield. Use {days} or XXXXXX for delivery date." },
-        { "type": "range", "id": "trust_1_delivery_days", "min": 1, "max": 20, "step": 1, "label": "Delivery Days (Replaces {days})", "default": 2 },
+        {
+          "type": "inline_richtext",
+          "id": "trust_1",
+          "label": "Text",
+          "default": "In Stock | Available for delivery by: {days}",
+          "info": "Supports ⚡ metafield. Use {days} or XXXXXX for delivery date."
+        },
+        {
+          "type": "range",
+          "id": "trust_1_delivery_days",
+          "min": 1,
+          "max": 20,
+          "step": 1,
+          "label": "Delivery Days (Replaces {days})",
+          "default": 2
+        },
         { "type": "checkbox", "id": "trust_1_underline", "label": "Underline Text", "default": false },
         { "type": "checkbox", "id": "trust_1_pulse", "label": "Show Green Pulse Dot", "default": false },
         { "type": "image_picker", "id": "trust_1_flag_img", "label": "Country Flag Image" },
-        { "type": "text", "id": "trust_1_flag_text", "label": "Text After Flag", "info": "Optional label shown after the flag image (e.g. 'United States')" },
+        {
+          "type": "text",
+          "id": "trust_1_flag_text",
+          "label": "Text After Flag",
+          "info": "Optional label shown after the flag image (e.g. 'United States')"
+        },
         { "type": "image_picker", "id": "trust_1_icon_image", "label": "Custom Icon (Image)" },
         { "type": "textarea", "id": "trust_1_icon_svg", "label": "Custom Icon (SVG code)" },
         { "type": "color", "id": "trust_1_color", "label": "Text Color" },
         { "type": "number", "id": "trust_1_size", "label": "Font Size (px)" },
         { "type": "text", "id": "trust_1_link", "label": "Link URL" },
         { "type": "header", "content": "Trust Signal 2" },
-        { "type": "inline_richtext", "id": "trust_2", "label": "Text", "default": "Fast, Tracked Shipping to: United States" },
+        {
+          "type": "inline_richtext",
+          "id": "trust_2",
+          "label": "Text",
+          "default": "Fast, Tracked Shipping to: United States"
+        },
         { "type": "checkbox", "id": "trust_2_underline", "label": "Underline Text", "default": false },
         { "type": "checkbox", "id": "trust_2_pulse", "label": "Show Green Pulse Dot", "default": false },
         { "type": "image_picker", "id": "trust_2_flag_img", "label": "Country Flag Image" },
-        { "type": "text", "id": "trust_2_flag_text", "label": "Text After Flag", "info": "Optional label shown after the flag image" },
+        {
+          "type": "text",
+          "id": "trust_2_flag_text",
+          "label": "Text After Flag",
+          "info": "Optional label shown after the flag image"
+        },
         { "type": "image_picker", "id": "trust_2_icon_image", "label": "Custom Icon (Image)" },
         { "type": "textarea", "id": "trust_2_icon_svg", "label": "Custom Icon (SVG code)" },
         { "type": "color", "id": "trust_2_color", "label": "Text Color" },
@@ -2259,7 +2909,12 @@
         { "type": "checkbox", "id": "trust_3_underline", "label": "Underline Text", "default": false },
         { "type": "checkbox", "id": "trust_3_pulse", "label": "Show Green Pulse Dot", "default": false },
         { "type": "image_picker", "id": "trust_3_flag_img", "label": "Country Flag Image" },
-        { "type": "text", "id": "trust_3_flag_text", "label": "Text After Flag", "info": "Optional label shown after the flag image" },
+        {
+          "type": "text",
+          "id": "trust_3_flag_text",
+          "label": "Text After Flag",
+          "info": "Optional label shown after the flag image"
+        },
         { "type": "image_picker", "id": "trust_3_icon_image", "label": "Custom Icon (Image)" },
         { "type": "textarea", "id": "trust_3_icon_svg", "label": "Custom Icon (SVG code)" },
         { "type": "color", "id": "trust_3_color", "label": "Text Color" },
@@ -2270,7 +2925,12 @@
         { "type": "checkbox", "id": "trust_4_underline", "label": "Underline Text", "default": false },
         { "type": "checkbox", "id": "trust_4_pulse", "label": "Show Green Pulse Dot", "default": false },
         { "type": "image_picker", "id": "trust_4_flag_img", "label": "Country Flag Image" },
-        { "type": "text", "id": "trust_4_flag_text", "label": "Text After Flag", "info": "Optional label shown after the flag image" },
+        {
+          "type": "text",
+          "id": "trust_4_flag_text",
+          "label": "Text After Flag",
+          "info": "Optional label shown after the flag image"
+        },
         { "type": "image_picker", "id": "trust_4_icon_image", "label": "Custom Icon (Image)" },
         { "type": "textarea", "id": "trust_4_icon_svg", "label": "Custom Icon (SVG code)" },
         { "type": "color", "id": "trust_4_color", "label": "Text Color" },
@@ -2295,8 +2955,18 @@
           ],
           "default": "right"
         },
-        { "type": "image_picker", "id": "icon_image", "label": "Custom Icon (Image)", "info": "Placed next to the accordion title" },
-        { "type": "textarea", "id": "icon_svg", "label": "Custom Icon (SVG Raw)", "info": "Overrides image if provided" },
+        {
+          "type": "image_picker",
+          "id": "icon_image",
+          "label": "Custom Icon (Image)",
+          "info": "Placed next to the accordion title"
+        },
+        {
+          "type": "textarea",
+          "id": "icon_svg",
+          "label": "Custom Icon (SVG Raw)",
+          "info": "Overrides image if provided"
+        },
         { "type": "text", "id": "title", "label": "Title", "default": "Product Description" },
         { "type": "richtext", "id": "content", "label": "Content", "default": "<p>Content goes here.</p>" },
         { "type": "checkbox", "id": "show_on_desktop", "label": "Show on Desktop", "default": true },
@@ -2331,8 +3001,22 @@
         { "type": "text", "id": "heading", "label": "Heading", "default": "Real Change for Real People" },
         { "type": "text", "id": "subheading", "label": "Subheading" },
         { "type": "header", "content": "Heading Style" },
-        { "type": "range", "id": "heading_size", "label": "Font Size", "min": 12, "max": 48, "step": 1, "unit": "px", "default": 24 },
-        { "type": "color", "id": "heading_color", "label": "Text Color", "info": "Leave blank to use default theme color." },
+        {
+          "type": "range",
+          "id": "heading_size",
+          "label": "Font Size",
+          "min": 12,
+          "max": 48,
+          "step": 1,
+          "unit": "px",
+          "default": 24
+        },
+        {
+          "type": "color",
+          "id": "heading_color",
+          "label": "Text Color",
+          "info": "Leave blank to use default theme color."
+        },
         {
           "type": "select",
           "id": "heading_weight",
@@ -2365,33 +3049,116 @@
           "id": "visible_cards_mobile",
           "label": "Visible Cards (Mobile)",
           "options": [
-            { "value": "1",   "label": "1 Card" },
+            { "value": "1", "label": "1 Card" },
             { "value": "1.2", "label": "1.2 Cards" },
             { "value": "1.5", "label": "1.5 Cards" },
-            { "value": "2",   "label": "2 Cards" },
+            { "value": "2", "label": "2 Cards" },
             { "value": "2.5", "label": "2.5 Cards" }
           ],
           "default": "1.2"
         },
         { "type": "header", "content": "Behavior" },
-        { "type": "checkbox", "id": "enable_infinite", "label": "Infinite Loop", "default": false, "info": "Loops back to the first slide after the last." },
+        {
+          "type": "checkbox",
+          "id": "enable_infinite",
+          "label": "Infinite Loop",
+          "default": false,
+          "info": "Loops back to the first slide after the last."
+        },
         { "type": "checkbox", "id": "enable_autoplay", "label": "Auto-slide", "default": false },
-        { "type": "range", "id": "autoplay_speed", "label": "Auto-slide Speed (ms)", "min": 1000, "max": 8000, "step": 500, "default": 3000 },
-        { "type": "checkbox", "id": "enable_marquee", "label": "Marquee (continuous scroll)", "default": false, "info": "Overrides auto-slide. Slides scroll continuously." },
-        { "type": "range", "id": "marquee_speed", "label": "Marquee Speed (px/s)", "min": 10, "max": 200, "step": 10, "default": 60 },
+        {
+          "type": "range",
+          "id": "autoplay_speed",
+          "label": "Auto-slide Speed (ms)",
+          "min": 1000,
+          "max": 8000,
+          "step": 500,
+          "default": 3000
+        },
+        {
+          "type": "checkbox",
+          "id": "enable_marquee",
+          "label": "Marquee (continuous scroll)",
+          "default": false,
+          "info": "Overrides auto-slide. Slides scroll continuously."
+        },
+        {
+          "type": "range",
+          "id": "marquee_speed",
+          "label": "Marquee Speed (px/s)",
+          "min": 10,
+          "max": 200,
+          "step": 10,
+          "default": 60
+        },
         { "type": "header", "content": "Navigation" },
         { "type": "checkbox", "id": "show_arrows", "label": "Show Arrows", "default": true },
         { "type": "checkbox", "id": "show_dots", "label": "Show Dots", "default": true },
         { "type": "color", "id": "dot_color", "label": "Dot Color (Inactive)", "info": "Leave blank for default." },
-        { "type": "color", "id": "dot_active_color", "label": "Dot Color (Active)", "info": "Leave blank to use brand color." },
+        {
+          "type": "color",
+          "id": "dot_active_color",
+          "label": "Dot Color (Active)",
+          "info": "Leave blank to use brand color."
+        },
         { "type": "header", "content": "Navigation Bar Background" },
-        { "type": "color", "id": "nav_bg", "label": "Nav Background Color", "info": "Adds a background behind the dots/arrows. Leave blank for none." },
-        { "type": "range", "id": "nav_radius", "label": "Nav Background Radius", "min": 0, "max": 60, "step": 2, "unit": "px", "default": 40 },
-        { "type": "range", "id": "nav_pad_v", "label": "Nav Padding (Vertical)", "min": 0, "max": 24, "step": 2, "unit": "px", "default": 8 },
-        { "type": "range", "id": "nav_pad_h", "label": "Nav Padding (Horizontal)", "min": 0, "max": 48, "step": 2, "unit": "px", "default": 16 },
+        {
+          "type": "color",
+          "id": "nav_bg",
+          "label": "Nav Background Color",
+          "info": "Adds a background behind the dots/arrows. Leave blank for none."
+        },
+        {
+          "type": "range",
+          "id": "nav_radius",
+          "label": "Nav Background Radius",
+          "min": 0,
+          "max": 60,
+          "step": 2,
+          "unit": "px",
+          "default": 40
+        },
+        {
+          "type": "range",
+          "id": "nav_pad_v",
+          "label": "Nav Padding (Vertical)",
+          "min": 0,
+          "max": 24,
+          "step": 2,
+          "unit": "px",
+          "default": 8
+        },
+        {
+          "type": "range",
+          "id": "nav_pad_h",
+          "label": "Nav Padding (Horizontal)",
+          "min": 0,
+          "max": 48,
+          "step": 2,
+          "unit": "px",
+          "default": 16
+        },
         { "type": "header", "content": "Navigation Arrows" },
-        { "type": "range", "id": "mc_arrow_size", "label": "Arrow Size (Desktop)", "min": 20, "max": 80, "step": 2, "unit": "px", "default": 44 },
-        { "type": "range", "id": "mc_arrow_mobile_size", "label": "Arrow Size (Mobile)", "min": 16, "max": 64, "step": 2, "unit": "px", "default": 36 },
+        {
+          "type": "range",
+          "id": "mc_arrow_size",
+          "label": "Arrow Size (Desktop)",
+          "min": 20,
+          "max": 80,
+          "step": 2,
+          "unit": "px",
+          "default": 44
+        },
+        {
+          "type": "range",
+          "id": "mc_arrow_mobile_size",
+          "label": "Arrow Size (Mobile)",
+          "min": 16,
+          "max": 64,
+          "step": 2,
+          "unit": "px",
+          "default": 36
+        },
         { "type": "image_picker", "id": "mc_prev_image", "label": "Custom Prev Arrow (Image)" },
         { "type": "textarea", "id": "mc_prev_svg", "label": "Custom Prev Arrow (SVG code)" },
         { "type": "image_picker", "id": "mc_next_image", "label": "Custom Next Arrow (Image)" },
@@ -2460,7 +3227,14 @@
         { "type": "benefit", "settings": { "text": "Feel more flexible" } },
         { "type": "bundles_heading" },
         { "type": "bundle" },
-        { "type": "bundle", "settings": { "title": "Buy 2, Get", "title_highlight": "1 Free", "social_proof": "<p>92% of customers choose: Buy 2, Get 1 Free</p>" } },
+        {
+          "type": "bundle",
+          "settings": {
+            "title": "Buy 2, Get",
+            "title_highlight": "1 Free",
+            "social_proof": "<p>92% of customers choose: Buy 2, Get 1 Free</p>"
+          }
+        },
         { "type": "bundle", "settings": { "title": "Buy 3, Get", "title_highlight": "2 Free", "best_value": true } },
         { "type": "subscription" },
         { "type": "add_to_cart" },
