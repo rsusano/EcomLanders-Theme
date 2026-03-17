@@ -1,0 +1,9 @@
+{
+  "recommendations": [
+    "Shopify.theme-check-vscode",
+    "sissel.shopify-liquid",
+    "bradlc.vscode-tailwindcss",
+    "esbenp.prettier-vscode",
+    "ms-vscode.live-server"
+  ]
+}

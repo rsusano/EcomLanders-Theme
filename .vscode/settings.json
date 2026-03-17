@@ -1,8 +1,22 @@
 {
-  // Tell the CSS/SCSS language service to ignore unknown at-rules.
-  // @starting-style is valid modern CSS (CSS Transitions Level 2) but the
-  // built-in language server reports it as unknown — this suppresses that false positive.
-  "css.lint.unknownAtRules": "ignore",
-  "scss.lint.unknownAtRules": "ignore",
-  "less.lint.unknownAtRules": "ignore"
+  "[liquid]": {
+    "editor.defaultFormatter": "Shopify.theme-check-vscode",
+    "editor.formatOnSave": true,
+    "editor.tabSize": 2
+  },
+  "[css]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true,
+    "editor.tabSize": 2
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true,
+    "editor.tabSize": 2
+  },
+  "files.associations": {
+    "*.liquid": "liquid"
+  },
+  "editor.wordWrap": "on",
+  "themeCheck.onlySingleFileChecks": false
 }
