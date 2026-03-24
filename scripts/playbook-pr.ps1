@@ -131,9 +131,17 @@ if ($DryRun) {
   exit 0
 }
 
-git checkout master 2>$null; git pull origin master
+$ea = $ErrorActionPreference
+$ErrorActionPreference = 'SilentlyContinue'
+git checkout master 2>$null
+$ErrorActionPreference = $ea
+git pull origin master
+if ($LASTEXITCODE -ne 0) { throw "git pull failed" }
+$ErrorActionPreference = 'SilentlyContinue'
 git branch -D $branch 2>$null
+$ErrorActionPreference = $ea
 git checkout -b $branch
+if ($LASTEXITCODE -ne 0) { throw "git checkout -b failed" }
 
 New-Item -ItemType Directory -Force -Path (Split-Path $absPath -Parent) | Out-Null
 Set-Content -Path $absPath -Value $body -Encoding utf8
@@ -145,7 +153,7 @@ git push -u origin $branch --force
 
 $prTitle = "docs(playbooks): $num $title"
 $safeTitle = $title -replace '"', '\"'
-gh pr create --repo rsusano/shopify-product-info-advanced --head $branch --base master `
+$prUrl = gh pr create --repo rsusano/shopify-product-info-advanced --head $branch --base master `
   --title $prTitle `
   --body @"
 ## Summary
@@ -158,8 +166,11 @@ Merchant-facing, single-topic documentation that stays reviewable and useful if 
 - [ ] Markdown renders
 - [ ] Links to sibling docs work
 "@
-
-gh pr merge --repo rsusano/shopify-product-info-advanced --merge --delete-branch
+if ($prUrl -notmatch '/pull/(\d+)') {
+  throw "gh pr create did not return a PR URL (got: $prUrl)"
+}
+$prNum = $Matches[1]
+gh pr merge $prNum --repo rsusano/shopify-product-info-advanced --merge --delete-branch
 git checkout master
 git pull origin master
 Write-Host "Done: $prTitle"
